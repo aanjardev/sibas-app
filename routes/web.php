@@ -14,3 +14,7 @@ Route::prefix('anggota')->name('anggota.')->group(function () {
     Route::get('/profil', function () { return view('anggota.profil'); })->name('profil');
     Route::get('/notifikasi', function () { return view('anggota.notifikasi'); })->name('notifikasi');
 });
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () { return view('admin.dashboard'); })->name('dashboard');
+});
