@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Bold, solid, firm corporate green - No pastels */
+    --primary-color: #084627; 
+    --primary-dark: #074225;
+    --primary-gradient: linear-gradient(135deg, #07351e 0%, #0d522d 100%);
+    --bg-color: #f1f5f9; 
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --surface-bg: #ffffff;
+    --border-color: #cbd5e1; /* Slightly darker border for more definition */
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    padding-bottom: 75px; 
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Unique UI Characteristics - Less rounded, structured */
+.surface-card {
+    background: var(--surface-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px; /* Uniform, not too big */
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.primary-card {
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: 4px 24px 4px 24px; /* Variative: Top-Left sharp, others rounded */
+    box-shadow: 3px 6px 12px rgba(13, 107, 60, 0.2);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Typography Helpers */
+.fw-medium { font-weight: 500; }
+.fw-semibold { font-weight: 600; }
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.875rem; }
+.text-muted { color: var(--text-muted) !important; }
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 65px;
+    background: var(--surface-bg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1030;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    width: 25%;
+    height: 100%;
+}
+
+.nav-item i {
+    font-size: 1.3rem;
+    margin-bottom: 2px;
+}
+
+.nav-item span {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-item.active {
+    color: var(--primary-color);
+}
+
+.nav-item.active i {
+    text-shadow: none; /* Removed the glowing shadow for a cleaner look */
+}
+
+/* Custom Header */
+.app-header {
+    background: var(--surface-bg);
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-title {
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+    font-size: 1.1rem;
+    letter-spacing: -0.5px;
+}
+
+/* History Item */
+.history-item {
+    padding: 14px;
+    background: var(--surface-bg);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 4px; /* Sharp and minimal */
+    border-left: 4px solid transparent; /* To be overridden */
+}
+
+.history-item.masuk {
+    border-left-color: var(--primary-color);
+}
+
+.history-item.keluar {
+    border-left-color: #f59e0b; /* Orange/Yellow instead of red */
+}
+
+.history-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+}
