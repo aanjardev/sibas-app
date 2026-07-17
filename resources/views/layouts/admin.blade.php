@@ -29,7 +29,7 @@
             </a>
             
             <div class="nav-category mt-4">Master Data</div>
-            <a href="#" class="sidebar-link">
+            <a href="{{ route('admin.anggota.index') }}" class="sidebar-link {{ request()->routeIs('admin.anggota.*') ? 'active' : '' }}">
                 <i class="bi bi-people"></i> Data Anggota
             </a>
             

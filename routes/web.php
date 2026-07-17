@@ -17,4 +17,9 @@ Route::prefix('anggota')->name('anggota.')->group(function () {
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () { return view('admin.dashboard'); })->name('dashboard');
+    
+    Route::get('/anggota', function () { return view('admin.anggota.index'); })->name('anggota.index');
+    Route::get('/anggota/create', function () { return view('admin.anggota.create'); })->name('anggota.create');
+    Route::get('/anggota/{id}', function () { return view('admin.anggota.show'); })->name('anggota.show');
+    Route::get('/anggota/{id}/edit', function () { return view('admin.anggota.edit'); })->name('anggota.edit');
 });
