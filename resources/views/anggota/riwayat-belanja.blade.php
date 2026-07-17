@@ -43,7 +43,7 @@
 
 <div class="surface-card p-3">
     <!-- Transaction Item 1 -->
-    <div class="history-item keluar mb-2">
+    <div class="history-item belanja mb-2">
         <div class="overflow-hidden flex-grow-1 pe-2">
             <h6 class="mb-1 text-sm fw-bold text-truncate">Pembelian Sembako</h6>
             <div class="text-muted text-xs text-truncate">
@@ -51,13 +51,13 @@
             </div>
         </div>
         <div class="text-end flex-shrink-0">
-            <h6 class="mb-1 text-sm fw-bold" style="color: #ea580c;">- Rp 45.000</h6>
+            <h6 class="amount mb-1 text-sm fw-bold">- Rp 45.000</h6>
             <div class="text-muted text-xs">15 Jul 2026, 16:30</div>
         </div>
     </div>
     
     <!-- Transaction Item 2 -->
-    <div class="history-item keluar mb-0">
+    <div class="history-item belanja mb-0">
         <div class="overflow-hidden flex-grow-1 pe-2">
             <h6 class="mb-1 text-sm fw-bold text-truncate">Pembelian Snack</h6>
             <div class="text-muted text-xs text-truncate">
@@ -65,7 +65,7 @@
             </div>
         </div>
         <div class="text-end flex-shrink-0">
-            <h6 class="mb-1 text-sm fw-bold" style="color: #ea580c;">- Rp 12.500</h6>
+            <h6 class="amount mb-1 text-sm fw-bold">- Rp 12.500</h6>
             <div class="text-muted text-xs">25 Jun 2026, 11:20</div>
         </div>
     </div>

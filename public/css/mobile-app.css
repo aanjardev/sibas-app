@@ -69,7 +69,7 @@ body {
     color: var(--text-muted);
     text-decoration: none;
     transition: color 0.2s ease;
-    width: 25%;
+    width: 20%;
     height: 100%;
 }
 
@@ -127,13 +127,26 @@ body {
     border-left: 4px solid transparent; /* To be overridden */
 }
 
-.history-item.masuk {
-    border-left-color: var(--primary-color);
+.history-item.setor-sampah {
+    border-left-color: #064e3b; /* Hijau Gelap */
 }
 
-.history-item.keluar {
-    border-left-color: #f59e0b; /* Orange/Yellow instead of red */
+.history-item.belanja {
+    border-left-color: #f97316; /* Orange */
 }
+
+.history-item.setor-tunai {
+    border-left-color: #22c55e; /* Hijau Muda */
+}
+
+.history-item.tarik-tunai {
+    border-left-color: #eab308; /* Kuning */
+}
+
+.history-item.setor-sampah .amount { color: #064e3b; }
+.history-item.belanja .amount { color: #f97316; }
+.history-item.setor-tunai .amount { color: #22c55e; }
+.history-item.tarik-tunai .amount { color: #eab308; }
 
 .history-icon {
     width: 36px;

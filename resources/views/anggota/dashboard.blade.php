@@ -10,7 +10,11 @@
         <!-- Balance Section (Top) -->
         <div class="text-center pb-3">
             <p class="mb-1 text-sm opacity-75">Saldo Tabungan</p>
-            <h2 class="fw-bold mb-0" style="font-size: 2.4rem; letter-spacing: -1px;">Rp 1.250.000</h2>
+            <h2 class="fw-bold mb-2" style="font-size: 2.4rem; letter-spacing: -1px;">Rp 1.250.000</h2>
+            <div class="d-inline-flex align-items-center bg-white bg-opacity-25 px-3 py-1 rounded-pill">
+                <i class="bi bi-wallet2 me-2 text-white opacity-75" style="font-size: 0.8rem;"></i>
+                <span class="text-white text-xs">Cashback Sampah: <strong class="fw-bold">Rp 350.000</strong></span>
+            </div>
         </div>
 
         <!-- Divider -->
@@ -60,7 +64,7 @@
 <h6 class="fw-bold mb-2 text-sm text-uppercase text-muted tracking-wide px-1">Aktivitas Terakhir</h6>
 
 <div class="surface-card p-3">
-    <div class="history-item masuk">
+    <div class="history-item setor-sampah">
         <div class="overflow-hidden flex-grow-1 pe-2">
             <h6 class="mb-1 text-sm fw-bold text-truncate">Setor Botol Plastik</h6>
             <div class="text-muted text-xs text-truncate">
@@ -68,21 +72,47 @@
             </div>
         </div>
         <div class="text-end flex-shrink-0">
-            <h6 class="text-success mb-1 text-sm fw-bold">+ Rp 15.000</h6>
+            <h6 class="amount mb-1 text-sm fw-bold">+ Rp 15.000</h6>
             <div class="text-muted text-xs">Hari ini, 09:41</div>
         </div>
     </div>
     
-    <div class="history-item keluar">
+    <div class="history-item belanja">
         <div class="overflow-hidden flex-grow-1 pe-2">
             <h6 class="mb-1 text-sm fw-bold text-truncate">Belanja Koperasi</h6>
             <div class="text-muted text-xs text-truncate">
-                Beras Premium 5kg, Minyak Goreng 2L, Gula Pasir...
+                Beras Premium 5kg, Minyak Goreng 2L...
             </div>
         </div>
         <div class="text-end flex-shrink-0">
-            <h6 class="mb-1 text-sm fw-bold" style="color: #ea580c;">- Rp 45.000</h6>
+            <h6 class="amount mb-1 text-sm fw-bold">- Rp 45.000</h6>
             <div class="text-muted text-xs">Kemarin, 16:30</div>
+        </div>
+    </div>
+
+    <div class="history-item setor-tunai">
+        <div class="overflow-hidden flex-grow-1 pe-2">
+            <h6 class="mb-1 text-sm fw-bold text-truncate">Setor Tunai Tabungan</h6>
+            <div class="text-muted text-xs text-truncate">
+                Melalui Admin (Siti)
+            </div>
+        </div>
+        <div class="text-end flex-shrink-0">
+            <h6 class="amount mb-1 text-sm fw-bold">+ Rp 50.000</h6>
+            <div class="text-muted text-xs">15 Jul 2026, 10:00</div>
+        </div>
+    </div>
+
+    <div class="history-item tarik-tunai">
+        <div class="overflow-hidden flex-grow-1 pe-2">
+            <h6 class="mb-1 text-sm fw-bold text-truncate">Tarik Tunai Tabungan</h6>
+            <div class="text-muted text-xs text-truncate">
+                Kebutuhan mendadak
+            </div>
+        </div>
+        <div class="text-end flex-shrink-0">
+            <h6 class="amount mb-1 text-sm fw-bold">- Rp 100.000</h6>
+            <div class="text-muted text-xs">10 Jul 2026, 09:15</div>
         </div>
     </div>
 </div>

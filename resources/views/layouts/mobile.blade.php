@@ -41,6 +41,10 @@
             <i class="bi bi-shop"></i>
             <span>Belanja</span>
         </a>
+        <a href="{{ route('anggota.tabungan') }}" class="nav-item {{ request()->routeIs('anggota.tabungan') ? 'active' : '' }}">
+            <i class="bi bi-wallet2"></i>
+            <span>Tabungan</span>
+        </a>
         <a href="{{ route('anggota.profil') }}" class="nav-item {{ request()->routeIs('anggota.profil') ? 'active' : '' }}">
             <i class="bi bi-person{{ request()->routeIs('anggota.profil') ? '-fill' : '' }}"></i>
             <span>Profil</span>
