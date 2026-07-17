@@ -45,7 +45,7 @@
         <div class="surface-card p-3 h-100 d-flex flex-column justify-content-center" style="border: 1.3px solid var(--primary-color);">
             <div class="d-flex align-items-center mb-1">
                 <i class="bi bi-recycle me-2 fs-4" style="color: var(--primary-dark);"></i>
-                <h5 class="fw-bold mb-0 text-main">125 <small class="text-xs text-muted">kg</small></h5>
+                <h5 class="fw-bold mb-0 text-main">15 <small class="text-xs text-muted">kg</small></h5>
             </div>
             <p class="text-muted mb-0 text-uppercase fw-semibold" style="font-size: 0.65rem;">Sampah Disetor</p>
         </div>

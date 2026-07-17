@@ -21,9 +21,18 @@
     </div>
 </div>
 
-<div class="d-flex justify-content-between align-items-end mb-3 px-1">
+<div class="d-flex justify-content-between align-items-center mb-3 px-1">
     <h6 class="fw-bold mb-0 text-sm text-uppercase text-muted tracking-wide">Riwayat Transaksi</h6>
-    <span class="badge bg-white text-muted border border-secondary border-opacity-25 rounded-1 px-2 py-1"><i class="bi bi-calendar3 me-1"></i> Bulan Ini</span>
+    <div class="dropdown">
+        <button class="btn btn-sm bg-white text-muted border border-secondary border-opacity-25 rounded-1 px-2 py-1 shadow-none d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.75rem;">
+            <i class="bi bi-calendar3 me-1"></i> Juli 2026 <i class="bi bi-chevron-down ms-1" style="font-size: 0.6rem;"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-1" style="border-radius: 8px; overflow: hidden; padding: 0; min-width: 130px; font-size: 0.85rem;">
+            <li><a class="dropdown-item py-2 px-3 bg-light text-success fw-bold border-bottom" href="#">Juli 2026 <i class="bi bi-check-circle-fill ms-1 float-end"></i></a></li>
+            <li><a class="dropdown-item py-2 px-3 border-bottom" href="#">Juni 2026</a></li>
+            <li><a class="dropdown-item py-2 px-3" href="#">Mei 2026</a></li>
+        </ul>
+    </div>
 </div>
 
 <div class="surface-card p-3">
