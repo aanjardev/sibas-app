@@ -22,4 +22,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/anggota/create', function () { return view('admin.anggota.create'); })->name('anggota.create');
     Route::get('/anggota/{id}', function () { return view('admin.anggota.show'); })->name('anggota.show');
     Route::get('/anggota/{id}/edit', function () { return view('admin.anggota.edit'); })->name('anggota.edit');
+    
+    Route::get('/setor-sampah', function () { return view('admin.setor-sampah.index'); })->name('setor-sampah.index');
+    Route::get('/setor-sampah/create', function () { return view('admin.setor-sampah.create'); })->name('setor-sampah.create');
+    Route::get('/setor-sampah/{id}/edit', function () { return view('admin.setor-sampah.edit'); })->name('setor-sampah.edit');
 });

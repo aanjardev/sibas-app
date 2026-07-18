@@ -34,7 +34,7 @@
             </a>
             
             <div class="nav-category mt-4">Transaksi Utama</div>
-            <a href="#" class="sidebar-link">
+            <a href="{{ route('admin.setor-sampah.index') }}" class="sidebar-link {{ request()->routeIs('admin.setor-sampah.*') ? 'active' : '' }}">
                 <i class="bi bi-trash3"></i> Setor Sampah
             </a>
             <a href="#" class="sidebar-link">
