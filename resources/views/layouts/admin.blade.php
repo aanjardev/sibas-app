@@ -32,6 +32,9 @@
             <a href="{{ route('admin.anggota.index') }}" class="sidebar-link {{ request()->routeIs('admin.anggota.*') ? 'active' : '' }}">
                 <i class="bi bi-people"></i> Data Anggota
             </a>
+            <a href="{{ route('admin.kategori-sampah.index') }}" class="sidebar-link {{ request()->routeIs('admin.kategori-sampah.*') ? 'active' : '' }}">
+                <i class="bi bi-tags"></i> Jenis & Harga Sampah
+            </a>
             
             <div class="nav-category mt-4">Transaksi Utama</div>
             <a href="{{ route('admin.setor-sampah.index') }}" class="sidebar-link {{ request()->routeIs('admin.setor-sampah.*') ? 'active' : '' }}">

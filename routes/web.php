@@ -58,5 +58,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/setor-sampah',           function () { return view('admin.setor-sampah.index'); })->name('setor-sampah.index');
         Route::get('/setor-sampah/create',    function () { return view('admin.setor-sampah.create'); })->name('setor-sampah.create');
         Route::get('/setor-sampah/{id}/edit', function () { return view('admin.setor-sampah.edit'); })->name('setor-sampah.edit');
+
+        Route::get('/kategori-sampah',           function () { return view('admin.kategori-sampah.index'); })->name('kategori-sampah.index');
+        Route::get('/kategori-sampah/create',    function () { return view('admin.kategori-sampah.create'); })->name('kategori-sampah.create');
+        Route::get('/kategori-sampah/{id}/edit', function () { return view('admin.kategori-sampah.edit'); })->name('kategori-sampah.edit');
     });
 });
