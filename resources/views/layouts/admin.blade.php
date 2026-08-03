@@ -43,7 +43,7 @@
             <a href="#" class="sidebar-link">
                 <i class="bi bi-cart3"></i> Belanja Koperasi
             </a>
-            <a href="#" class="sidebar-link">
+            <a href="{{ route('admin.tabungan.index') }}" class="sidebar-link {{ request()->routeIs('admin.tabungan.*') ? 'active' : '' }}">
                 <i class="bi bi-wallet2"></i> Kelola Tabungan
             </a>
             
