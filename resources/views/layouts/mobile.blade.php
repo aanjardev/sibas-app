@@ -14,7 +14,7 @@
     <header class="app-header">
         <h1 class="app-title">@yield('header_title', 'SIBAS')</h1>
         <div class="header-actions">
-            <a href="{{ route('anggota.notifikasi') }}" class="text-dark position-relative text-decoration-none">
+            <a href="{{ route('notifikasi') }}" class="text-dark position-relative text-decoration-none">
                 <i class="bi bi-bell fs-5"></i>
                 <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
                     <span class="visually-hidden">Pesan baru</span>
@@ -29,24 +29,24 @@
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <a href="{{ route('anggota.dashboard') }}" class="nav-item {{ request()->routeIs('anggota.dashboard') ? 'active' : '' }}">
-            <i class="bi bi-grid{{ request()->routeIs('anggota.dashboard') ? '-fill' : '' }}"></i>
+        <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <i class="bi bi-grid{{ request()->routeIs('dashboard') ? '-fill' : '' }}"></i>
             <span>Beranda</span>
         </a>
-        <a href="{{ route('anggota.riwayat_sampah') }}" class="nav-item {{ request()->routeIs('anggota.riwayat_sampah') ? 'active' : '' }}">
+        <a href="{{ route('riwayat_sampah') }}" class="nav-item {{ request()->routeIs('riwayat_sampah') ? 'active' : '' }}">
             <i class="bi bi-recycle"></i>
             <span>Sampah</span>
         </a>
-        <a href="{{ route('anggota.riwayat_belanja') }}" class="nav-item {{ request()->routeIs('anggota.riwayat_belanja') ? 'active' : '' }}">
+        <a href="{{ route('riwayat_belanja') }}" class="nav-item {{ request()->routeIs('riwayat_belanja') ? 'active' : '' }}">
             <i class="bi bi-shop"></i>
             <span>Belanja</span>
         </a>
-        <a href="{{ route('anggota.tabungan') }}" class="nav-item {{ request()->routeIs('anggota.tabungan') ? 'active' : '' }}">
+        <a href="{{ route('tabungan') }}" class="nav-item {{ request()->routeIs('tabungan') ? 'active' : '' }}">
             <i class="bi bi-wallet2"></i>
             <span>Tabungan</span>
         </a>
-        <a href="{{ route('anggota.profil') }}" class="nav-item {{ request()->routeIs('anggota.profil') ? 'active' : '' }}">
-            <i class="bi bi-person{{ request()->routeIs('anggota.profil') ? '-fill' : '' }}"></i>
+        <a href="{{ route('profil') }}" class="nav-item {{ request()->routeIs('profil') ? 'active' : '' }}">
+            <i class="bi bi-person{{ request()->routeIs('profil') ? '-fill' : '' }}"></i>
             <span>Profil</span>
         </a>
     </nav>

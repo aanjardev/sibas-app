@@ -3,7 +3,7 @@
 @section('title', 'Setor Sampah')
 @section('header_title', 'Setor Sampah')
 @section('header_actions')
-<a href="{{ route('anggota.dashboard') }}" class="text-dark me-2">
+<a href="{{ route('dashboard') }}" class="text-dark me-2">
     <i class="bi bi-arrow-left fs-4"></i>
 </a>
 @endsection
