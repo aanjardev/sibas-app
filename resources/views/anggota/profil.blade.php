@@ -62,7 +62,7 @@
 
 <!-- Logout Confirmation Modal -->
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="margin: 1rem; max-width: calc(100% - 2rem);">
+    <div class="modal-dialog modal-dialog-centered" style="margin: 1rem auto; width: calc(100% - 2rem); max-width: 360px;">
         <div class="modal-content shadow" style="border-radius: 16px; border: none;">
             <div class="modal-body text-center p-4">
                 <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
@@ -75,7 +75,10 @@
                         <button type="button" class="btn btn-light w-100 fw-bold py-2 border" data-bs-dismiss="modal" style="border-radius: 8px;">Batal</button>
                     </div>
                     <div class="col-6">
-                        <a href="#" class="btn btn-danger w-100 fw-bold py-2" style="border-radius: 8px;">Ya, Keluar</a>
+                        <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                            @csrf
+                            <button type="submit" class="btn btn-danger w-100 fw-bold py-2" style="border-radius: 8px;">Ya, Keluar</button>
+                        </form>
                     </div>
                 </div>
             </div>

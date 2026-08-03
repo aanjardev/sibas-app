@@ -13,14 +13,23 @@
     <!-- Header -->
     <header class="app-header">
         <h1 class="app-title">@yield('header_title', 'SIBAS')</h1>
-        <div class="header-actions">
+        <div class="header-actions" style="display:flex;align-items:center;gap:14px;">
             <a href="{{ route('notifikasi') }}" class="text-dark position-relative text-decoration-none">
                 <i class="bi bi-bell fs-5"></i>
                 <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
                     <span class="visually-hidden">Pesan baru</span>
                 </span>
             </a>
+            <form action="{{ route('logout') }}" method="POST" id="logout-form" style="margin:0;">
+                @csrf
+                <button type="submit" title="Keluar"
+                    style="background:none;border:none;padding:2px 0;cursor:pointer;color:#64748b;font-size:1.2rem;line-height:1;display:flex;align-items:center;"
+                    onclick="return confirm('Yakin ingin keluar?')">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </form>
         </div>
+
     </header>
 
     <main class="container-fluid px-3 py-4">
