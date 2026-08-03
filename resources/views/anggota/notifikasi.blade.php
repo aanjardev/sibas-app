@@ -11,7 +11,7 @@
         <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 42px; height: 42px;">
             <i class="bi bi-recycle text-success fs-5"></i>
         </div>
-        <div>
+        <div class="flex-grow-1" style="min-width: 0;">
             <div class="d-flex justify-content-between align-items-start mb-1">
                 <h6 class="fw-bold mb-0 text-main" style="font-size: 0.95rem;">Setoran Berhasil</h6>
                 <small class="text-muted text-xs ms-2">09:41</small>
@@ -24,7 +24,7 @@
         <div class="bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 42px; height: 42px;">
             <i class="bi bi-shop" style="color: #ea580c; font-size: 1.15rem;"></i>
         </div>
-        <div>
+        <div class="flex-grow-1" style="min-width: 0;">
             <div class="d-flex justify-content-between align-items-start mb-1">
                 <h6 class="fw-bold mb-0 text-main" style="font-size: 0.95rem;">Transaksi Koperasi</h6>
                 <small class="text-muted text-xs ms-2">16:30</small>
@@ -41,7 +41,7 @@
         <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 42px; height: 42px;">
             <i class="bi bi-megaphone-fill text-primary fs-5"></i>
         </div>
-        <div>
+        <div class="flex-grow-1" style="min-width: 0;">
             <div class="d-flex justify-content-between align-items-start mb-1">
                 <h6 class="fw-bold mb-0 text-main" style="font-size: 0.95rem;">Jadwal Buka Bank Sampah</h6>
                 <small class="text-muted text-xs ms-2">12 Jul</small>
@@ -54,7 +54,7 @@
         <div class="bg-white rounded-circle border d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 42px; height: 42px; border-color: var(--border-color) !important;">
             <i class="bi bi-check-circle-fill text-success fs-5"></i>
         </div>
-        <div>
+        <div class="flex-grow-1" style="min-width: 0;">
             <div class="d-flex justify-content-between align-items-start mb-1">
                 <h6 class="fw-bold mb-0 text-main" style="font-size: 0.95rem;">Selamat Datang di SIBAS!</h6>
                 <small class="text-muted text-xs ms-2">10 Jul</small>
