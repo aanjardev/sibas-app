@@ -40,7 +40,7 @@
             <a href="{{ route('admin.setor-sampah.index') }}" class="sidebar-link {{ request()->routeIs('admin.setor-sampah.*') ? 'active' : '' }}">
                 <i class="bi bi-trash3"></i> Setor Sampah
             </a>
-            <a href="#" class="sidebar-link">
+            <a href="{{ route('admin.belanja-koperasi.index') }}" class="sidebar-link {{ request()->routeIs('admin.belanja-koperasi.*') ? 'active' : '' }}">
                 <i class="bi bi-cart3"></i> Belanja Koperasi
             </a>
             <a href="{{ route('admin.tabungan.index') }}" class="sidebar-link {{ request()->routeIs('admin.tabungan.*') ? 'active' : '' }}">
@@ -48,7 +48,7 @@
             </a>
             
             <div class="nav-category mt-4">Koperasi</div>
-            <a href="#" class="sidebar-link">
+            <a href="{{ route('admin.inventory.index') }}" class="sidebar-link {{ request()->routeIs('admin.inventory.*') ? 'active' : '' }}">
                 <i class="bi bi-box-seam"></i> Inventory Barang
             </a>
             

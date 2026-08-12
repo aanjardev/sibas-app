@@ -66,5 +66,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/tabungan',           function () { return view('admin.tabungan.index'); })->name('tabungan.index');
         Route::get('/tabungan/create',    function () { return view('admin.tabungan.create'); })->name('tabungan.create');
         Route::get('/tabungan/{id}/edit', function () { return view('admin.tabungan.edit'); })->name('tabungan.edit');
+
+        Route::get('/inventory',           function () { return view('admin.inventory.index'); })->name('inventory.index');
+        Route::get('/inventory/create',    function () { return view('admin.inventory.create'); })->name('inventory.create');
+        Route::get('/inventory/{id}/edit', function () { return view('admin.inventory.edit'); })->name('inventory.edit');
+
+        Route::get('/belanja-koperasi',              function () { return view('admin.belanja-koperasi.index'); })->name('belanja-koperasi.index');
+        Route::get('/belanja-koperasi/pos',          function () { return view('admin.belanja-koperasi.pos'); })->name('belanja-koperasi.pos');
+        Route::get('/belanja-koperasi/checkout',     function () { return view('admin.belanja-koperasi.checkout'); })->name('belanja-koperasi.checkout');
+        Route::get('/belanja-koperasi/{id}',         function ($id) { return view('admin.belanja-koperasi.show'); })->name('belanja-koperasi.show');
+        Route::get('/belanja-koperasi/{id}/edit',    function ($id) { return view('admin.belanja-koperasi.edit'); })->name('belanja-koperasi.edit');
     });
 });
