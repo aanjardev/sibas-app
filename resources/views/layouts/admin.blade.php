@@ -56,7 +56,7 @@
             <a href="#" class="sidebar-link">
                 <i class="bi bi-file-earmark-bar-graph"></i> Laporan
             </a>
-            <a href="#" class="sidebar-link text-danger mt-3">
+            <a href="#" class="sidebar-link text-danger mt-3" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
                 <i class="bi bi-box-arrow-right text-danger"></i> Keluar
             </a>
         </div>
@@ -83,7 +83,7 @@
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                     <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2"></i>Profil</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item py-2 text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                    <li><a class="dropdown-item py-2 text-danger" href="#" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                 </ul>
             </div>
         </div>
@@ -96,6 +96,12 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Hidden Logout Form -->
+    <form id="admin-logout-form" action="{{ route('admin.logout') }}" method="POST" class="d-none">
+        @csrf
+    </form>
+
     @yield('scripts')
 </body>
 </html>

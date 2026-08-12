@@ -40,38 +40,51 @@
 
         /* Logo Area */
         .auth-logo {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
             margin-bottom: 32px;
         }
 
         .logo-icon {
-            width: 64px;
-            height: 64px;
+            width: 54px;
+            height: 54px;
             background: var(--primary-gradient);
-            border-radius: 4px 20px 4px 20px;
+            border-radius: 4px 16px 4px 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 14px auto;
-            box-shadow: 0 6px 20px rgba(8, 70, 39, 0.3);
+            box-shadow: 0 4px 15px rgba(8, 70, 39, 0.25);
+            flex-shrink: 0;
         }
 
         .logo-icon i {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: white;
         }
 
+        .logo-text {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
         .auth-logo h1 {
-            font-size: 1.6rem;
+            font-size: 1.7rem;
             font-weight: 700;
             color: var(--text-main);
             letter-spacing: -0.5px;
+            line-height: 1;
+            margin-bottom: 4px;
         }
 
         .auth-logo p {
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            margin-top: 4px;
+            margin: 0;
+            font-weight: 500;
         }
 
         /* Card */
@@ -264,8 +277,10 @@
             <div class="logo-icon">
                 <i class="bi bi-recycle"></i>
             </div>
-            <h1>SIBAS</h1>
-            <p>Sistem Bank Sampah</p>
+            <div class="logo-text">
+                <h1>SIBAS</h1>
+                <p>Sistem Bank Sampah</p>
+            </div>
         </div>
 
         <!-- Card -->
