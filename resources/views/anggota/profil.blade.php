@@ -14,12 +14,12 @@
             <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 80px; height: 80px; color: var(--primary-dark);">
                 <i class="bi bi-person-fill" style="font-size: 3.5rem;"></i>
             </div>
-            <h4 class="fw-bold mb-1 text-white" style="font-size: 1.6rem;">Budi Santoso</h4>
-            <p class="text-white opacity-75 text-sm mb-4">Anggota Aktif • BSA0001</p>
+            <h4 class="fw-bold mb-1 text-white" style="font-size: 1.6rem;">{{ $user->name }}</h4>
+            <p class="text-white opacity-75 text-sm mb-4">{{ $user->is_active ? 'Anggota Aktif' : 'Anggota Nonaktif' }} • {{ $user->nomor_anggota ?? '-' }}</p>
             
             <div class="d-inline-block bg-white bg-opacity-25 text-white px-4 py-2 shadow-sm" style="border-radius: 50rem; border: 1px solid rgba(255,255,255,0.3);">
                 <span class="opacity-75 me-1" style="font-size: 0.85rem;">Saldo:</span> 
-                <span class="fw-bold" style="font-size: 1.1rem;">Rp 1.250.000</span>
+                <span class="fw-bold" style="font-size: 1.1rem;">Rp {{ number_format($user->saldo, 0, ',', '.') }}</span>
             </div>
         </div>
     </div>
@@ -33,7 +33,7 @@
         </div>
         <div>
             <p class="mb-0 opacity-75 fw-medium" style="font-size: 0.8rem;">Email</p>
-            <h6 class="fw-bold mb-0 text-main" style="font-size: 1rem;">budi@example.com</h6>
+            <h6 class="fw-bold mb-0 text-main" style="font-size: 1rem;">{{ $user->email ?? '-' }}</h6>
         </div>
     </div>
     <div class="d-flex align-items-center p-3 border-bottom" style="border-color: var(--border-color) !important;">
@@ -42,7 +42,7 @@
         </div>
         <div>
             <p class="mb-0 opacity-75 fw-medium" style="font-size: 0.8rem;">Nomor HP</p>
-            <h6 class="fw-bold mb-0 text-main" style="font-size: 1rem;">081234567890</h6>
+            <h6 class="fw-bold mb-0 text-main" style="font-size: 1rem;">{{ $user->no_hp ?? '-' }}</h6>
         </div>
     </div>
     <div class="d-flex align-items-center p-3">
@@ -51,7 +51,7 @@
         </div>
         <div>
             <p class="mb-0 opacity-75 fw-medium" style="font-size: 0.8rem;">Alamat Lengkap</p>
-            <h6 class="fw-bold mb-0 text-main" style="font-size: 1rem;">Jl. Melati No. 45, Sukamaju</h6>
+            <h6 class="fw-bold mb-0 text-main" style="font-size: 1rem;">{{ $user->alamat ?? '-' }}</h6>
         </div>
     </div>
 </div>

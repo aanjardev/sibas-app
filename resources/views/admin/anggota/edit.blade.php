@@ -4,8 +4,9 @@
 @section('header_title', 'Edit Data Anggota')
 
 @section('content')
-<form action="#" method="POST" id="edit-anggota-form">
+<form action="{{ route('admin.anggota.update', $anggota->id) }}" method="POST" id="edit-anggota-form">
     @csrf
+    @method('PUT')
     <!-- Top Header Bar with Back & Save Buttons on a single row -->
     <div class="row g-3 mb-3 mb-md-4">
         <div class="col-12 d-flex align-items-center justify-content-between gap-2">
@@ -13,13 +14,24 @@
                 <i class="bi bi-arrow-left me-1"></i> Kembali
             </a>
             <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-light text-dark border d-none d-sm-inline-block">ID: AGT-001</span>
+                <span class="badge bg-light text-dark border d-none d-sm-inline-block">ID: {{ $anggota->nomor_anggota }}</span>
                 <button type="submit" class="btn btn-primary btn-sm text-white px-3 shadow-sm">
                     <i class="bi bi-check-lg me-1"></i> Simpan Perubahan
                 </button>
             </div>
         </div>
     </div>
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
     <div class="row g-3">
         <div class="col-12 col-lg-8 mx-auto">
@@ -31,30 +43,30 @@
                 <div class="admin-card-body p-3 p-md-4">
                     <div class="mb-3">
                         <label for="name" class="form-label fw-semibold text-sm">Nama Lengkap <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control text-sm" id="name" name="name" value="Budi Santoso" required>
+                        <input type="text" class="form-control text-sm @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $anggota->name) }}" required>
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-md-6">
-                            <label for="email" class="form-label fw-semibold text-sm">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control text-sm" id="email" name="email" value="budi@example.com" required>
+                            <label for="email" class="form-label fw-semibold text-sm">Email</label>
+                            <input type="email" class="form-control text-sm @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $anggota->email) }}">
                         </div>
                         <div class="col-12 col-md-6">
                             <label for="no_hp" class="form-label fw-semibold text-sm">Nomor HP / WA <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control text-sm" id="no_hp" name="no_hp" value="081234567890" required>
+                            <input type="tel" class="form-control text-sm @error('no_hp') is-invalid @enderror" id="no_hp" name="no_hp" value="{{ old('no_hp', $anggota->no_hp) }}" required>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="alamat" class="form-label fw-semibold text-sm">Alamat Lengkap <span class="text-danger">*</span></label>
-                        <textarea class="form-control text-sm" id="alamat" name="alamat" rows="3" required>Jl. Merdeka No. 10, Jakarta</textarea>
+                        <textarea class="form-control text-sm @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3" required>{{ old('alamat', $anggota->alamat) }}</textarea>
                     </div>
 
                     <div class="mb-0">
                         <label for="status" class="form-label fw-semibold text-sm">Status Keanggotaan</label>
-                        <select class="form-select text-sm" id="status" name="is_active">
-                            <option value="1" selected>Aktif</option>
-                            <option value="0">Nonaktif</option>
+                        <select class="form-select text-sm @error('is_active') is-invalid @enderror" id="status" name="is_active">
+                            <option value="1" {{ old('is_active', $anggota->is_active) ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ !old('is_active', $anggota->is_active) ? 'selected' : '' }}>Nonaktif</option>
                         </select>
                     </div>
                 </div>
@@ -70,7 +82,7 @@
                     <div class="mb-3">
                         <label for="new_password" class="form-label fw-semibold text-sm">Password Baru</label>
                         <div class="password-wrapper position-relative">
-                            <input type="password" class="form-control text-sm pe-5" id="new_password" name="new_password" placeholder="Ketik password baru (opsional)" oninput="checkStrength(this.value)">
+                            <input type="password" class="form-control text-sm pe-5 @error('new_password') is-invalid @enderror" id="new_password" name="new_password" placeholder="Ketik password baru (opsional)" oninput="checkStrength(this.value)">
                             <button type="button" class="btn border-0 position-absolute end-0 top-50 translate-middle-y text-muted px-3" onclick="togglePassword('new_password', this)">
                                 <i class="bi bi-eye"></i>
                             </button>
@@ -99,6 +111,7 @@
     </div>
 </form>
 
+@section('scripts')
 <script>
     function togglePassword(fieldId, btn) {
         const field = document.getElementById(fieldId);
@@ -150,4 +163,5 @@
         }
     }
 </script>
+@endsection
 @endsection

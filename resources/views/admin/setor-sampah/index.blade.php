@@ -14,20 +14,30 @@
     
     <!-- Search & Filter Bar -->
     <div class="col-12 col-md-6">
-        <div class="d-flex gap-2">
-            <div class="input-group">
-                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control bg-white border-start-0 text-sm" placeholder="Cari TRX, nama, kategori...">
+        <form action="{{ route('admin.setor-sampah.index') }}" method="GET">
+            <div class="d-flex gap-2">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari TRX, nama anggota...">
+                </div>
+                <select name="kategori_id" class="form-select bg-white text-sm" style="max-width: 150px;" onchange="this.form.submit()">
+                    <option value="">Semua Kategori</option>
+                    @foreach($kategoriList as $kat)
+                        <option value="{{ $kat->id }}" {{ request('kategori_id') == $kat->id ? 'selected' : '' }}>{{ $kat->nama }}</option>
+                    @endforeach
+                </select>
+                <button type="submit" class="d-none"></button>
             </div>
-            <select class="form-select bg-white text-sm" style="max-width: 130px;">
-                <option value="">Semua Kategori</option>
-                <option value="Plastik">Plastik PET</option>
-                <option value="Kardus">Kardus Bekas</option>
-                <option value="Besi">Besi/Logam</option>
-            </select>
-        </div>
+        </form>
     </div>
 </div>
+
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 
 <div class="row g-3">
     <div class="col-12">
@@ -41,150 +51,92 @@
                                 <th class="ps-4 py-3 text-xs text-uppercase text-muted">No. TRX</th>
                                 <th class="py-3 text-xs text-uppercase text-muted">Tanggal</th>
                                 <th class="py-3 text-xs text-uppercase text-muted">Nama Anggota</th>
-                                <th class="py-3 text-xs text-uppercase text-muted">Rincian Item Sampah</th>
+                                <th class="py-3 text-xs text-uppercase text-muted">Kategori</th>
                                 <th class="py-3 text-end text-xs text-uppercase text-muted">Total Berat</th>
                                 <th class="py-3 text-end text-xs text-uppercase text-muted">Total Nilai</th>
                                 <th class="pe-4 py-3 text-end text-xs text-uppercase text-muted">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- TRX 1 (Multi-Item) -->
+                            @forelse($setorList as $setor)
                             <tr>
-                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-S045</span></td>
-                                <td class="py-3 text-muted text-sm">Hari ini, 09:41</td>
+                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-S{{ str_pad($setor->id, 4, '0', STR_PAD_LEFT) }}</span></td>
+                                <td class="py-3 text-muted text-sm">{{ $setor->created_at->format('d M Y, H:i') }}</td>
                                 <td class="py-3">
-                                    <div class="fw-bold text-dark text-sm">Budi Santoso</div>
-                                    <div class="text-xs text-muted">ID: AGT-001</div>
+                                    <div class="fw-bold text-dark text-sm">{{ $setor->anggota->name ?? '-' }}</div>
+                                    <div class="text-xs text-muted">ID: {{ $setor->anggota->nomor_anggota ?? '-' }}</div>
                                 </td>
                                 <td class="py-3">
-                                    <div class="d-flex flex-wrap gap-1">
-                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Plastik PET (5kg)</span>
-                                        <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 py-1 text-xs">Kardus (10kg)</span>
-                                    </div>
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">
+                                        {{ $setor->kategoriSampah->nama ?? '-' }}
+                                    </span>
                                 </td>
-                                <td class="py-3 text-end fw-semibold text-sm">15.0 kg</td>
-                                <td class="py-3 text-end text-success fw-bold">+ Rp 25.000</td>
+                                <td class="py-3 text-end fw-semibold text-sm">{{ $setor->berat }} kg</td>
+                                <td class="py-3 text-end text-success fw-bold">+ Rp {{ number_format($setor->total, 0, ',', '.') }}</td>
                                 <td class="pe-4 py-3 text-end">
                                     <div class="btn-group">
-                                        <a href="{{ route('admin.setor-sampah.edit', 1) }}" class="btn btn-sm btn-outline-primary" title="Edit Data">
+                                        <a href="{{ route('admin.setor-sampah.edit', $setor->id) }}" class="btn btn-sm btn-outline-primary" title="Edit Data">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Transaksi" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Transaksi" onclick="confirmDelete({{ $setor->id }})">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-
-                            <!-- TRX 2 (Single Item) -->
+                            @empty
                             <tr>
-                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-S044</span></td>
-                                <td class="py-3 text-muted text-sm">Hari ini, 08:30</td>
-                                <td class="py-3">
-                                    <div class="fw-bold text-dark text-sm">Siti Aminah</div>
-                                    <div class="text-xs text-muted">ID: AGT-002</div>
-                                </td>
-                                <td class="py-3">
-                                    <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 py-1 text-xs">Kardus Bekas (10kg)</span>
-                                </td>
-                                <td class="py-3 text-end fw-semibold text-sm">10.0 kg</td>
-                                <td class="py-3 text-end text-success fw-bold">+ Rp 10.000</td>
-                                <td class="pe-4 py-3 text-end">
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.setor-sampah.edit', 2) }}" class="btn btn-sm btn-outline-primary" title="Edit Data">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Transaksi" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
+                                <td colspan="7" class="text-center py-4 text-muted">Tidak ada transaksi setor sampah ditemukan.</td>
                             </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Mobile Card List View (< 768px) -->
                 <div class="d-block d-md-none p-3">
-                    <!-- Item 1 (Multi-Item) -->
+                    @forelse($setorList as $setor)
                     <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
                         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                            <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>Hari ini, 09:41</span>
-                            <span class="badge bg-light text-dark border">TRX-S045</span>
+                            <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>{{ $setor->created_at->format('d M Y, H:i') }}</span>
+                            <span class="badge bg-light text-dark border">TRX-S{{ str_pad($setor->id, 4, '0', STR_PAD_LEFT) }}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-muted text-xs">Anggota</span>
-                            <span class="fw-bold text-sm text-dark">Budi Santoso <small class="text-muted fw-normal">(AGT-001)</small></span>
+                            <span class="fw-bold text-sm text-dark">{{ $setor->anggota->name ?? '-' }} <small class="text-muted fw-normal">({{ $setor->anggota->nomor_anggota ?? '-' }})</small></span>
                         </div>
                         <div class="mb-2">
                             <span class="text-muted text-xs d-block mb-1">Rincian Item Setor</span>
                             <div class="d-flex flex-wrap gap-1">
-                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Plastik PET: 5.0 kg</span>
-                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 py-1 text-xs">Kardus: 10.0 kg</span>
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">
+                                    {{ $setor->kategoriSampah->nama ?? '-' }}: {{ $setor->berat }} kg
+                                </span>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top mb-3">
                             <div>
                                 <span class="text-muted text-xs d-block">Total Berat</span>
-                                <span class="fw-semibold text-dark text-xs">15.0 kg</span>
+                                <span class="fw-semibold text-dark text-xs">{{ $setor->berat }} kg</span>
                             </div>
                             <div class="text-end">
                                 <span class="text-muted text-xs d-block">Grand Total</span>
-                                <span class="fw-bold text-success text-base">+ Rp 25.000</span>
+                                <span class="fw-bold text-success text-base">+ Rp {{ number_format($setor->total, 0, ',', '.') }}</span>
                             </div>
                         </div>
                         <div class="d-flex gap-2">
-                            <a href="{{ route('admin.setor-sampah.edit', 1) }}" class="btn btn-sm btn-outline-primary flex-fill text-xs py-1.5"><i class="bi bi-pencil me-1"></i> Edit</a>
-                            <button type="button" class="btn btn-sm btn-outline-danger flex-fill text-xs py-1.5" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-trash me-1"></i> Hapus</button>
+                            <a href="{{ route('admin.setor-sampah.edit', $setor->id) }}" class="btn btn-sm btn-outline-primary flex-fill text-xs py-1.5"><i class="bi bi-pencil me-1"></i> Edit</a>
+                            <button type="button" class="btn btn-sm btn-outline-danger flex-fill text-xs py-1.5" onclick="confirmDelete({{ $setor->id }})"><i class="bi bi-trash me-1"></i> Hapus</button>
                         </div>
                     </div>
-
-                    <!-- Item 2 -->
-                    <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
-                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                            <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>Hari ini, 08:30</span>
-                            <span class="badge bg-light text-dark border">TRX-S044</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-muted text-xs">Anggota</span>
-                            <span class="fw-bold text-sm text-dark">Siti Aminah <small class="text-muted fw-normal">(AGT-002)</small></span>
-                        </div>
-                        <div class="mb-2">
-                            <span class="text-muted text-xs d-block mb-1">Rincian Item Setor</span>
-                            <div class="d-flex flex-wrap gap-1">
-                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 py-1 text-xs">Kardus Bekas: 10.0 kg</span>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center pt-2 border-top mb-3">
-                            <div>
-                                <span class="text-muted text-xs d-block">Total Berat</span>
-                                <span class="fw-semibold text-dark text-xs">10.0 kg</span>
-                            </div>
-                            <div class="text-end">
-                                <span class="text-muted text-xs d-block">Grand Total</span>
-                                <span class="fw-bold text-success text-base">+ Rp 10.000</span>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a href="{{ route('admin.setor-sampah.edit', 2) }}" class="btn btn-sm btn-outline-primary flex-fill text-xs py-1.5"><i class="bi bi-pencil me-1"></i> Edit</a>
-                            <button type="button" class="btn btn-sm btn-outline-danger flex-fill text-xs py-1.5" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-trash me-1"></i> Hapus</button>
-                        </div>
-                    </div>
+                    @empty
+                    <div class="text-center py-4 text-muted border rounded-3 bg-light">Tidak ada transaksi setor sampah ditemukan.</div>
+                    @endforelse
                 </div>
             </div>
             
             <!-- Footer Pagination -->
-            <div class="admin-card-footer d-flex flex-column flex-sm-row justify-content-between align-items-center p-3 p-md-4 border-top gap-3">
-                <span class="text-muted text-xs text-center text-sm-start">Menampilkan 1-2 dari 45 transaksi</span>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">Sebelumnya</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Selanjutnya</a></li>
-                    </ul>
-                </nav>
+            <div class="admin-card-footer p-3 p-md-4 border-top">
+                {{ $setorList->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>
@@ -205,7 +157,7 @@
                         <button type="button" class="btn btn-light w-100 fw-bold py-2 text-muted border text-sm" data-bs-dismiss="modal" style="border-radius: 8px;">Batal</button>
                     </div>
                     <div class="col-6">
-                        <form action="#" method="POST" style="margin:0;">
+                        <form id="deleteForm" action="" method="POST" style="margin:0;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger w-100 fw-bold py-2 text-sm shadow-sm" style="border-radius: 8px;">Ya, Hapus</button>
@@ -231,4 +183,15 @@
     background-color: #e9ecef;
 }
 </style>
+
+@section('scripts')
+<script>
+    function confirmDelete(id) {
+        var form = document.getElementById('deleteForm');
+        form.action = '/admin/setor-sampah/' + id;
+        var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    }
+</script>
+@endsection
 @endsection

@@ -14,12 +14,29 @@
     
     <!-- Search Bar -->
     <div class="col-12 col-md-6">
-        <div class="input-group">
-            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-            <input type="text" class="form-control bg-white border-start-0 text-sm" placeholder="Cari nama jenis atau kode sampah...">
-        </div>
+        <form action="{{ route('admin.kategori-sampah.index') }}" method="GET">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari nama jenis sampah...">
+                <button type="submit" class="d-none"></button>
+            </div>
+        </form>
     </div>
 </div>
+
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 
 <div class="row g-3">
     <div class="col-12">
@@ -39,160 +56,76 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Item 1 -->
+                            @forelse($kategoriList as $kategori)
                             <tr>
-                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">SMP-001</span></td>
+                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">SMP-{{ str_pad($kategori->id, 3, '0', STR_PAD_LEFT) }}</span></td>
                                 <td class="py-3">
-                                    <div class="fw-bold text-dark text-sm">Plastik PET (Botol Bening)</div>
-                                    <div class="text-xs text-muted">Botol plastik air mineral bersih & kering</div>
+                                    <div class="fw-bold text-dark text-sm">{{ $kategori->nama }}</div>
+                                    <div class="text-xs text-muted">{{ $kategori->deskripsi ?? '-' }}</div>
                                 </td>
                                 <td class="py-3 text-muted text-sm">Kilogram (kg)</td>
-                                <td class="py-3 text-end fw-bold text-success text-sm">Rp 3.000 / kg</td>
+                                <td class="py-3 text-end fw-bold text-success text-sm">Rp {{ number_format($kategori->harga_beli, 0, ',', '.') }} / kg</td>
                                 <td class="py-3 text-center">
-                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">Aktif</span>
+                                    @if($kategori->is_active)
+                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">Aktif</span>
+                                    @else
+                                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1">Nonaktif</span>
+                                    @endif
                                 </td>
                                 <td class="pe-4 py-3 text-end">
                                     <div class="btn-group">
-                                        <a href="{{ route('admin.kategori-sampah.edit', 1) }}" class="btn btn-sm btn-outline-primary" title="Edit Data">
+                                        <a href="{{ route('admin.kategori-sampah.edit', $kategori->id) }}" class="btn btn-sm btn-outline-primary" title="Edit Data">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Jenis Sampah" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Jenis Sampah" onclick="confirmDelete({{ $kategori->id }})">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-
-                            <!-- Item 2 -->
+                            @empty
                             <tr>
-                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">SMP-002</span></td>
-                                <td class="py-3">
-                                    <div class="fw-bold text-dark text-sm">Kardus Bekas</div>
-                                    <div class="text-xs text-muted">Kardus kemasan bersih tanpa minyak</div>
-                                </td>
-                                <td class="py-3 text-muted text-sm">Kilogram (kg)</td>
-                                <td class="py-3 text-end fw-bold text-success text-sm">Rp 1.000 / kg</td>
-                                <td class="py-3 text-center">
-                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">Aktif</span>
-                                </td>
-                                <td class="pe-4 py-3 text-end">
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.kategori-sampah.edit', 2) }}" class="btn btn-sm btn-outline-primary" title="Edit Data">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Jenis Sampah" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
+                                <td colspan="6" class="text-center py-4 text-muted">Data jenis sampah tidak ditemukan.</td>
                             </tr>
-
-                            <!-- Item 3 -->
-                            <tr>
-                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">SMP-003</span></td>
-                                <td class="py-3">
-                                    <div class="fw-bold text-dark text-sm">Besi / Logam Tebal</div>
-                                    <div class="text-xs text-muted">Besi siku, pipa, peralatan bekas</div>
-                                </td>
-                                <td class="py-3 text-muted text-sm">Kilogram (kg)</td>
-                                <td class="py-3 text-end fw-bold text-success text-sm">Rp 5.000 / kg</td>
-                                <td class="py-3 text-center">
-                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">Aktif</span>
-                                </td>
-                                <td class="pe-4 py-3 text-end">
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.kategori-sampah.edit', 3) }}" class="btn btn-sm btn-outline-primary" title="Edit Data">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Jenis Sampah" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- Item 4 (Nonaktif) -->
-                            <tr>
-                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">SMP-004</span></td>
-                                <td class="py-3">
-                                    <div class="fw-bold text-muted text-sm">Kaca / Beling Campur</div>
-                                    <div class="text-xs text-muted">Botol kaca utuh atau pecah</div>
-                                </td>
-                                <td class="py-3 text-muted text-sm">Kilogram (kg)</td>
-                                <td class="py-3 text-end fw-bold text-muted text-sm">Rp 500 / kg</td>
-                                <td class="py-3 text-center">
-                                    <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1">Nonaktif</span>
-                                </td>
-                                <td class="pe-4 py-3 text-end">
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.kategori-sampah.edit', 4) }}" class="btn btn-sm btn-outline-primary" title="Edit Data">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Jenis Sampah" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Mobile Card List View (< 768px) -->
                 <div class="d-block d-md-none p-3">
-                    <!-- Mobile Item 1 -->
+                    @forelse($kategoriList as $kategori)
                     <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
                         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                            <span class="badge bg-light text-dark border">SMP-001</span>
-                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Aktif</span>
+                            <span class="badge bg-light text-dark border">SMP-{{ str_pad($kategori->id, 3, '0', STR_PAD_LEFT) }}</span>
+                            @if($kategori->is_active)
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Aktif</span>
+                            @else
+                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 text-xs">Nonaktif</span>
+                            @endif
                         </div>
                         <div class="mb-2">
-                            <h6 class="mb-0 fw-bold text-dark text-sm">Plastik PET (Botol Bening)</h6>
-                            <p class="text-xs text-muted mb-0">Botol plastik air mineral bersih & kering</p>
+                            <h6 class="mb-0 fw-bold text-dark text-sm">{{ $kategori->nama }}</h6>
+                            <p class="text-xs text-muted mb-0">{{ Str::limit($kategori->deskripsi, 50) }}</p>
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top mb-3">
                             <span class="text-muted text-xs">Harga per Kg</span>
-                            <span class="fw-bold text-success text-base">Rp 3.000 / kg</span>
+                            <span class="fw-bold text-success text-base">Rp {{ number_format($kategori->harga_beli, 0, ',', '.') }} / kg</span>
                         </div>
                         <div class="d-flex gap-2">
-                            <a href="{{ route('admin.kategori-sampah.edit', 1) }}" class="btn btn-sm btn-outline-primary flex-fill text-xs py-1.5"><i class="bi bi-pencil me-1"></i> Edit</a>
-                            <button type="button" class="btn btn-sm btn-outline-danger flex-fill text-xs py-1.5" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-trash me-1"></i> Hapus</button>
+                            <a href="{{ route('admin.kategori-sampah.edit', $kategori->id) }}" class="btn btn-sm btn-outline-primary flex-fill text-xs py-1.5"><i class="bi bi-pencil me-1"></i> Edit</a>
+                            <button type="button" class="btn btn-sm btn-outline-danger flex-fill text-xs py-1.5" onclick="confirmDelete({{ $kategori->id }})"><i class="bi bi-trash me-1"></i> Hapus</button>
                         </div>
                     </div>
-
-                    <!-- Mobile Item 2 -->
-                    <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
-                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                            <span class="badge bg-light text-dark border">SMP-002</span>
-                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Aktif</span>
-                        </div>
-                        <div class="mb-2">
-                            <h6 class="mb-0 fw-bold text-dark text-sm">Kardus Bekas</h6>
-                            <p class="text-xs text-muted mb-0">Kardus kemasan bersih tanpa minyak</p>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center pt-2 border-top mb-3">
-                            <span class="text-muted text-xs">Harga per Kg</span>
-                            <span class="fw-bold text-success text-base">Rp 1.000 / kg</span>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a href="{{ route('admin.kategori-sampah.edit', 2) }}" class="btn btn-sm btn-outline-primary flex-fill text-xs py-1.5"><i class="bi bi-pencil me-1"></i> Edit</a>
-                            <button type="button" class="btn btn-sm btn-outline-danger flex-fill text-xs py-1.5" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-trash me-1"></i> Hapus</button>
-                        </div>
-                    </div>
+                    @empty
+                    <div class="text-center py-4 text-muted border rounded-3 bg-light">Data jenis sampah tidak ditemukan.</div>
+                    @endforelse
                 </div>
             </div>
 
             <!-- Footer Pagination -->
-            <div class="admin-card-footer d-flex flex-column flex-sm-row justify-content-between align-items-center p-3 p-md-4 border-top gap-3">
-                <span class="text-muted text-xs text-center text-sm-start">Menampilkan 1-4 dari 12 jenis sampah</span>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">Sebelumnya</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Selanjutnya</a></li>
-                    </ul>
-                </nav>
+            <div class="admin-card-footer p-3 p-md-4 border-top">
+                {{ $kategoriList->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>
@@ -213,7 +146,7 @@
                         <button type="button" class="btn btn-light w-100 fw-bold py-2 text-muted border text-sm" data-bs-dismiss="modal" style="border-radius: 8px;">Batal</button>
                     </div>
                     <div class="col-6">
-                        <form action="#" method="POST" style="margin:0;">
+                        <form id="deleteForm" action="" method="POST" style="margin:0;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger w-100 fw-bold py-2 text-sm shadow-sm" style="border-radius: 8px;">Ya, Hapus</button>
@@ -239,4 +172,15 @@
     background-color: #e9ecef;
 }
 </style>
+
+@section('scripts')
+<script>
+    function confirmDelete(id) {
+        var form = document.getElementById('deleteForm');
+        form.action = '/admin/kategori-sampah/' + id;
+        var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    }
+</script>
+@endsection
 @endsection

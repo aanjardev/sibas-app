@@ -14,38 +14,48 @@
     
     <!-- Search & Filter Bar -->
     <div class="col-12 col-md-6">
-        <div class="d-flex gap-2">
-            <div class="input-group">
-                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control bg-white border-start-0 text-sm" placeholder="Cari No TRX, nama nasabah...">
+        <form action="{{ route('admin.tabungan.index') }}" method="GET">
+            <div class="d-flex gap-2">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari No TRX, nama anggota...">
+                </div>
+                <select name="jenis" class="form-select bg-white text-sm" style="max-width: 140px;" onchange="this.form.submit()">
+                    <option value="">Semua Transaksi</option>
+                    <option value="setor" {{ request('jenis') == 'setor' ? 'selected' : '' }}>Setor Tunai</option>
+                    <option value="tarik" {{ request('jenis') == 'tarik' ? 'selected' : '' }}>Tarik Tunai</option>
+                </select>
+                <button type="submit" class="d-none"></button>
             </div>
-            <select class="form-select bg-white text-sm" style="max-width: 140px;">
-                <option value="">Semua Transaksi</option>
-                <option value="setor">Setor Tunai</option>
-                <option value="tarik">Tarik Tunai</option>
-            </select>
-        </div>
+        </form>
     </div>
 </div>
+
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 
 <!-- Summary Widgets -->
 <div class="row g-3 mb-3 mb-md-4">
     <div class="col-12 col-sm-4">
         <div class="admin-card border-0 shadow-sm p-3">
             <span class="text-muted text-xs text-uppercase tracking-wider fw-semibold d-block mb-1">Total Tabungan Terhimpun</span>
-            <h4 class="fw-bold text-success mb-0">Rp 124.500.000</h4>
+            <h4 class="fw-bold text-success mb-0">Rp {{ number_format($totalTerhimpun ?? 0, 0, ',', '.') }}</h4>
         </div>
     </div>
     <div class="col-12 col-sm-4">
         <div class="admin-card border-0 shadow-sm p-3">
             <span class="text-muted text-xs text-uppercase tracking-wider fw-semibold d-block mb-1">Setor Tunai Hari Ini</span>
-            <h4 class="fw-bold text-dark mb-0">+ Rp 1.250.000</h4>
+            <h4 class="fw-bold text-dark mb-0">+ Rp {{ number_format($setorHariIni ?? 0, 0, ',', '.') }}</h4>
         </div>
     </div>
     <div class="col-12 col-sm-4">
         <div class="admin-card border-0 shadow-sm p-3">
             <span class="text-muted text-xs text-uppercase tracking-wider fw-semibold d-block mb-1">Penarikan Tunai Hari Ini</span>
-            <h4 class="fw-bold text-danger mb-0">- Rp 500.000</h4>
+            <h4 class="fw-bold text-danger mb-0">- Rp {{ number_format($tarikHariIni ?? 0, 0, ',', '.') }}</h4>
         </div>
     </div>
 </div>
@@ -69,138 +79,91 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Item 1 (Setor Tunai) -->
+                            @forelse($tabunganList as $tabungan)
                             <tr>
-                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-T102</span></td>
-                                <td class="py-3 text-muted text-sm">Hari ini, 10:15</td>
+                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-T{{ str_pad($tabungan->id, 4, '0', STR_PAD_LEFT) }}</span></td>
+                                <td class="py-3 text-muted text-sm">{{ $tabungan->created_at->format('d M Y, H:i') }}</td>
                                 <td class="py-3">
-                                    <div class="fw-bold text-dark text-sm">Budi Santoso</div>
-                                    <div class="text-xs text-muted">ID: AGT-001</div>
+                                    <div class="fw-bold text-dark text-sm">{{ $tabungan->anggota->name ?? '-' }}</div>
+                                    <div class="text-xs text-muted">ID: {{ $tabungan->anggota->nomor_anggota ?? '-' }}</div>
                                 </td>
                                 <td class="py-3">
-                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fw-medium">
-                                        <i class="bi bi-arrow-down-left me-1"></i> Setor Tunai
-                                    </span>
+                                    @if($tabungan->jenis == 'setor')
+                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fw-medium">
+                                            <i class="bi bi-arrow-down-left me-1"></i> Setor Tunai
+                                        </span>
+                                    @else
+                                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1 fw-medium">
+                                            <i class="bi bi-arrow-up-right me-1"></i> Tarik Tunai
+                                        </span>
+                                    @endif
                                 </td>
-                                <td class="py-3 text-end fw-bold text-success text-sm">+ Rp 200.000</td>
-                                <td class="py-3 text-end text-muted text-sm">Rp 450.000</td>
+                                <td class="py-3 text-end fw-bold {{ $tabungan->jenis == 'setor' ? 'text-success' : 'text-danger' }} text-sm">
+                                    {{ $tabungan->jenis == 'setor' ? '+' : '-' }} Rp {{ number_format($tabungan->nominal, 0, ',', '.') }}
+                                </td>
+                                <td class="py-3 text-end text-muted text-sm">Rp {{ number_format($tabungan->saldo_sesudah, 0, ',', '.') }}</td>
                                 <td class="pe-4 py-3 text-end">
                                     <div class="btn-group">
-                                        <a href="{{ route('admin.tabungan.edit', 1) }}" class="btn btn-sm btn-outline-primary" title="Edit Transaksi">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Transaksi" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Transaksi" onclick="confirmDelete({{ $tabungan->id }})">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-
-                            <!-- Item 2 (Penarikan Tunai) -->
+                            @empty
                             <tr>
-                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-T101</span></td>
-                                <td class="py-3 text-muted text-sm">Hari ini, 08:45</td>
-                                <td class="py-3">
-                                    <div class="fw-bold text-dark text-sm">Siti Aminah</div>
-                                    <div class="text-xs text-muted">ID: AGT-002</div>
-                                </td>
-                                <td class="py-3">
-                                    <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1 fw-medium">
-                                        <i class="bi bi-arrow-up-right me-1"></i> Tarik Tunai
-                                    </span>
-                                </td>
-                                <td class="py-3 text-end fw-bold text-danger text-sm">- Rp 500.000</td>
-                                <td class="py-3 text-end text-muted text-sm">Rp 1.200.000</td>
-                                <td class="pe-4 py-3 text-end">
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.tabungan.edit', 2) }}" class="btn btn-sm btn-outline-primary" title="Edit Transaksi">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Transaksi" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
+                                <td colspan="7" class="text-center py-4 text-muted">Tidak ada transaksi tabungan ditemukan.</td>
                             </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Mobile Card List View (< 768px) -->
                 <div class="d-block d-md-none p-3">
-                    <!-- Mobile Item 1 -->
+                    @forelse($tabunganList as $tabungan)
                     <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
                         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                            <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>Hari ini, 10:15</span>
-                            <span class="badge bg-light text-dark border">TRX-T102</span>
+                            <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>{{ $tabungan->created_at->format('d M Y, H:i') }}</span>
+                            <span class="badge bg-light text-dark border">TRX-T{{ str_pad($tabungan->id, 4, '0', STR_PAD_LEFT) }}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <span class="text-muted text-xs">Anggota</span>
-                            <span class="fw-bold text-sm text-dark">Budi Santoso <small class="text-muted fw-normal">(AGT-001)</small></span>
+                            <span class="fw-bold text-sm text-dark">{{ $tabungan->anggota->name ?? '-' }} <small class="text-muted fw-normal">({{ $tabungan->anggota->nomor_anggota ?? '-' }})</small></span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-muted text-xs">Jenis Transaksi</span>
-                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Setor Tunai</span>
+                            @if($tabungan->jenis == 'setor')
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Setor Tunai</span>
+                            @else
+                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 text-xs">Tarik Tunai</span>
+                            @endif
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top mb-3">
                             <div>
                                 <span class="text-muted text-xs d-block">Saldo Akhir</span>
-                                <span class="text-dark text-xs">Rp 450.000</span>
+                                <span class="text-dark text-xs">Rp {{ number_format($tabungan->saldo_sesudah, 0, ',', '.') }}</span>
                             </div>
                             <div class="text-end">
-                                <span class="text-muted text-xs d-block">Nominal Setor</span>
-                                <span class="fw-bold text-success text-base">+ Rp 200.000</span>
+                                <span class="text-muted text-xs d-block">Nominal</span>
+                                <span class="fw-bold {{ $tabungan->jenis == 'setor' ? 'text-success' : 'text-danger' }} text-base">
+                                    {{ $tabungan->jenis == 'setor' ? '+' : '-' }} Rp {{ number_format($tabungan->nominal, 0, ',', '.') }}
+                                </span>
                             </div>
                         </div>
                         <div class="d-flex gap-2">
-                            <a href="{{ route('admin.tabungan.edit', 1) }}" class="btn btn-sm btn-outline-primary flex-fill text-xs py-1.5"><i class="bi bi-pencil me-1"></i> Edit</a>
-                            <button type="button" class="btn btn-sm btn-outline-danger flex-fill text-xs py-1.5" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-trash me-1"></i> Hapus</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger flex-fill text-xs py-1.5" onclick="confirmDelete({{ $tabungan->id }})"><i class="bi bi-trash me-1"></i> Hapus</button>
                         </div>
                     </div>
-
-                    <!-- Mobile Item 2 -->
-                    <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
-                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                            <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>Hari ini, 08:45</span>
-                            <span class="badge bg-light text-dark border">TRX-T101</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-muted text-xs">Anggota</span>
-                            <span class="fw-bold text-sm text-dark">Siti Aminah <small class="text-muted fw-normal">(AGT-002)</small></span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-muted text-xs">Jenis Transaksi</span>
-                            <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 text-xs">Tarik Tunai</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center pt-2 border-top mb-3">
-                            <div>
-                                <span class="text-muted text-xs d-block">Saldo Akhir</span>
-                                <span class="text-dark text-xs">Rp 1.200.000</span>
-                            </div>
-                            <div class="text-end">
-                                <span class="text-muted text-xs d-block">Nominal Tarik</span>
-                                <span class="fw-bold text-danger text-base">- Rp 500.000</span>
-                            </div>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a href="{{ route('admin.tabungan.edit', 2) }}" class="btn btn-sm btn-outline-primary flex-fill text-xs py-1.5"><i class="bi bi-pencil me-1"></i> Edit</a>
-                            <button type="button" class="btn btn-sm btn-outline-danger flex-fill text-xs py-1.5" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-trash me-1"></i> Hapus</button>
-                        </div>
-                    </div>
+                    @empty
+                    <div class="text-center py-4 text-muted border rounded-3 bg-light">Tidak ada transaksi tabungan ditemukan.</div>
+                    @endforelse
                 </div>
             </div>
 
             <!-- Footer Pagination -->
-            <div class="admin-card-footer d-flex flex-column flex-sm-row justify-content-between align-items-center p-3 p-md-4 border-top gap-3">
-                <span class="text-muted text-xs text-center text-sm-start">Menampilkan 1-2 dari 84 transaksi</span>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item disabled"><a class="page-link" href="#">Sebelumnya</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Selanjutnya</a></li>
-                    </ul>
-                </nav>
+            <div class="admin-card-footer p-3 p-md-4 border-top">
+                {{ $tabunganList->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>
@@ -221,7 +184,7 @@
                         <button type="button" class="btn btn-light w-100 fw-bold py-2 text-muted border text-sm" data-bs-dismiss="modal" style="border-radius: 8px;">Batal</button>
                     </div>
                     <div class="col-6">
-                        <form action="#" method="POST" style="margin:0;">
+                        <form id="deleteForm" action="" method="POST" style="margin:0;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger w-100 fw-bold py-2 text-sm shadow-sm" style="border-radius: 8px;">Ya, Hapus</button>
@@ -247,4 +210,15 @@
     background-color: #e9ecef;
 }
 </style>
+
+@section('scripts')
+<script>
+    function confirmDelete(id) {
+        var form = document.getElementById('deleteForm');
+        form.action = '/admin/tabungan/' + id;
+        var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    }
+</script>
+@endsection
 @endsection

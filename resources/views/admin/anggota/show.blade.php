@@ -11,7 +11,7 @@
             <i class="bi bi-arrow-left me-1"></i> Kembali
         </a>
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.anggota.edit', 1) }}" class="btn btn-primary btn-sm text-white px-3 shadow-sm">
+            <a href="{{ route('admin.anggota.edit', $anggota->id) }}" class="btn btn-primary btn-sm text-white px-3 shadow-sm">
                 <i class="bi bi-pencil me-1"></i> Edit Data
             </a>
             <button class="btn btn-outline-danger btn-sm px-3" title="Hapus Anggota" data-bs-toggle="modal" data-bs-target="#deleteModal">
@@ -21,6 +21,13 @@
     </div>
 </div>
 
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
 <!-- Profile Hero Card -->
 <div class="row g-3 mb-3 mb-md-4">
     <div class="col-12">
@@ -28,20 +35,30 @@
             <div class="admin-card-body p-3 p-md-4">
                 <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start text-center text-sm-start mb-4 border-bottom pb-4 gap-3">
                     <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 72px; height: 72px; font-size: 1.8rem;">
-                        <span class="fw-bold">B</span>
+                        <span class="fw-bold">{{ substr($anggota->name, 0, 1) }}</span>
                     </div>
-                    <div class="flex-grow-1">
+                    <div class="flex-grow-1 w-100">
                         <div class="d-flex flex-column flex-sm-row align-items-center align-items-sm-start justify-content-between gap-2">
                             <div>
-                                <h4 class="mb-1 fw-bold text-dark fs-4">Budi Santoso</h4>
+                                <h4 class="mb-1 fw-bold text-dark fs-4">{{ $anggota->name }}</h4>
                                 <div class="d-flex flex-wrap justify-content-center justify-content-sm-start align-items-center gap-2">
-                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">Anggota Aktif</span>
-                                    <span class="badge bg-light text-dark border">ID: AGT-001</span>
+                                    @if($anggota->is_active)
+                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">Anggota Aktif</span>
+                                    @else
+                                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1">Anggota Nonaktif</span>
+                                    @endif
+                                    <span class="badge bg-light text-dark border">ID: {{ $anggota->nomor_anggota }}</span>
                                 </div>
                             </div>
-                            <div class="bg-light p-2 px-3 rounded-3 border mt-2 mt-sm-0 text-center text-sm-end">
-                                <span class="text-muted text-xs d-block mb-1">Total Saldo Tabungan</span>
-                                <span class="fw-bold text-success fs-5">Rp 450.000</span>
+                            <div class="bg-light p-2 px-3 rounded-3 border mt-2 mt-sm-0 text-center text-sm-end d-flex gap-3">
+                                <div>
+                                    <span class="text-muted text-xs d-block mb-1">Saldo Koperasi</span>
+                                    <span class="fw-bold text-primary fs-5">Rp {{ number_format($anggota->saldo, 0, ',', '.') }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-muted text-xs d-block mb-1">Saldo Tabungan</span>
+                                    <span class="fw-bold text-success fs-5">Rp {{ number_format($anggota->saldo_tabungan, 0, ',', '.') }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -56,18 +73,18 @@
                             </div>
                             <div>
                                 <h6 class="text-muted text-xs mb-1 text-uppercase tracking-wider">No. Telepon / WA</h6>
-                                <p class="mb-0 fw-semibold text-sm text-dark">0812-3456-7890</p>
+                                <p class="mb-0 fw-semibold text-sm text-dark">{{ $anggota->no_hp }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-md-6 col-xl-3">
                         <div class="d-flex align-items-start">
                             <div class="bg-light text-primary rounded-circle p-2 me-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px;">
-                                <i class="bi bi-card-heading fs-5"></i>
+                                <i class="bi bi-envelope fs-5"></i>
                             </div>
                             <div>
-                                <h6 class="text-muted text-xs mb-1 text-uppercase tracking-wider">NIK Kependudukan</h6>
-                                <p class="mb-0 fw-semibold text-sm text-dark">3171234567890001</p>
+                                <h6 class="text-muted text-xs mb-1 text-uppercase tracking-wider">Email</h6>
+                                <p class="mb-0 fw-semibold text-sm text-dark">{{ $anggota->email ?? '-' }}</p>
                             </div>
                         </div>
                     </div>
@@ -78,7 +95,7 @@
                             </div>
                             <div>
                                 <h6 class="text-muted text-xs mb-1 text-uppercase tracking-wider">Alamat Domisili</h6>
-                                <p class="mb-0 fw-semibold text-sm text-dark">Jl. Merdeka No. 10 (RT 001 / RW 005), Jakarta</p>
+                                <p class="mb-0 fw-semibold text-sm text-dark">{{ $anggota->alamat }}</p>
                             </div>
                         </div>
                     </div>
@@ -89,7 +106,7 @@
                             </div>
                             <div>
                                 <h6 class="text-muted text-xs mb-1 text-uppercase tracking-wider">Bergabung Sejak</h6>
-                                <p class="mb-0 fw-semibold text-sm text-dark">12 Januari 2026</p>
+                                <p class="mb-0 fw-semibold text-sm text-dark">{{ $anggota->created_at->format('d F Y') }}</p>
                             </div>
                         </div>
                     </div>
@@ -129,10 +146,7 @@
                     <!-- TAB 1: Riwayat Tabungan -->
                     <div class="tab-pane fade show active" id="tabungan" role="tabpanel">
                         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3 mb-md-4">
-                            <h6 class="fw-bold mb-0 text-dark">Transaksi Saldo Tabungan</h6>
-                            <button class="btn btn-outline-primary btn-sm rounded-pill align-self-start align-self-sm-center px-3">
-                                <i class="bi bi-printer me-1"></i> Cetak Rekap Tabungan
-                            </button>
+                            <h6 class="fw-bold mb-0 text-dark">Transaksi Saldo Tabungan (Terbaru)</h6>
                         </div>
 
                         <!-- Table View (Desktop & Tablet >= 768px) -->
@@ -149,83 +163,71 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @forelse($riwayatTabungan as $trx)
                                     <tr>
-                                        <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-T040</span></td>
-                                        <td class="py-3 text-muted text-sm">15 Jul 2026, 09:41</td>
-                                        <td class="py-3 text-center"><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">Setor (Sampah)</span></td>
-                                        <td class="py-3 text-end text-success fw-bold">+ Rp 25.000</td>
-                                        <td class="py-3 text-end text-muted">-</td>
-                                        <td class="pe-4 py-3 text-end fw-bold text-dark">Rp 450.000</td>
+                                        <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-T{{ str_pad($trx->id, 4, '0', STR_PAD_LEFT) }}</span></td>
+                                        <td class="py-3 text-muted text-sm">{{ $trx->created_at->format('d M Y, H:i') }}</td>
+                                        <td class="py-3 text-center">
+                                            @if($trx->jenis == 'setor')
+                                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">Setor Tunai</span>
+                                            @else
+                                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1">Tarik Tunai</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-3 text-end {{ $trx->jenis == 'setor' ? 'text-success fw-bold' : 'text-muted' }}">
+                                            {{ $trx->jenis == 'setor' ? '+ Rp ' . number_format($trx->nominal, 0, ',', '.') : '-' }}
+                                        </td>
+                                        <td class="py-3 text-end {{ $trx->jenis == 'tarik' ? 'text-danger fw-bold' : 'text-muted' }}">
+                                            {{ $trx->jenis == 'tarik' ? '- Rp ' . number_format($trx->nominal, 0, ',', '.') : '-' }}
+                                        </td>
+                                        <td class="pe-4 py-3 text-end fw-bold text-dark">Rp {{ number_format($trx->saldo_sesudah, 0, ',', '.') }}</td>
                                     </tr>
+                                    @empty
                                     <tr>
-                                        <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-T035</span></td>
-                                        <td class="py-3 text-muted text-sm">10 Jul 2026, 14:20</td>
-                                        <td class="py-3 text-center"><span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1">Tarik Tunai</span></td>
-                                        <td class="py-3 text-end text-muted">-</td>
-                                        <td class="py-3 text-end text-danger fw-bold">- Rp 100.000</td>
-                                        <td class="pe-4 py-3 text-end fw-bold text-dark">Rp 425.000</td>
+                                        <td colspan="6" class="text-center py-4 text-muted">Belum ada riwayat tabungan.</td>
                                     </tr>
-                                    <tr>
-                                        <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-T020</span></td>
-                                        <td class="py-3 text-muted text-sm">01 Jul 2026, 10:15</td>
-                                        <td class="py-3 text-center"><span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-1">Setor Tunai</span></td>
-                                        <td class="py-3 text-end text-success fw-bold">+ Rp 150.000</td>
-                                        <td class="py-3 text-end text-muted">-</td>
-                                        <td class="pe-4 py-3 text-end fw-bold text-dark">Rp 525.000</td>
-                                    </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
 
                         <!-- Mobile Card List View (< 768px) -->
                         <div class="d-block d-md-none">
+                            @forelse($riwayatTabungan as $trx)
                             <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
                                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                                    <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>15 Jul 2026, 09:41</span>
-                                    <span class="badge bg-light text-dark border">TRX-T040</span>
+                                    <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>{{ $trx->created_at->format('d M Y, H:i') }}</span>
+                                    <span class="badge bg-light text-dark border">TRX-T{{ str_pad($trx->id, 4, '0', STR_PAD_LEFT) }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <span class="text-muted text-xs">Jenis</span>
-                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Setor (Sampah)</span>
+                                    @if($trx->jenis == 'setor')
+                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Setor Tunai</span>
+                                    @else
+                                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 text-xs">Tarik Tunai</span>
+                                    @endif
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <span class="text-muted text-xs">Nominal Setor</span>
-                                    <span class="fw-bold text-success text-sm">+ Rp 25.000</span>
+                                    <span class="text-muted text-xs">Nominal</span>
+                                    <span class="fw-bold {{ $trx->jenis == 'setor' ? 'text-success' : 'text-danger' }} text-sm">
+                                        {{ $trx->jenis == 'setor' ? '+' : '-' }} Rp {{ number_format($trx->nominal, 0, ',', '.') }}
+                                    </span>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                     <span class="text-muted text-xs fw-semibold">Sisa Saldo</span>
-                                    <span class="fw-bold text-dark text-sm">Rp 450.000</span>
+                                    <span class="fw-bold text-dark text-sm">Rp {{ number_format($trx->saldo_sesudah, 0, ',', '.') }}</span>
                                 </div>
                             </div>
-
-                            <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
-                                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                                    <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>10 Jul 2026, 14:20</span>
-                                    <span class="badge bg-light text-dark border">TRX-T035</span>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <span class="text-muted text-xs">Jenis</span>
-                                    <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 text-xs">Tarik Tunai</span>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <span class="text-muted text-xs">Nominal Tarik</span>
-                                    <span class="fw-bold text-danger text-sm">- Rp 100.000</span>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                                    <span class="text-muted text-xs fw-semibold">Sisa Saldo</span>
-                                    <span class="fw-bold text-dark text-sm">Rp 425.000</span>
-                                </div>
-                            </div>
+                            @empty
+                            <div class="text-center py-4 text-muted border rounded-3 bg-light">Belum ada riwayat tabungan.</div>
+                            @endforelse
                         </div>
                     </div>
                     
                     <!-- TAB 2: Riwayat Setor Sampah -->
                     <div class="tab-pane fade" id="sampah" role="tabpanel">
                         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3 mb-md-4">
-                            <h6 class="fw-bold mb-0 text-dark">Riwayat Penyetoran Sampah</h6>
-                            <button class="btn btn-outline-success btn-sm rounded-pill align-self-start align-self-sm-center px-3">
-                                <i class="bi bi-download me-1"></i> Cetak Laporan Sampah
-                            </button>
+                            <h6 class="fw-bold mb-0 text-dark">Riwayat Penyetoran Sampah (Terbaru)</h6>
                         </div>
 
                         <!-- Table View (Desktop & Tablet >= 768px) -->
@@ -241,61 +243,54 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @forelse($riwayatSampah as $trx)
                                     <tr>
-                                        <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-S045</span></td>
-                                        <td class="py-3 text-muted text-sm">15 Jul 2026</td>
-                                        <td class="py-3 fw-semibold">Plastik PET (Botol Mineral)</td>
-                                        <td class="py-3 text-end fw-semibold">5.0 kg</td>
-                                        <td class="pe-4 py-3 text-end text-success fw-bold">+ Rp 15.000</td>
+                                        <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-S{{ str_pad($trx->id, 4, '0', STR_PAD_LEFT) }}</span></td>
+                                        <td class="py-3 text-muted text-sm">{{ $trx->created_at->format('d M Y, H:i') }}</td>
+                                        <td class="py-3 fw-semibold">{{ $trx->kategoriSampah->nama ?? '-' }}</td>
+                                        <td class="py-3 text-end fw-semibold">{{ $trx->berat }} kg</td>
+                                        <td class="pe-4 py-3 text-end text-success fw-bold">+ Rp {{ number_format($trx->total, 0, ',', '.') }}</td>
                                     </tr>
+                                    @empty
                                     <tr>
-                                        <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-S045</span></td>
-                                        <td class="py-3 text-muted text-sm">15 Jul 2026</td>
-                                        <td class="py-3 fw-semibold">Kardus Bekas</td>
-                                        <td class="py-3 text-end fw-semibold">10.0 kg</td>
-                                        <td class="pe-4 py-3 text-end text-success fw-bold">+ Rp 10.000</td>
+                                        <td colspan="5" class="text-center py-4 text-muted">Belum ada riwayat setor sampah.</td>
                                     </tr>
-                                    <tr>
-                                        <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-S012</span></td>
-                                        <td class="py-3 text-muted text-sm">28 Jun 2026</td>
-                                        <td class="py-3 fw-semibold">Besi/Logam Tebal</td>
-                                        <td class="py-3 text-end fw-semibold">2.5 kg</td>
-                                        <td class="pe-4 py-3 text-end text-success fw-bold">+ Rp 12.500</td>
-                                    </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
 
                         <!-- Mobile Card List View (< 768px) -->
                         <div class="d-block d-md-none">
+                            @forelse($riwayatSampah as $trx)
                             <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
                                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                                    <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>15 Jul 2026</span>
-                                    <span class="badge bg-light text-dark border">TRX-S045</span>
+                                    <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>{{ $trx->created_at->format('d M Y') }}</span>
+                                    <span class="badge bg-light text-dark border">TRX-S{{ str_pad($trx->id, 4, '0', STR_PAD_LEFT) }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <span class="text-muted text-xs">Kategori</span>
-                                    <span class="fw-semibold text-sm">Plastik PET</span>
+                                    <span class="fw-semibold text-sm">{{ $trx->kategoriSampah->nama ?? '-' }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <span class="text-muted text-xs">Berat</span>
-                                    <span class="fw-semibold text-sm">5.0 kg</span>
+                                    <span class="fw-semibold text-sm">{{ $trx->berat }} kg</span>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                     <span class="text-muted text-xs fw-semibold">Pendapatan</span>
-                                    <span class="fw-bold text-success text-sm">+ Rp 15.000</span>
+                                    <span class="fw-bold text-success text-sm">+ Rp {{ number_format($trx->total, 0, ',', '.') }}</span>
                                 </div>
                             </div>
+                            @empty
+                            <div class="text-center py-4 text-muted border rounded-3 bg-light">Belum ada riwayat setor sampah.</div>
+                            @endforelse
                         </div>
                     </div>
                     
                     <!-- TAB 3: Riwayat Penjualan Koperasi -->
                     <div class="tab-pane fade" id="penjualan" role="tabpanel">
                         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3 mb-md-4">
-                            <h6 class="fw-bold mb-0 text-dark">Riwayat Pembelian Barang Koperasi</h6>
-                            <button class="btn btn-outline-warning btn-sm rounded-pill text-dark px-3 align-self-start align-self-sm-center">
-                                <i class="bi bi-receipt me-1"></i> Cetak Struk Belanja
-                            </button>
+                            <h6 class="fw-bold mb-0 text-dark">Riwayat Pembelian Barang Koperasi (Terbaru)</h6>
                         </div>
 
                         <!-- Table View (Desktop & Tablet >= 768px) -->
@@ -305,56 +300,67 @@
                                     <tr>
                                         <th class="ps-4 py-3 text-xs text-uppercase text-muted">No. TRX</th>
                                         <th class="py-3 text-xs text-uppercase text-muted">Tanggal</th>
+                                        <th class="py-3 text-xs text-uppercase text-muted">Status</th>
                                         <th class="py-3 text-xs text-uppercase text-muted">Item Barang Belanja</th>
                                         <th class="pe-4 py-3 text-end text-xs text-uppercase text-muted">Total Pembayaran</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @forelse($riwayatBelanja as $trx)
                                     <tr>
-                                        <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-B080</span></td>
-                                        <td class="py-3 text-muted text-sm">12 Jul 2026</td>
+                                        <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-B{{ str_pad($trx->id, 4, '0', STR_PAD_LEFT) }}</span></td>
+                                        <td class="py-3 text-muted text-sm">{{ $trx->created_at->format('d M Y, H:i') }}</td>
+                                        <td class="py-3">
+                                            @if($trx->status == 'selesai')
+                                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">Selesai</span>
+                                            @elseif($trx->status == 'batal')
+                                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1">Batal</span>
+                                            @else
+                                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-1">Pending</span>
+                                            @endif
+                                        </td>
                                         <td class="py-3">
                                             <div class="text-sm">
-                                                <div>• 2x Minyak Goreng 1L (Rp 28.000)</div>
-                                                <div>• 1x Gula Pasir 1kg (Rp 20.000)</div>
+                                                @foreach($trx->details as $detail)
+                                                <div>• {{ $detail->jumlah }}x {{ $detail->kategoriProduk->nama ?? 'Produk' }} (Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }})</div>
+                                                @endforeach
                                             </div>
                                         </td>
-                                        <td class="pe-4 py-3 text-end fw-bold text-danger">- Rp 48.000</td>
+                                        <td class="pe-4 py-3 text-end fw-bold text-danger">- Rp {{ number_format($trx->total_belanja, 0, ',', '.') }}</td>
                                     </tr>
+                                    @empty
                                     <tr>
-                                        <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-B045</span></td>
-                                        <td class="py-3 text-muted text-sm">05 Jul 2026</td>
-                                        <td class="py-3">
-                                            <div class="text-sm">
-                                                <div>• 1x Beras Premium 5kg (Rp 68.000)</div>
-                                                <div>• 3x Mie Instan (Rp 10.500)</div>
-                                            </div>
-                                        </td>
-                                        <td class="pe-4 py-3 text-end fw-bold text-danger">- Rp 78.500</td>
+                                        <td colspan="5" class="text-center py-4 text-muted">Belum ada riwayat belanja.</td>
                                     </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
 
                         <!-- Mobile Card List View (< 768px) -->
                         <div class="d-block d-md-none">
+                            @forelse($riwayatBelanja as $trx)
                             <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
                                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                                    <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>12 Jul 2026</span>
-                                    <span class="badge bg-light text-dark border">TRX-B080</span>
+                                    <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>{{ $trx->created_at->format('d M Y') }}</span>
+                                    <span class="badge bg-light text-dark border">TRX-B{{ str_pad($trx->id, 4, '0', STR_PAD_LEFT) }}</span>
                                 </div>
                                 <div class="mb-2">
                                     <span class="text-muted text-xs d-block mb-1">Item Barang Belanja</span>
                                     <div class="text-sm fw-medium">
-                                        <div>• 2x Minyak Goreng 1L</div>
-                                        <div>• 1x Gula Pasir 1kg</div>
+                                        @foreach($trx->details as $detail)
+                                        <div>• {{ $detail->jumlah }}x {{ $detail->kategoriProduk->nama ?? 'Produk' }}</div>
+                                        @endforeach
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                     <span class="text-muted text-xs fw-semibold">Total Pembayaran</span>
-                                    <span class="fw-bold text-danger text-sm">- Rp 48.000</span>
+                                    <span class="fw-bold text-danger text-sm">- Rp {{ number_format($trx->total_belanja, 0, ',', '.') }}</span>
                                 </div>
                             </div>
+                            @empty
+                            <div class="text-center py-4 text-muted border rounded-3 bg-light">Belum ada riwayat belanja.</div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -378,7 +384,7 @@
                         <button type="button" class="btn btn-light w-100 fw-bold py-2 text-muted border text-sm" data-bs-dismiss="modal" style="border-radius: 8px;">Batal</button>
                     </div>
                     <div class="col-6">
-                        <form action="#" method="POST" style="margin:0;">
+                        <form action="{{ route('admin.anggota.destroy', $anggota->id) }}" method="POST" style="margin:0;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger w-100 fw-bold py-2 text-sm shadow-sm" style="border-radius: 8px;">Ya, Hapus</button>

@@ -4,7 +4,7 @@
 @section('header_title', 'Tambah Anggota Baru')
 
 @section('content')
-<form action="#" method="POST" id="create-anggota-form">
+<form action="{{ route('admin.anggota.store') }}" method="POST" id="create-anggota-form">
     @csrf
     <!-- Top Header Bar with Back & Save Buttons on a single row -->
     <div class="row g-3 mb-3 mb-md-4">
@@ -12,11 +12,25 @@
             <a href="{{ route('admin.anggota.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                 <i class="bi bi-arrow-left me-1"></i> Kembali
             </a>
-            <button type="submit" class="btn btn-primary btn-sm text-white px-3 shadow-sm">
-                <i class="bi bi-check-lg me-1"></i> Simpan Data Anggota
-            </button>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-dark border d-none d-sm-inline-block">ID: {{ $nomorAnggota ?? 'Otomatis' }}</span>
+                <button type="submit" class="btn btn-primary btn-sm text-white px-3 shadow-sm">
+                    <i class="bi bi-check-lg me-1"></i> Simpan Data Anggota
+                </button>
+            </div>
         </div>
     </div>
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
     <div class="row g-3">
         <div class="col-12 col-lg-8 mx-auto">
@@ -30,23 +44,23 @@
                     
                     <div class="mb-3">
                         <label for="name" class="form-label fw-semibold text-sm">Nama Lengkap <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control text-sm" id="name" name="name" placeholder="Masukkan nama lengkap" required>
+                        <input type="text" class="form-control text-sm @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" placeholder="Masukkan nama lengkap" required>
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-md-6">
-                            <label for="email" class="form-label fw-semibold text-sm">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control text-sm" id="email" name="email" placeholder="nama@contoh.com" required>
+                            <label for="email" class="form-label fw-semibold text-sm">Email</label>
+                            <input type="email" class="form-control text-sm @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="nama@contoh.com">
                         </div>
                         <div class="col-12 col-md-6">
                             <label for="no_hp" class="form-label fw-semibold text-sm">Nomor HP / WA <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control text-sm" id="no_hp" name="no_hp" placeholder="08xxxxxxxxxx" required>
+                            <input type="tel" class="form-control text-sm @error('no_hp') is-invalid @enderror" id="no_hp" name="no_hp" value="{{ old('no_hp') }}" placeholder="08xxxxxxxxxx" required>
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <label for="alamat" class="form-label fw-semibold text-sm">Alamat Lengkap <span class="text-danger">*</span></label>
-                        <textarea class="form-control text-sm" id="alamat" name="alamat" rows="3" placeholder="Masukkan alamat lengkap domisili" required></textarea>
+                        <textarea class="form-control text-sm @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3" placeholder="Masukkan alamat lengkap domisili" required>{{ old('alamat') }}</textarea>
                     </div>
 
                     <!-- Keamanan Akun -->
@@ -55,7 +69,7 @@
                     <div class="mb-3">
                         <label for="password" class="form-label fw-semibold text-sm">Password <span class="text-danger">*</span></label>
                         <div class="password-wrapper position-relative">
-                            <input type="password" class="form-control text-sm pe-5" id="password" name="password" placeholder="Minimal 8 karakter" required oninput="checkStrength(this.value)">
+                            <input type="password" class="form-control text-sm pe-5 @error('password') is-invalid @enderror" id="password" name="password" placeholder="Minimal 8 karakter" required oninput="checkStrength(this.value)">
                             <button type="button" class="btn border-0 position-absolute end-0 top-50 translate-middle-y text-muted px-3" onclick="togglePassword('password', this)">
                                 <i class="bi bi-eye"></i>
                             </button>
@@ -84,6 +98,7 @@
     </div>
 </form>
 
+@section('scripts')
 <script>
     function togglePassword(fieldId, btn) {
         const field = document.getElementById(fieldId);
@@ -135,4 +150,5 @@
         }
     }
 </script>
+@endsection
 @endsection

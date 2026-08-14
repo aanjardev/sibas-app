@@ -12,7 +12,7 @@
             <div class="admin-card-body p-3 p-md-4">
                 <div class="row g-3">
                     <div class="col-12 col-md-4">
-                        <button class="btn btn-primary text-white w-100 d-flex justify-content-between align-items-center p-3 text-start border-0 shadow-sm rounded-3 h-100 transition-hover">
+                        <a href="{{ route('admin.setor-sampah.create') }}" class="text-decoration-none btn btn-primary text-white w-100 d-flex justify-content-between align-items-center p-3 text-start border-0 shadow-sm rounded-3 h-100 transition-hover">
                             <div>
                                 <div class="fw-bold mb-1 text-white">Input Setor Sampah</div>
                                 <div class="text-xs text-white opacity-75">Catat setoran sampah baru</div>
@@ -20,10 +20,10 @@
                             <div class="bg-white bg-opacity-25 rounded-circle p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px;">
                                 <i class="bi bi-recycle fs-5 text-white"></i>
                             </div>
-                        </button>
+                        </a>
                     </div>
                     <div class="col-12 col-md-4">
-                        <button class="btn btn-primary text-white w-100 d-flex justify-content-between align-items-center p-3 text-start border-0 shadow-sm rounded-3 h-100 transition-hover">
+                        <a href="{{ route('admin.belanja-koperasi.pos') }}" class="text-decoration-none btn btn-primary text-white w-100 d-flex justify-content-between align-items-center p-3 text-start border-0 shadow-sm rounded-3 h-100 transition-hover">
                             <div>
                                 <div class="fw-bold mb-1 text-white">Kasir Koperasi</div>
                                 <div class="text-xs text-white opacity-75">Input penjualan barang koperasi</div>
@@ -31,10 +31,10 @@
                             <div class="bg-white bg-opacity-25 rounded-circle p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px;">
                                 <i class="bi bi-cart-plus fs-5 text-white"></i>
                             </div>
-                        </button>
+                        </a>
                     </div>
                     <div class="col-12 col-md-4">
-                        <button class="btn btn-primary text-white w-100 d-flex justify-content-between align-items-center p-3 text-start border-0 shadow-sm rounded-3 h-100 transition-hover">
+                        <a href="{{ route('admin.tabungan.create') }}" class="text-decoration-none btn btn-primary text-white w-100 d-flex justify-content-between align-items-center p-3 text-start border-0 shadow-sm rounded-3 h-100 transition-hover">
                             <div>
                                 <div class="fw-bold mb-1 text-white">Setor/Tarik Tabungan</div>
                                 <div class="text-xs text-white opacity-75">Kelola saldo tabungan anggota</div>
@@ -42,7 +42,7 @@
                             <div class="bg-white bg-opacity-25 rounded-circle p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px;">
                                 <i class="bi bi-wallet2 fs-5 text-white"></i>
                             </div>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -59,7 +59,7 @@
             </div>
             <div class="flex-grow-1">
                 <h6 class="text-muted mb-1 fw-semibold text-xs text-uppercase tracking-wider">Total Anggota</h6>
-                <h3 class="mb-0 fw-bold">142</h3>
+                <h3 class="mb-0 fw-bold">{{ number_format($totalAnggota, 0, ',', '.') }}</h3>
             </div>
         </div>
     </div>
@@ -70,7 +70,7 @@
             </div>
             <div class="flex-grow-1">
                 <h6 class="text-muted mb-1 fw-semibold text-xs text-uppercase tracking-wider">Sampah Masuk (Bulan Ini)</h6>
-                <h3 class="mb-0 fw-bold">1,250 <small class="text-muted fs-6 fw-normal">kg</small></h3>
+                <h3 class="mb-0 fw-bold">{{ number_format($sampahMasukBulanIni, 1, ',', '.') }} <small class="text-muted fs-6 fw-normal">kg</small></h3>
             </div>
         </div>
     </div>
@@ -81,7 +81,7 @@
             </div>
             <div class="flex-grow-1">
                 <h6 class="text-muted mb-1 fw-semibold text-xs text-uppercase tracking-wider">Penjualan Koperasi</h6>
-                <h3 class="mb-0 fw-bold">Rp 3.5M</h3>
+                <h3 class="mb-0 fw-bold">Rp {{ number_format($penjualanKoperasiBulanIni, 0, ',', '.') }}</h3>
             </div>
         </div>
     </div>
@@ -92,7 +92,7 @@
             </div>
             <div class="flex-grow-1">
                 <h6 class="text-muted mb-1 fw-semibold text-xs text-uppercase tracking-wider">Total Saldo Tabungan</h6>
-                <h3 class="mb-0 fw-bold">Rp 12.4M</h3>
+                <h3 class="mb-0 fw-bold">Rp {{ number_format($totalSaldoTabungan, 0, ',', '.') }}</h3>
             </div>
         </div>
     </div>
@@ -121,92 +121,69 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($aktivitasTerbaru as $aktivitas)
                             <tr>
-                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-S010</span></td>
-                                <td class="py-3 fw-semibold">Budi Santoso</td>
-                                <td class="py-3 text-center"><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fw-medium">Setor Sampah</span></td>
-                                <td class="text-muted text-sm py-3">Hari ini, 09:41</td>
-                                <td class="text-end pe-4 fw-bold text-success py-3">+ Rp 15.000</td>
+                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-{{ str_pad($aktivitas->id, 4, '0', STR_PAD_LEFT) }}</span></td>
+                                <td class="py-3 fw-semibold">{{ $aktivitas->user->name ?? 'User Terhapus' }}</td>
+                                <td class="py-3 text-center">
+                                    @if($aktivitas->jenis == 'penukaran_sampah')
+                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fw-medium">Setor Sampah</span>
+                                    @elseif($aktivitas->jenis == 'belanja')
+                                        <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-1 fw-medium">Belanja Koperasi</span>
+                                    @elseif($aktivitas->jenis == 'deposit')
+                                        <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-1 fw-medium">Setor Tabungan</span>
+                                    @else
+                                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1 fw-medium">Penarikan</span>
+                                    @endif
+                                </td>
+                                <td class="text-muted text-sm py-3">{{ $aktivitas->created_at->diffForHumans() }}</td>
+                                <td class="text-end pe-4 fw-bold {{ in_array($aktivitas->jenis, ['penukaran_sampah', 'deposit']) ? 'text-success' : 'text-danger' }} py-3">
+                                    {{ in_array($aktivitas->jenis, ['penukaran_sampah', 'deposit']) ? '+' : '-' }} Rp {{ number_format($aktivitas->nominal, 0, ',', '.') }}
+                                </td>
                             </tr>
+                            @empty
                             <tr>
-                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-B045</span></td>
-                                <td class="py-3 fw-semibold">Siti Aminah</td>
-                                <td class="py-3 text-center"><span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-1 fw-medium">Belanja Koperasi</span></td>
-                                <td class="text-muted text-sm py-3">Hari ini, 08:30</td>
-                                <td class="text-end pe-4 fw-bold text-danger py-3">- Rp 45.000</td>
+                                <td colspan="5" class="text-center py-4 text-muted">Belum ada aktivitas transaksi.</td>
                             </tr>
-                            <tr>
-                                <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-T002</span></td>
-                                <td class="py-3 fw-semibold">Ahmad Fausi</td>
-                                <td class="py-3 text-center"><span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-1 fw-medium">Setor Tabungan</span></td>
-                                <td class="text-muted text-sm py-3">Kemarin, 14:15</td>
-                                <td class="text-end pe-4 fw-bold text-success py-3">+ Rp 100.000</td>
-                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Mobile List View (< 768px) -->
                 <div class="trx-mobile-list d-block d-md-none">
-                    <!-- Item 1 -->
+                    @forelse($aktivitasTerbaru as $aktivitas)
                     <div class="trx-mobile-item p-3 mb-2 rounded-3 border bg-white shadow-xs">
                         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                            <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>Hari ini, 09:41</span>
-                            <span class="badge bg-light text-dark border">TRX-S010</span>
+                            <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>{{ $aktivitas->created_at->diffForHumans() }}</span>
+                            <span class="badge bg-light text-dark border">TRX-{{ str_pad($aktivitas->id, 4, '0', STR_PAD_LEFT) }}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <span class="text-muted text-xs">Anggota</span>
-                            <span class="fw-bold text-sm text-dark">Budi Santoso</span>
+                            <span class="fw-bold text-sm text-dark">{{ $aktivitas->user->name ?? 'User Terhapus' }}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-muted text-xs">Jenis</span>
-                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Setor Sampah</span>
+                            @if($aktivitas->jenis == 'penukaran_sampah')
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Setor Sampah</span>
+                            @elseif($aktivitas->jenis == 'belanja')
+                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 py-1 text-xs">Belanja Koperasi</span>
+                            @elseif($aktivitas->jenis == 'deposit')
+                                <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-2 py-1 text-xs">Setor Tabungan</span>
+                            @else
+                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 text-xs">Penarikan</span>
+                            @endif
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                             <span class="text-muted text-xs fw-semibold">Nominal</span>
-                            <span class="fw-bold text-success text-base">+ Rp 15.000</span>
+                            <span class="fw-bold {{ in_array($aktivitas->jenis, ['penukaran_sampah', 'deposit']) ? 'text-success' : 'text-danger' }} text-base">
+                                {{ in_array($aktivitas->jenis, ['penukaran_sampah', 'deposit']) ? '+' : '-' }} Rp {{ number_format($aktivitas->nominal, 0, ',', '.') }}
+                            </span>
                         </div>
                     </div>
-
-                    <!-- Item 2 -->
-                    <div class="trx-mobile-item p-3 mb-2 rounded-3 border bg-white shadow-xs">
-                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                            <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>Hari ini, 08:30</span>
-                            <span class="badge bg-light text-dark border">TRX-B045</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-muted text-xs">Anggota</span>
-                            <span class="fw-bold text-sm text-dark">Siti Aminah</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-muted text-xs">Jenis</span>
-                            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 py-1 text-xs">Belanja Koperasi</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                            <span class="text-muted text-xs fw-semibold">Nominal</span>
-                            <span class="fw-bold text-danger text-base">- Rp 45.000</span>
-                        </div>
-                    </div>
-
-                    <!-- Item 3 -->
-                    <div class="trx-mobile-item p-3 mb-0 rounded-3 border bg-white shadow-xs">
-                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                            <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>Kemarin, 14:15</span>
-                            <span class="badge bg-light text-dark border">TRX-T002</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-muted text-xs">Anggota</span>
-                            <span class="fw-bold text-sm text-dark">Ahmad Fausi</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-muted text-xs">Jenis</span>
-                            <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-2 py-1 text-xs">Setor Tabungan</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                            <span class="text-muted text-xs fw-semibold">Nominal</span>
-                            <span class="fw-bold text-success text-base">+ Rp 100.000</span>
-                        </div>
-                    </div>
+                    @empty
+                    <div class="text-center py-4 text-muted border rounded-3 bg-light">Belum ada aktivitas.</div>
+                    @endforelse
                 </div>
             </div>
         </div>

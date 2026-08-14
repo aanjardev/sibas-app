@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Detail Transaksi — TRX-B089')
+@section('title', 'Detail Transaksi — TRX-B' . str_pad($transaksi->id, 4, '0', STR_PAD_LEFT))
 @section('header_title', 'Detail Transaksi Belanja')
 
 @section('content')
@@ -15,7 +15,7 @@
             <button onclick="window.print()" class="btn btn-success btn-sm text-white px-3 shadow-sm">
                 <i class="bi bi-printer me-1"></i> Cetak Nota
             </button>
-            <a href="{{ route('admin.belanja-koperasi.edit', 1) }}" class="btn btn-primary btn-sm text-white px-3 shadow-sm">
+            <a href="{{ route('admin.belanja-koperasi.edit', $transaksi->id) }}" class="btn btn-primary btn-sm text-white px-3 shadow-sm">
                 <i class="bi bi-pencil me-1"></i> Edit
             </a>
             <button class="btn btn-outline-danger btn-sm px-3" data-bs-toggle="modal" data-bs-target="#deleteModal">
@@ -25,22 +25,59 @@
     </div>
 </div>
 
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
 {{-- Status Banner --}}
 <div class="row g-3 mb-3">
     <div class="col-12">
+        @if($transaksi->status == 'selesai')
         <div class="d-flex align-items-center gap-3 p-3 rounded-3 border" style="background: #f0f7f3; border-color: #c3dece !important;">
             <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;">
                 <i class="bi bi-check-lg fs-5"></i>
             </div>
             <div>
                 <div class="fw-bold text-dark">Transaksi Selesai — Lunas</div>
-                <div class="text-xs text-muted">Diselesaikan oleh Admin pada Senin, 11 Agustus 2026 pukul 14:22 WIB</div>
+                <div class="text-xs text-muted">Diselesaikan pada {{ $transaksi->updated_at->isoFormat('dddd, D MMMM Y HH:mm') }} WIB</div>
             </div>
             <div class="ms-auto text-end d-none d-sm-block">
                 <div class="text-xs text-muted mb-0">No. Transaksi</div>
-                <span class="badge bg-dark px-3 py-2 fw-bold">TRX-B089</span>
+                <span class="badge bg-dark px-3 py-2 fw-bold">TRX-B{{ str_pad($transaksi->id, 4, '0', STR_PAD_LEFT) }}</span>
             </div>
         </div>
+        @elseif($transaksi->status == 'batal')
+        <div class="d-flex align-items-center gap-3 p-3 rounded-3 border" style="background: #fdf0f0; border-color: #f5c2c7 !important;">
+            <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;">
+                <i class="bi bi-x-lg fs-5"></i>
+            </div>
+            <div>
+                <div class="fw-bold text-dark">Transaksi Dibatalkan</div>
+                <div class="text-xs text-muted">Dibatalkan pada {{ $transaksi->updated_at->isoFormat('dddd, D MMMM Y HH:mm') }} WIB</div>
+            </div>
+            <div class="ms-auto text-end d-none d-sm-block">
+                <div class="text-xs text-muted mb-0">No. Transaksi</div>
+                <span class="badge bg-dark px-3 py-2 fw-bold">TRX-B{{ str_pad($transaksi->id, 4, '0', STR_PAD_LEFT) }}</span>
+            </div>
+        </div>
+        @else
+        <div class="d-flex align-items-center gap-3 p-3 rounded-3 border" style="background: #fff8eb; border-color: #f9d69c !important;">
+            <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:44px;height:44px;">
+                <i class="bi bi-hourglass-split fs-5"></i>
+            </div>
+            <div>
+                <div class="fw-bold text-dark">Transaksi Pending</div>
+                <div class="text-xs text-muted">Dibuat pada {{ $transaksi->created_at->isoFormat('dddd, D MMMM Y HH:mm') }} WIB</div>
+            </div>
+            <div class="ms-auto text-end d-none d-sm-block">
+                <div class="text-xs text-muted mb-0">No. Transaksi</div>
+                <span class="badge bg-dark px-3 py-2 fw-bold">TRX-B{{ str_pad($transaksi->id, 4, '0', STR_PAD_LEFT) }}</span>
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 
@@ -55,26 +92,25 @@
                 <div class="text-center border-bottom pb-3 mb-3 print-kop">
                     <div class="fw-bold fs-5" style="color: var(--primary);">KOPERASI SIBAS</div>
                     <div class="text-xs text-muted">Sistem Bank Sampah Terpadu</div>
-                    <div class="text-xs text-muted">Jl. Contoh Alamat No. 1, Kota</div>
                 </div>
 
                 {{-- Info Transaksi --}}
                 <div class="row g-2 mb-2">
                     <div class="col-6 col-sm-3">
                         <div class="text-xs text-muted text-uppercase fw-semibold tracking-wider mb-1">No. TRX</div>
-                        <div class="fw-bold text-sm">TRX-B089</div>
+                        <div class="fw-bold text-sm">TRX-B{{ str_pad($transaksi->id, 4, '0', STR_PAD_LEFT) }}</div>
                     </div>
                     <div class="col-6 col-sm-3">
                         <div class="text-xs text-muted text-uppercase fw-semibold tracking-wider mb-1">Tanggal</div>
-                        <div class="fw-bold text-sm">11 Agt 2026</div>
+                        <div class="fw-bold text-sm">{{ $transaksi->created_at->format('d M Y') }}</div>
                     </div>
                     <div class="col-6 col-sm-3">
                         <div class="text-xs text-muted text-uppercase fw-semibold tracking-wider mb-1">Jam</div>
-                        <div class="fw-bold text-sm">14:22 WIB</div>
+                        <div class="fw-bold text-sm">{{ $transaksi->created_at->format('H:i') }} WIB</div>
                     </div>
                     <div class="col-6 col-sm-3">
                         <div class="text-xs text-muted text-uppercase fw-semibold tracking-wider mb-1">Kasir</div>
-                        <div class="fw-bold text-sm">Admin Utama</div>
+                        <div class="fw-bold text-sm">Sistem</div>
                     </div>
                 </div>
 
@@ -83,14 +119,24 @@
                 <div class="row g-2">
                     <div class="col-6">
                         <div class="text-xs text-muted text-uppercase fw-semibold tracking-wider mb-1">Pembeli</div>
-                        <div class="fw-bold text-sm">Budi Santoso</div>
-                        <div class="text-xs text-muted">Anggota · ID: AGT-001</div>
+                        <div class="fw-bold text-sm">{{ $transaksi->user->name ?? 'Pelanggan Umum' }}</div>
+                        <div class="text-xs text-muted">Anggota · ID: {{ $transaksi->user->nomor_anggota ?? 'Non-Anggota' }}</div>
                     </div>
                     <div class="col-6">
                         <div class="text-xs text-muted text-uppercase fw-semibold tracking-wider mb-1">Metode Bayar</div>
-                        <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-1 fw-medium">
-                            <i class="bi bi-wallet2 me-1"></i>Tabungan
-                        </span>
+                        @if($transaksi->bayar_saldo > 0 && $transaksi->bayar_tunai == 0)
+                            <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-1 fw-medium">
+                                <i class="bi bi-wallet2 me-1"></i>Saldo Tabungan
+                            </span>
+                        @elseif($transaksi->bayar_tunai > 0 && $transaksi->bayar_saldo == 0)
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fw-medium">
+                                <i class="bi bi-cash me-1"></i>Tunai
+                            </span>
+                        @else
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 fw-medium">
+                                <i class="bi bi-cash-coin me-1"></i>Campuran
+                            </span>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -113,55 +159,37 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @foreach($transaksi->details as $detail)
                             <tr>
                                 <td class="ps-4 py-3">
-                                    <div class="fw-semibold text-sm">🛢️ Minyak Goreng Sawit 1L</div>
-                                    <div class="text-xs text-muted">PRD-001 · Sembako</div>
+                                    <div class="fw-semibold text-sm">{{ $detail->kategoriProduk->nama ?? 'Produk' }}</div>
+                                    <div class="text-xs text-muted">{{ $detail->kategoriProduk->sku ?? '-' }}</div>
                                 </td>
-                                <td class="py-3 text-center fw-bold text-sm">2</td>
-                                <td class="py-3 text-end text-muted text-sm">Rp 16.500</td>
-                                <td class="pe-4 py-3 text-end fw-bold text-sm">Rp 33.000</td>
+                                <td class="py-3 text-center fw-bold text-sm">{{ $detail->jumlah }}</td>
+                                <td class="py-3 text-end text-muted text-sm">Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
+                                <td class="pe-4 py-3 text-end fw-bold text-sm">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                             </tr>
-                            <tr>
-                                <td class="ps-4 py-3">
-                                    <div class="fw-semibold text-sm">🍬 Gula Pasir Premium 1kg</div>
-                                    <div class="text-xs text-muted">PRD-002 · Sembako</div>
-                                </td>
-                                <td class="py-3 text-center fw-bold text-sm">1</td>
-                                <td class="py-3 text-end text-muted text-sm">Rp 17.500</td>
-                                <td class="pe-4 py-3 text-end fw-bold text-sm">Rp 17.500</td>
-                            </tr>
+                            @endforeach
                         </tbody>
                         <tfoot class="border-top">
-                            <tr>
-                                <td colspan="3" class="ps-4 py-3 text-end text-sm text-muted fw-semibold">Subtotal</td>
-                                <td class="pe-4 py-3 text-end fw-semibold text-sm">Rp 50.500</td>
-                            </tr>
-                            <tr>
-                                <td colspan="3" class="ps-4 py-2 text-end text-sm text-muted fw-semibold">Diskon</td>
-                                <td class="pe-4 py-2 text-end text-sm text-danger">- Rp 0</td>
-                            </tr>
                             <tr style="background: #f0f7f3;">
                                 <td colspan="3" class="ps-4 py-3 text-end fw-bold">TOTAL BAYAR</td>
-                                <td class="pe-4 py-3 text-end fw-bold fs-5" style="color: var(--primary);">Rp 50.500</td>
+                                <td class="pe-4 py-3 text-end fw-bold fs-5" style="color: var(--primary);">Rp {{ number_format($transaksi->total_belanja, 0, ',', '.') }}</td>
                             </tr>
+                            @if($transaksi->bayar_saldo > 0)
+                            <tr>
+                                <td colspan="3" class="ps-4 py-2 text-end text-sm text-muted fw-semibold">Bayar Saldo</td>
+                                <td class="pe-4 py-2 text-end text-sm fw-bold">Rp {{ number_format($transaksi->bayar_saldo, 0, ',', '.') }}</td>
+                            </tr>
+                            @endif
+                            @if($transaksi->bayar_tunai > 0)
+                            <tr>
+                                <td colspan="3" class="ps-4 py-2 text-end text-sm text-muted fw-semibold">Bayar Tunai</td>
+                                <td class="pe-4 py-2 text-end text-sm fw-bold">Rp {{ number_format($transaksi->bayar_tunai, 0, ',', '.') }}</td>
+                            </tr>
+                            @endif
                         </tfoot>
                     </table>
-                </div>
-
-                {{-- Saldo Info --}}
-                <div class="p-3 p-md-4 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div>
-                        <div class="text-xs text-muted">Saldo Sebelum</div>
-                        <div class="fw-semibold text-sm">Rp 500.500</div>
-                    </div>
-                    <div class="text-center">
-                        <i class="bi bi-arrow-right text-muted"></i>
-                    </div>
-                    <div class="text-end">
-                        <div class="text-xs text-muted">Saldo Setelah</div>
-                        <div class="fw-bold text-sm" style="color: var(--primary);">Rp 450.000</div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -170,7 +198,7 @@
         <div class="admin-card border-0 shadow-sm">
             <div class="admin-card-body p-3 p-md-4">
                 <div class="text-xs text-muted text-uppercase fw-semibold tracking-wider mb-1">Catatan Transaksi</div>
-                <div class="text-sm text-dark">Pembelian kebutuhan bulanan anggota.</div>
+                <div class="text-sm text-dark">{{ $transaksi->keterangan ?? '-' }}</div>
             </div>
         </div>
     </div>
@@ -185,19 +213,31 @@
             <div class="admin-card-body p-3">
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <span class="text-muted text-xs">Total Item</span>
-                    <span class="fw-bold text-sm">3 item (3 jenis)</span>
+                    <span class="fw-bold text-sm">{{ $transaksi->details->sum('jumlah') }} item ({{ $transaksi->details->count() }} jenis)</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <span class="text-muted text-xs">Total Belanja</span>
-                    <span class="fw-bold text-sm" style="color:var(--primary);">Rp 50.500</span>
+                    <span class="fw-bold text-sm" style="color:var(--primary);">Rp {{ number_format($transaksi->total_belanja, 0, ',', '.') }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <span class="text-muted text-xs">Metode</span>
-                    <span class="badge bg-info bg-opacity-10 text-info rounded-pill text-xs">Tabungan</span>
+                    @if($transaksi->bayar_saldo > 0 && $transaksi->bayar_tunai == 0)
+                        <span class="badge bg-info bg-opacity-10 text-info rounded-pill text-xs">Saldo Tabungan</span>
+                    @elseif($transaksi->bayar_tunai > 0 && $transaksi->bayar_saldo == 0)
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill text-xs">Tunai</span>
+                    @else
+                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill text-xs">Campuran</span>
+                    @endif
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-2">
                     <span class="text-muted text-xs">Status</span>
-                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill text-xs">Lunas</span>
+                    @if($transaksi->status == 'selesai')
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill text-xs">Lunas</span>
+                    @elseif($transaksi->status == 'batal')
+                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill text-xs">Batal</span>
+                    @else
+                        <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill text-xs">Pending</span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -208,7 +248,7 @@
                 <button onclick="window.print()" class="btn btn-success text-white fw-semibold py-2">
                     <i class="bi bi-printer me-2"></i>Cetak Nota Struk
                 </button>
-                <a href="{{ route('admin.belanja-koperasi.edit', 1) }}" class="btn btn-primary text-white fw-semibold py-2">
+                <a href="{{ route('admin.belanja-koperasi.edit', $transaksi->id) }}" class="btn btn-primary text-white fw-semibold py-2">
                     <i class="bi bi-pencil me-2"></i>Edit Transaksi
                 </a>
                 <button class="btn btn-outline-danger fw-semibold py-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
@@ -231,13 +271,13 @@
                     <i class="bi bi-trash fs-3"></i>
                 </div>
                 <h5 class="fw-bold mb-2 text-dark">Hapus Transaksi Ini?</h5>
-                <p class="text-muted text-xs mb-4">Transaksi <strong>TRX-B089</strong> akan dihapus permanen. Stok barang dan saldo tabungan akan dikembalikan secara otomatis.</p>
+                <p class="text-muted text-xs mb-4">Transaksi <strong>TRX-B{{ str_pad($transaksi->id, 4, '0', STR_PAD_LEFT) }}</strong> akan dihapus permanen. Stok barang dan saldo tabungan akan dikembalikan secara otomatis.</p>
                 <div class="row g-2">
                     <div class="col-6">
                         <button type="button" class="btn btn-light w-100 fw-bold py-2 text-muted border text-sm" data-bs-dismiss="modal" style="border-radius: 8px;">Batal</button>
                     </div>
                     <div class="col-6">
-                        <form action="#" method="POST" style="margin:0;">
+                        <form action="{{ route('admin.belanja-koperasi.destroy', $transaksi->id) }}" method="POST" style="margin:0;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger w-100 fw-bold py-2 text-sm shadow-sm" style="border-radius: 8px;">Ya, Hapus</button>
@@ -266,4 +306,11 @@
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+@if(request('print'))
+<script>
+    window.onload = function() {
+        window.print();
+    }
+</script>
+@endif
 @endsection

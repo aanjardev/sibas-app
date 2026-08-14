@@ -4,8 +4,9 @@
 @section('header_title', 'Edit Setor Sampah')
 
 @section('content')
-<form action="#" method="POST" id="edit-setor-form">
+<form action="{{ route('admin.setor-sampah.update', $setorSampah->id) }}" method="POST" id="edit-setor-form">
     @csrf
+    @method('PUT')
     <!-- Top Header Bar with Back & Save Buttons on a single row -->
     <div class="row g-3 mb-3 mb-md-4">
         <div class="col-12 d-flex align-items-center justify-content-between gap-2">
@@ -13,13 +14,24 @@
                 <i class="bi bi-arrow-left me-1"></i> Kembali
             </a>
             <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-light text-dark border d-none d-sm-inline-block">TRX-S045</span>
-                <button type="submit" class="btn btn-primary btn-sm text-white px-3 shadow-sm">
+                <span class="badge bg-light text-dark border d-none d-sm-inline-block">TRX-S{{ str_pad($setorSampah->id, 4, '0', STR_PAD_LEFT) }}</span>
+                <button type="submit" class="btn btn-primary btn-sm text-white px-3 shadow-sm" id="submit-btn">
                     <i class="bi bi-check-lg me-1"></i> Simpan Perubahan
                 </button>
             </div>
         </div>
     </div>
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
     <div class="row g-3">
         <div class="col-12 col-lg-9 mx-auto">
@@ -32,92 +44,52 @@
                 <div class="admin-card-body p-3 p-md-4">
                     <div class="d-flex align-items-center">
                         <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 48px; height: 48px;">
-                            <span class="fw-bold fs-5">B</span>
+                            <span class="fw-bold fs-5">{{ substr($setorSampah->anggota->name, 0, 1) }}</span>
                         </div>
                         <div>
-                            <h6 class="mb-0 fw-bold text-dark text-base">Budi Santoso</h6>
-                            <span class="text-muted text-xs">ID: AGT-001 | No. HP: 0812-3456-7890</span>
+                            <h6 class="mb-0 fw-bold text-dark text-base">{{ $setorSampah->anggota->name }}</h6>
+                            <span class="text-muted text-xs">ID: {{ $setorSampah->anggota->nomor_anggota }} | No. HP: {{ $setorSampah->anggota->no_hp }}</span>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Edit Form (Multi-Item) -->
+            <!-- Edit Form (Single Item as per Backend) -->
             <div class="admin-card border-0 shadow-sm mb-3">
                 <div class="admin-card-header bg-transparent border-bottom p-3 p-md-4 d-flex align-items-center justify-content-between">
                     <h5 class="admin-card-title mb-0 fw-bold fs-5">Edit Detail Rincian Setoran Sampah</h5>
-                    <button type="button" class="btn btn-outline-primary btn-sm text-sm" onclick="addItemRow()">
-                        <i class="bi bi-plus-lg me-1"></i> Tambah Jenis Sampah
-                    </button>
                 </div>
                 <div class="admin-card-body p-3 p-md-4">
                     <div class="mb-3">
                         <label for="tanggal" class="form-label fw-semibold text-sm">Tanggal Setor <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control text-sm" id="tanggal" name="tanggal" value="2026-07-15" style="max-width: 250px;" required>
+                        <input type="date" class="form-control text-sm" id="tanggal" name="tanggal" value="{{ old('tanggal', $setorSampah->created_at->format('Y-m-d')) }}" style="max-width: 250px;" required>
                     </div>
 
                     <!-- Container Items -->
                     <div class="text-xs fw-bold text-uppercase text-muted tracking-wider mb-2">Item Sampah Diterima</div>
-                    <div id="items-container" class="d-flex flex-column gap-3 mb-4">
-                        <!-- Item Row 1 -->
-                        <div class="item-row p-3 border rounded-3 bg-light position-relative">
-                            <div class="row g-2 align-items-center">
-                                <div class="col-12 col-md-5">
-                                    <label class="form-label text-xs fw-semibold text-muted mb-1">Kategori Sampah</label>
-                                    <select class="form-select text-sm kategori-select" name="items[0][kategori]" required onchange="calculateGrandTotal()">
-                                        <option value="3000" selected>Plastik PET (Rp 3.000 / kg)</option>
-                                        <option value="1000">Kardus Bekas (Rp 1.000 / kg)</option>
-                                        <option value="5000">Besi / Logam (Rp 5.000 / kg)</option>
-                                        <option value="500">Kaca / Beling (Rp 500 / kg)</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <label class="form-label text-xs fw-semibold text-muted mb-1">Berat (kg)</label>
-                                    <div class="input-group">
-                                        <input type="number" step="0.1" min="0.1" class="form-control text-sm berat-input" name="items[0][berat]" value="5.0" required oninput="calculateGrandTotal()">
-                                        <span class="input-group-text bg-white text-muted text-xs">kg</span>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <label class="form-label text-xs fw-semibold text-muted mb-1">Subtotal (Rp)</label>
-                                    <div class="fw-bold text-success text-sm py-2 px-2 bg-white rounded border subtotal-text">Rp 15.000</div>
-                                </div>
-                                <div class="col-12 col-md-1 text-end pt-2 pt-md-4">
-                                    <button type="button" class="btn btn-outline-danger btn-sm border-0 remove-item-btn" onclick="removeItemRow(this)" title="Hapus Item">
-                                        <i class="bi bi-trash fs-6"></i>
-                                    </button>
+                    <div class="item-row p-3 border rounded-3 bg-light position-relative mb-4">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label text-xs fw-semibold text-muted mb-1">Kategori Sampah</label>
+                                <select class="form-select text-sm kategori-select" name="kategori_sampah_id" required onchange="calculateGrandTotal()">
+                                    <option value="" selected disabled>Pilih Kategori...</option>
+                                    @foreach($kategoriList as $kat)
+                                        <option value="{{ $kat->id }}" data-harga="{{ $kat->harga_beli }}" {{ old('kategori_sampah_id', $setorSampah->kategori_sampah_id) == $kat->id ? 'selected' : '' }}>
+                                            {{ $kat->nama }} (Rp {{ number_format($kat->harga_beli, 0, ',', '.') }} / kg)
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <label class="form-label text-xs fw-semibold text-muted mb-1">Berat (kg)</label>
+                                <div class="input-group">
+                                    <input type="number" step="0.1" min="0.1" class="form-control text-sm berat-input" name="berat" value="{{ old('berat', $setorSampah->berat) }}" required oninput="calculateGrandTotal()">
+                                    <span class="input-group-text bg-white text-muted text-xs">kg</span>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Item Row 2 -->
-                        <div class="item-row p-3 border rounded-3 bg-light position-relative">
-                            <div class="row g-2 align-items-center">
-                                <div class="col-12 col-md-5">
-                                    <label class="form-label text-xs fw-semibold text-muted mb-1">Kategori Sampah</label>
-                                    <select class="form-select text-sm kategori-select" name="items[1][kategori]" required onchange="calculateGrandTotal()">
-                                        <option value="3000">Plastik PET (Rp 3.000 / kg)</option>
-                                        <option value="1000" selected>Kardus Bekas (Rp 1.000 / kg)</option>
-                                        <option value="5000">Besi / Logam (Rp 5.000 / kg)</option>
-                                        <option value="500">Kaca / Beling (Rp 500 / kg)</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <label class="form-label text-xs fw-semibold text-muted mb-1">Berat (kg)</label>
-                                    <div class="input-group">
-                                        <input type="number" step="0.1" min="0.1" class="form-control text-sm berat-input" name="items[1][berat]" value="10.0" required oninput="calculateGrandTotal()">
-                                        <span class="input-group-text bg-white text-muted text-xs">kg</span>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <label class="form-label text-xs fw-semibold text-muted mb-1">Subtotal (Rp)</label>
-                                    <div class="fw-bold text-success text-sm py-2 px-2 bg-white rounded border subtotal-text">Rp 10.000</div>
-                                </div>
-                                <div class="col-12 col-md-1 text-end pt-2 pt-md-4">
-                                    <button type="button" class="btn btn-outline-danger btn-sm border-0 remove-item-btn" onclick="removeItemRow(this)" title="Hapus Item">
-                                        <i class="bi bi-trash fs-6"></i>
-                                    </button>
-                                </div>
+                            <div class="col-12 col-md-3">
+                                <label class="form-label text-xs fw-semibold text-muted mb-1">Subtotal (Rp)</label>
+                                <div class="fw-bold text-success text-sm py-2 px-2 bg-white rounded border subtotal-text">Rp {{ number_format($setorSampah->total, 0, ',', '.') }}</div>
                             </div>
                         </div>
                     </div>
@@ -127,13 +99,13 @@
                         <div class="row align-items-center g-3">
                             <div class="col-12 col-sm-6 border-end-sm">
                                 <span class="text-muted text-xs text-uppercase tracking-wider fw-semibold d-block">Total Berat Keseluruhan</span>
-                                <span class="fs-4 fw-bold text-dark" id="total_berat_display">15.0 kg</span>
+                                <span class="fs-4 fw-bold text-dark" id="total_berat_display">{{ old('berat', $setorSampah->berat) }} kg</span>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <span class="text-muted text-xs text-uppercase tracking-wider fw-semibold d-block">Grand Total Pendapatan</span>
                                 <div class="d-flex align-items-center">
                                     <span class="fs-4 fw-bold text-success me-1">Rp</span>
-                                    <span class="fs-2 fw-bold text-success" id="grand_total_display">25.000</span>
+                                    <span class="fs-2 fw-bold text-success" id="grand_total_display">{{ number_format($setorSampah->total, 0, ',', '.') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -144,85 +116,31 @@
     </div>
 </form>
 
+@section('scripts')
 <script>
-    let itemIndex = 2;
-
-    function addItemRow() {
-        const container = document.getElementById('items-container');
-        const newRow = document.createElement('div');
-        newRow.className = 'item-row p-3 border rounded-3 bg-light position-relative';
-        newRow.innerHTML = `
-            <div class="row g-2 align-items-center">
-                <div class="col-12 col-md-5">
-                    <label class="form-label text-xs fw-semibold text-muted mb-1">Kategori Sampah</label>
-                    <select class="form-select text-sm kategori-select" name="items[${itemIndex}][kategori]" required onchange="calculateGrandTotal()">
-                        <option value="" selected disabled>Pilih Kategori...</option>
-                        <option value="3000">Plastik PET (Rp 3.000 / kg)</option>
-                        <option value="1000">Kardus Bekas (Rp 1.000 / kg)</option>
-                        <option value="5000">Besi / Logam (Rp 5.000 / kg)</option>
-                        <option value="500">Kaca / Beling (Rp 500 / kg)</option>
-                    </select>
-                </div>
-                <div class="col-6 col-md-3">
-                    <label class="form-label text-xs fw-semibold text-muted mb-1">Berat (kg)</label>
-                    <div class="input-group">
-                        <input type="number" step="0.1" min="0.1" class="form-control text-sm berat-input" name="items[${itemIndex}][berat]" placeholder="0.0" required oninput="calculateGrandTotal()">
-                        <span class="input-group-text bg-white text-muted text-xs">kg</span>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <label class="form-label text-xs fw-semibold text-muted mb-1">Subtotal (Rp)</label>
-                    <div class="fw-bold text-success text-sm py-2 px-2 bg-white rounded border subtotal-text">Rp 0</div>
-                </div>
-                <div class="col-12 col-md-1 text-end pt-2 pt-md-4">
-                    <button type="button" class="btn btn-outline-danger btn-sm border-0 remove-item-btn" onclick="removeItemRow(this)" title="Hapus Item">
-                        <i class="bi bi-trash fs-6"></i>
-                    </button>
-                </div>
-            </div>
-        `;
-        container.appendChild(newRow);
-        itemIndex++;
-        updateRemoveButtons();
-    }
-
-    function removeItemRow(btn) {
-        const row = btn.closest('.item-row');
-        row.remove();
-        updateRemoveButtons();
-        calculateGrandTotal();
-    }
-
-    function updateRemoveButtons() {
-        const rows = document.querySelectorAll('.item-row');
-        rows.forEach(row => {
-            const btn = row.querySelector('.remove-item-btn');
-            if (rows.length === 1) {
-                btn.disabled = true;
-            } else {
-                btn.disabled = false;
-            }
-        });
-    }
-
     function calculateGrandTotal() {
-        const rows = document.querySelectorAll('.item-row');
-        let grandTotal = 0;
-        let totalBerat = 0;
+        const select = document.querySelector('.kategori-select');
+        const selectedOption = select.options[select.selectedIndex];
+        const harga = parseFloat(selectedOption.getAttribute('data-harga')) || 0;
+        const berat = parseFloat(document.querySelector('.berat-input').value) || 0;
+        const subtotal = harga * berat;
 
-        rows.forEach(row => {
-            const harga = parseFloat(row.querySelector('.kategori-select').value) || 0;
-            const berat = parseFloat(row.querySelector('.berat-input').value) || 0;
-            const subtotal = harga * berat;
+        document.querySelector('.subtotal-text').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(subtotal);
+        document.getElementById('total_berat_display').innerText = berat.toFixed(1) + ' kg';
+        document.getElementById('grand_total_display').innerText = new Intl.NumberFormat('id-ID').format(subtotal);
 
-            row.querySelector('.subtotal-text').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(subtotal);
-
-            grandTotal += subtotal;
-            totalBerat += berat;
-        });
-
-        document.getElementById('total_berat_display').innerText = totalBerat.toFixed(1) + ' kg';
-        document.getElementById('grand_total_display').innerText = new Intl.NumberFormat('id-ID').format(grandTotal);
+        checkFormValidity();
     }
+
+    function checkFormValidity() {
+        const hasKategori = document.querySelector('.kategori-select').value !== '';
+        const hasBerat = document.querySelector('.berat-input').value > 0;
+
+        document.getElementById('submit-btn').disabled = !(hasKategori && hasBerat);
+    }
+
+    // Call on load to ensure initial state matches old or db data
+    calculateGrandTotal();
 </script>
+@endsection
 @endsection

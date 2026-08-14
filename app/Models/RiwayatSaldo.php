@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class RiwayatTabungan extends Model
+class RiwayatSaldo extends Model
 {
-    protected $table = 'riwayat_tabungan';
+    protected $table = 'riwayat_saldo';
 
     protected $fillable = [
         'user_id',
@@ -15,8 +15,8 @@ class RiwayatTabungan extends Model
         'nominal',
         'saldo_sebelum',
         'saldo_sesudah',
+        'reference_id',
         'keterangan',
-        'admin_id',
     ];
 
     protected $casts = [
@@ -28,10 +28,5 @@ class RiwayatTabungan extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function admin(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'admin_id');
     }
 }

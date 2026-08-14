@@ -550,7 +550,6 @@
             <div class="brand"><i class="bi bi-cart3 me-1"></i>Kasir Koperasi</div>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <span class="trx-num">TRX-B090</span>
             <span style="font-size:0.82rem; opacity:0.75;" id="pos-time">--:--</span>
         </div>
     </div>
@@ -560,6 +559,17 @@
 
         {{-- ── Left: Product Catalog ── --}}
         <div class="pos-catalog">
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             {{-- Search Bar --}}
             <div class="pos-search-bar">
                 <i class="bi bi-search" style="position:absolute; margin:9px 11px; color:#aaa; font-size:0.9rem; pointer-events:none;"></i>
@@ -567,20 +577,18 @@
                     oninput="filterProducts(this.value)">
                 <select id="catFilter" onchange="filterProducts(document.getElementById('productSearch').value)">
                     <option value="">Semua Kategori</option>
-                    <option value="Sembako">Sembako</option>
-                    <option value="Minuman">Minuman</option>
-                    <option value="Makanan">Makanan Ringan</option>
-                    <option value="Rumah Tangga">Rumah Tangga</option>
+                    @foreach($produkList->pluck('kategoriProduk.nama')->unique()->filter() as $kat)
+                        <option value="{{ $kat }}">{{ $kat }}</option>
+                    @endforeach
                 </select>
             </div>
 
             {{-- Category Pills --}}
             <div class="cat-pills">
                 <div class="cat-pill active" onclick="setCat(this, '')">Semua</div>
-                <div class="cat-pill" onclick="setCat(this, 'Sembako')">Sembako</div>
-                <div class="cat-pill" onclick="setCat(this, 'Minuman')">Minuman</div>
-                <div class="cat-pill" onclick="setCat(this, 'Makanan')">Makanan Ringan</div>
-                <div class="cat-pill" onclick="setCat(this, 'Rumah Tangga')">Rumah Tangga</div>
+                @foreach($produkList->pluck('kategoriProduk.nama')->unique()->filter() as $kat)
+                    <div class="cat-pill" onclick="setCat(this, '{{ addslashes($kat) }}')">{{ $kat }}</div>
+                @endforeach
             </div>
 
             {{-- Product Grid --}}
@@ -622,9 +630,9 @@
                     <span>Total</span>
                     <span id="totalDisplay">Rp 0</span>
                 </div>
-                <a href="{{ route('admin.belanja-koperasi.checkout') }}" id="checkoutBtn" class="btn-checkout text-decoration-none" style="pointer-events:none; opacity:0.55;">
+                <button type="button" id="checkoutBtn" class="btn-checkout text-decoration-none" style="pointer-events:none; opacity:0.55;" data-bs-toggle="modal" data-bs-target="#checkoutModal">
                     <i class="bi bi-bag-check-fill"></i> Lanjut Checkout
-                </a>
+                </button>
                 <button class="btn-clear-cart" onclick="clearCart()" id="clearCartBtn" style="display:none;">
                     <i class="bi bi-x-circle me-1"></i>Kosongkan Keranjang
                 </button>
@@ -654,25 +662,101 @@
     <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
 </div>
 
+<!-- Modal Checkout -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="margin: 1rem auto; width: calc(100% - 2rem); max-width: 500px;">
+        <div class="modal-content shadow border-0" style="border-radius: 16px;">
+            <div class="modal-header border-bottom px-4 pt-4 pb-2">
+                <h5 class="fw-bold mb-0 text-dark fs-5"><i class="bi bi-bag-check-fill text-success me-1"></i> Proses Checkout</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form action="{{ route('admin.belanja-koperasi.checkout') }}" method="POST" id="checkoutForm">
+                    @csrf
+                    <div id="hiddenCartInputs"></div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-sm">Pencarian Anggota <span class="text-danger">*</span></label>
+                        <div class="input-group position-relative">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control bg-white border-start-0 text-sm" id="searchAnggota" placeholder="Ketik nama / ID anggota..." autocomplete="off">
+                            <div id="search-results" class="list-group position-absolute w-100 shadow d-none" style="top: 100%; left: 0; max-height: 200px; overflow-y: auto; z-index: 1050;"></div>
+                        </div>
+                        <input type="hidden" name="user_id" id="user_id" required>
+
+                        <!-- Selected Member Card Display -->
+                        <div class="mt-2 p-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3 d-flex justify-content-between align-items-center d-none" id="selected-member-card">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 36px; height: 36px;">
+                                    <span class="fw-bold" id="selected-member-initial"></span>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold text-success text-sm" id="selected-member-name"></h6>
+                                    <span class="text-muted text-xs">Saldo: <b class="text-dark" id="saldo_awal_text">Rp 0</b></span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-light text-danger border" onclick="clearMemberSelection()">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-sm">Metode Pembayaran <span class="text-danger">*</span></label>
+                        <select name="metode_bayar" id="metode_bayar" class="form-select text-sm" required onchange="toggleBayarTunai()">
+                            <option value="" disabled selected>Pilih Metode...</option>
+                            <option value="saldo">Potong Saldo Penuh</option>
+                            <option value="tunai">Tunai Penuh</option>
+                            <option value="campuran">Campuran (Saldo + Tunai)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4 d-none" id="bayar_tunai_container">
+                        <label class="form-label fw-semibold text-sm">Nominal Bayar Tunai (Rp) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted text-sm">Rp</span>
+                            <input type="number" step="100" min="0" class="form-control text-sm fw-bold text-success" name="bayar_tunai" id="bayar_tunai" placeholder="0">
+                        </div>
+                        <small class="text-muted text-xs">Sisanya akan dipotong dari saldo otomatis.</small>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 mb-4 border">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="text-muted text-sm">Total Belanja</span>
+                            <span class="fw-bold text-dark text-base" id="checkout_total">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <button type="button" class="btn btn-light w-100 fw-bold py-2 text-muted border text-sm" data-bs-dismiss="modal" style="border-radius: 8px;">Batal</button>
+                        </div>
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-primary w-100 fw-bold py-2 text-sm text-white shadow-sm" style="border-radius: 8px;" id="submitCheckoutBtn" disabled>Proses Pembayaran</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ────── Data Produk Demo ──────
 const products = [
-    { id: 1, sku: 'PRD-001', name: 'Minyak Goreng Sawit 1L',  category: 'Sembako',       price: 16500,  stock: 45,  image: null },
-    { id: 2, sku: 'PRD-002', name: 'Gula Pasir Premium 1kg',  category: 'Sembako',       price: 17500,  stock: 4,   image: null },
-    { id: 3, sku: 'PRD-003', name: 'Beras SPHP 5kg',          category: 'Sembako',       price: 68000,  stock: 22,  image: null },
-    { id: 4, sku: 'PRD-004', name: 'Mie Instan Goreng',       category: 'Makanan',       price: 3000,   stock: 200, image: null },
-    { id: 5, sku: 'PRD-005', name: 'Air Mineral 600ml',       category: 'Minuman',       price: 3500,   stock: 120, image: null },
-    { id: 6, sku: 'PRD-006', name: 'Teh Kotak 250ml',         category: 'Minuman',       price: 4500,   stock: 60,  image: null },
-    { id: 7, sku: 'PRD-007', name: 'Sabun Mandi Batang',      category: 'Rumah Tangga',  price: 5500,   stock: 80,  image: null },
-    { id: 8, sku: 'PRD-008', name: 'Deterjen Bubuk 1kg',      category: 'Rumah Tangga',  price: 21000,  stock: 35,  image: null },
-    { id: 9, sku: 'PRD-009', name: 'Kecap Manis 135ml',       category: 'Sembako',       price: 6500,   stock: 40,  image: null },
-    { id: 10, sku: 'PRD-010', name: 'Kopi Sachet (isi 10)',   category: 'Minuman',       price: 12000,  stock: 55,  image: null },
-    { id: 11, sku: 'PRD-011', name: 'Kerupuk Udang 200gr',    category: 'Makanan',       price: 8500,   stock: 30,  image: null },
-    { id: 12, sku: 'PRD-012', name: 'Pasta Gigi 120gr',       category: 'Rumah Tangga',  price: 9500,   stock: 0,   image: null },
+    @foreach($produkList as $p)
+    { 
+        id: {{ $p->id }}, 
+        sku: '{{ $p->sku }}', 
+        name: '{!! addslashes($p->nama) !!}', 
+        category: '{!! addslashes($p->kategoriProduk->nama ?? 'Umum') !!}', 
+        price: {{ $p->harga_jual }}, 
+        stock: {{ $p->stok }}, 
+        image: {!! $p->foto ? "'" . asset('storage/' . $p->foto) . "'" : 'null' !!} 
+    },
+    @endforeach
 ];
 
-// ────── Category icon fallback map ──────
 const categoryIcon = {
     'Sembako':      'bi-basket2',
     'Minuman':      'bi-cup-straw',
@@ -682,8 +766,8 @@ const categoryIcon = {
 
 let cart = {}; // { productId: { product, qty } }
 let currentCat = '';
+let memberSaldo = 0;
 
-// ────── Build image markup ──────
 function productImageHTML(p) {
     if (p.image) {
         return `<img src="${p.image}" alt="${p.name}"
@@ -697,7 +781,6 @@ function productImageHTML(p) {
             </div>`;
 }
 
-// ────── Render Products ──────
 function renderProducts(list) {
     const grid = document.getElementById('productGrid');
     grid.innerHTML = '';
@@ -747,7 +830,6 @@ function setCat(el, cat) {
     filterProducts(document.getElementById('productSearch').value);
 }
 
-// ────── Cart Logic ──────
 function addToCart(product) {
     if (cart[product.id]) {
         if (cart[product.id].qty >= product.stock) return;
@@ -802,18 +884,27 @@ function renderCart() {
     document.getElementById('itemCountDisplay').innerText = `${totalItems} item`;
     document.getElementById('subtotalDisplay').innerText = `Rp ${subtotal.toLocaleString('id-ID')}`;
     document.getElementById('totalDisplay').innerText = `Rp ${subtotal.toLocaleString('id-ID')}`;
+    document.getElementById('checkout_total').innerText = `Rp ${subtotal.toLocaleString('id-ID')}`;
 
-    // Update floating cart bar
+    // Update hidden inputs for form submission
+    const hiddenInputsContainer = document.getElementById('hiddenCartInputs');
+    hiddenInputsContainer.innerHTML = '';
+    entries.forEach((e, idx) => {
+        hiddenInputsContainer.innerHTML += `
+            <input type="hidden" name="items[${idx}][produk_id]" value="${e.product.id}">
+            <input type="hidden" name="items[${idx}][jumlah]" value="${e.qty}">
+        `;
+    });
+
     const floatingBadge = document.getElementById('floatingCartBadge');
     const floatingTotal = document.getElementById('floatingCartTotal');
     const floatingBar = document.getElementById('floatingCartBar');
     if (floatingBadge) {
         const oldCount = floatingBadge.innerText;
         floatingBadge.innerText = totalItems;
-        // Pulse animation on change
         if (oldCount !== String(totalItems)) {
             floatingBadge.classList.remove('pulse');
-            void floatingBadge.offsetWidth; // trigger reflow
+            void floatingBadge.offsetWidth;
             floatingBadge.classList.add('pulse');
         }
     }
@@ -828,12 +919,14 @@ function renderCart() {
         checkoutBtn.style.pointerEvents = 'none';
         checkoutBtn.style.opacity = '0.55';
         clearBtn.style.display = 'none';
+        checkCheckoutValidity();
         return;
     }
 
     checkoutBtn.style.pointerEvents = '';
     checkoutBtn.style.opacity = '';
     clearBtn.style.display = '';
+    checkCheckoutValidity();
 
     container.innerHTML = entries.map(({ product: p, qty }) => `
         <div class="cart-item">
@@ -854,7 +947,6 @@ function renderCart() {
     `).join('');
 }
 
-// ────── Clock ──────
 function updateTime() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2,'0');
@@ -864,11 +956,9 @@ function updateTime() {
 setInterval(updateTime, 10000);
 updateTime();
 
-// ────── Init ──────
 renderProducts(products);
 renderCart();
 
-// ────── Floating Cart Toggle ──────
 let cartExpanded = false;
 
 function toggleCart() {
@@ -890,19 +980,16 @@ function toggleCart() {
     }
 }
 
-// Close cart on Escape key
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && cartExpanded) toggleCart();
 });
 
-// Touch swipe down to close cart
 (function() {
     let startY = 0;
     let isDragging = false;
     const cartEl = document.querySelector('.pos-cart');
 
     cartEl.addEventListener('touchstart', (e) => {
-        // Only track swipe on the drag handle area
         const handle = cartEl.querySelector('.cart-mobile-handle');
         if (handle && handle.contains(e.target)) {
             startY = e.touches[0].clientY;
@@ -923,6 +1010,117 @@ document.addEventListener('keydown', (e) => {
         isDragging = false;
     }, { passive: true });
 })();
+
+// Checkout Logic
+const searchInput = document.getElementById('searchAnggota');
+const searchResults = document.getElementById('search-results');
+const userIdInput = document.getElementById('user_id');
+const submitBtn = document.getElementById('submitCheckoutBtn');
+let debounceTimer;
+
+searchInput.addEventListener('input', function() {
+    clearTimeout(debounceTimer);
+    const query = this.value;
+
+    if (query.length < 2) {
+        searchResults.classList.add('d-none');
+        return;
+    }
+
+    debounceTimer = setTimeout(() => {
+        fetch(`/admin/api/search-anggota?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                searchResults.innerHTML = '';
+                if (data.length > 0) {
+                    data.forEach(user => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'list-group-item list-group-item-action py-2 text-sm';
+                        btn.innerHTML = `<div class="fw-bold">${user.name}</div><div class="text-muted text-xs">ID: ${user.nomor_anggota} | Saldo: Rp ${new Intl.NumberFormat('id-ID').format(user.saldo_tabungan)}</div>`;
+                        btn.onclick = () => selectMember(user);
+                        searchResults.appendChild(btn);
+                    });
+                    searchResults.classList.remove('d-none');
+                } else {
+                    searchResults.innerHTML = '<div class="list-group-item text-muted text-sm py-2">Tidak ditemukan anggota.</div>';
+                    searchResults.classList.remove('d-none');
+                }
+            });
+    }, 300);
+});
+
+document.addEventListener('click', function(e) {
+    if (!searchResults.contains(e.target) && e.target !== searchInput) {
+        searchResults.classList.add('d-none');
+    }
+});
+
+function selectMember(user) {
+    userIdInput.value = user.id;
+    memberSaldo = parseFloat(user.saldo_tabungan) || 0;
+
+    document.getElementById('selected-member-initial').innerText = user.name.charAt(0).toUpperCase();
+    document.getElementById('selected-member-name').innerText = user.name;
+    document.getElementById('saldo_awal_text').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(memberSaldo);
+    
+    searchInput.value = '';
+    searchInput.parentElement.classList.add('d-none');
+    searchResults.classList.add('d-none');
+    document.getElementById('selected-member-card').classList.remove('d-none');
+    
+    checkCheckoutValidity();
+}
+
+function clearMemberSelection() {
+    userIdInput.value = '';
+    memberSaldo = 0;
+    
+    searchInput.parentElement.classList.remove('d-none');
+    document.getElementById('selected-member-card').classList.add('d-none');
+    checkCheckoutValidity();
+}
+
+function toggleBayarTunai() {
+    const metode = document.getElementById('metode_bayar').value;
+    const container = document.getElementById('bayar_tunai_container');
+    const bayarTunaiInput = document.getElementById('bayar_tunai');
+
+    if (metode === 'campuran') {
+        container.classList.remove('d-none');
+        bayarTunaiInput.required = true;
+    } else {
+        container.classList.add('d-none');
+        bayarTunaiInput.required = false;
+        bayarTunaiInput.value = '';
+    }
+    checkCheckoutValidity();
+}
+
+function checkCheckoutValidity() {
+    const hasUser = userIdInput.value !== '';
+    const metode = document.getElementById('metode_bayar').value;
+    const hasItems = Object.keys(cart).length > 0;
+    const entries = Object.values(cart);
+    const subtotal = entries.reduce((s, e) => s + e.product.price * e.qty, 0);
+
+    let isValid = hasUser && hasItems && metode;
+
+    if (isValid && metode === 'saldo' && subtotal > memberSaldo) {
+        isValid = false; // Saldo tidak cukup
+    }
+    
+    if (isValid && metode === 'campuran') {
+        const tunai = parseFloat(document.getElementById('bayar_tunai').value) || 0;
+        if (tunai <= 0 || (subtotal - tunai) > memberSaldo) {
+            isValid = false;
+        }
+    }
+
+    submitBtn.disabled = !isValid;
+}
+
+document.getElementById('bayar_tunai').addEventListener('input', checkCheckoutValidity);
 </script>
 </body>
 </html>

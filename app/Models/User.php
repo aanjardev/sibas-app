@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -20,6 +21,7 @@ class User extends Authenticatable
         'no_hp',
         'alamat',
         'saldo',
+        'saldo_tabungan',
         'is_active',
     ];
 
@@ -32,7 +34,30 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'saldo'             => 'decimal:2',
+            'saldo_tabungan'    => 'decimal:2',
+            'is_active'         => 'boolean',
         ];
+    }
+
+    public function transaksiSampah(): HasMany
+    {
+        return $this->hasMany(TransaksiSampah::class);
+    }
+
+    public function transaksiBelanja(): HasMany
+    {
+        return $this->hasMany(TransaksiBelanja::class);
+    }
+
+    public function riwayatSaldo(): HasMany
+    {
+        return $this->hasMany(RiwayatSaldo::class);
+    }
+
+    public function riwayatTabungan(): HasMany
+    {
+        return $this->hasMany(RiwayatTabungan::class);
     }
 }

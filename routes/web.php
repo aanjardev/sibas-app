@@ -3,10 +3,28 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminAnggotaController;
+use App\Http\Controllers\Admin\AdminKategoriSampahController;
+use App\Http\Controllers\Admin\AdminSetorSampahController;
+use App\Http\Controllers\Admin\AdminTabunganController;
+use App\Http\Controllers\Admin\AdminInventoryController;
+use App\Http\Controllers\Admin\AdminBelanjaController;
 
 // ─── Root redirect ────────────────────────────────────────────────────────────
 Route::get('/', function () {
     return redirect()->route('dashboard');
+});
+
+// ─── Health Check (BetterStack) ───────────────────────────────────────────────
+Route::get('/health', function () {
+    try {
+        \Illuminate\Support\Facades\DB::select('SELECT 1');
+        return response()->json(['status' => 'ok', 'database' => 'connected'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'database' => 'disconnected'], 500);
+    }
 });
 
 // ─── Anggota Auth routes (hanya bisa diakses jika belum login) ───────────────
@@ -22,12 +40,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 
 // ─── Anggota routes (harus login) ────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard',     function () { return view('anggota.dashboard'); })->name('dashboard');
-    Route::get('/riwayat-sampah',function () { return view('anggota.riwayat-sampah'); })->name('riwayat_sampah');
-    Route::get('/riwayat-belanja',function () { return view('anggota.riwayat-belanja'); })->name('riwayat_belanja');
-    Route::get('/tabungan',      function () { return view('anggota.tabungan'); })->name('tabungan');
-    Route::get('/profil',        function () { return view('anggota.profil'); })->name('profil');
-    Route::get('/notifikasi',    function () { return view('anggota.notifikasi'); })->name('notifikasi');
+    Route::get('/dashboard',      [AnggotaController::class, 'dashboard'])->name('dashboard');
+    Route::get('/riwayat-sampah', [AnggotaController::class, 'riwayatSampah'])->name('riwayat_sampah');
+    Route::get('/riwayat-belanja',[AnggotaController::class, 'riwayatBelanja'])->name('riwayat_belanja');
+    Route::get('/tabungan',       [AnggotaController::class, 'tabungan'])->name('tabungan');
+    Route::get('/profil',         [AnggotaController::class, 'profil'])->name('profil');
+    Route::get('/notifikasi',     [AnggotaController::class, 'notifikasi'])->name('notifikasi');
 });
 
 // ─── Admin Auth Guest routes ──────────────────────────────────────────────────
@@ -48,33 +66,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Admin Protected routes (harus login & role admin)
     Route::middleware(['auth', 'admin'])->group(function () {
-        Route::get('/dashboard', function () { return view('admin.dashboard'); })->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/anggota',          function () { return view('admin.anggota.index'); })->name('anggota.index');
-        Route::get('/anggota/create',   function () { return view('admin.anggota.create'); })->name('anggota.create');
-        Route::get('/anggota/{id}',     function () { return view('admin.anggota.show'); })->name('anggota.show');
-        Route::get('/anggota/{id}/edit',function () { return view('admin.anggota.edit'); })->name('anggota.edit');
+        Route::get('/api/search-anggota', [AdminSetorSampahController::class, 'searchAnggota'])->name('api.search-anggota');
 
-        Route::get('/setor-sampah',           function () { return view('admin.setor-sampah.index'); })->name('setor-sampah.index');
-        Route::get('/setor-sampah/create',    function () { return view('admin.setor-sampah.create'); })->name('setor-sampah.create');
-        Route::get('/setor-sampah/{id}/edit', function () { return view('admin.setor-sampah.edit'); })->name('setor-sampah.edit');
-
-        Route::get('/kategori-sampah',           function () { return view('admin.kategori-sampah.index'); })->name('kategori-sampah.index');
-        Route::get('/kategori-sampah/create',    function () { return view('admin.kategori-sampah.create'); })->name('kategori-sampah.create');
-        Route::get('/kategori-sampah/{id}/edit', function () { return view('admin.kategori-sampah.edit'); })->name('kategori-sampah.edit');
-
-        Route::get('/tabungan',           function () { return view('admin.tabungan.index'); })->name('tabungan.index');
-        Route::get('/tabungan/create',    function () { return view('admin.tabungan.create'); })->name('tabungan.create');
-        Route::get('/tabungan/{id}/edit', function () { return view('admin.tabungan.edit'); })->name('tabungan.edit');
-
-        Route::get('/inventory',           function () { return view('admin.inventory.index'); })->name('inventory.index');
-        Route::get('/inventory/create',    function () { return view('admin.inventory.create'); })->name('inventory.create');
-        Route::get('/inventory/{id}/edit', function () { return view('admin.inventory.edit'); })->name('inventory.edit');
-
-        Route::get('/belanja-koperasi',              function () { return view('admin.belanja-koperasi.index'); })->name('belanja-koperasi.index');
-        Route::get('/belanja-koperasi/pos',          function () { return view('admin.belanja-koperasi.pos'); })->name('belanja-koperasi.pos');
-        Route::get('/belanja-koperasi/checkout',     function () { return view('admin.belanja-koperasi.checkout'); })->name('belanja-koperasi.checkout');
-        Route::get('/belanja-koperasi/{id}',         function ($id) { return view('admin.belanja-koperasi.show'); })->name('belanja-koperasi.show');
-        Route::get('/belanja-koperasi/{id}/edit',    function ($id) { return view('admin.belanja-koperasi.edit'); })->name('belanja-koperasi.edit');
+        Route::resource('anggota', AdminAnggotaController::class);
+        
+        Route::resource('setor-sampah', AdminSetorSampahController::class)->except(['show']);
+        
+        Route::resource('kategori-sampah', AdminKategoriSampahController::class)->except(['show']);
+        
+        Route::resource('tabungan', AdminTabunganController::class)->except(['show']);
+        
+        Route::post('inventory/{inventory}/restock', [AdminInventoryController::class, 'restock'])->name('inventory.restock');
+        Route::resource('inventory', AdminInventoryController::class)->except(['show']);
+        
+        Route::get('/belanja-koperasi/pos', [AdminBelanjaController::class, 'pos'])->name('belanja-koperasi.pos');
+        Route::post('/belanja-koperasi/checkout', [AdminBelanjaController::class, 'checkout'])->name('belanja-koperasi.checkout');
+        Route::resource('belanja-koperasi', AdminBelanjaController::class)->except(['create', 'store']);
     });
 });

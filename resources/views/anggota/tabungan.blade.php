@@ -8,7 +8,7 @@
     <div class="primary-card p-4 text-center position-relative overflow-hidden">
         
         <p class="mb-1 text-sm text-white opacity-75 position-relative z-index-1">Saldo Tabungan Anda</p>
-        <h2 class="fw-bold mb-3 text-white position-relative z-index-1" style="font-size: 2.2rem; letter-spacing: -1px;">Rp 1.250.000</h2>
+        <h2 class="fw-bold mb-3 text-white position-relative z-index-1" style="font-size: 2.2rem; letter-spacing: -1px;">Rp {{ number_format($user->saldo_tabungan, 0, ',', '.') }}</h2>
         
         <div class="d-flex justify-content-center gap-2 position-relative z-index-1">
             <button class="btn btn-light btn-sm px-3 rounded-pill fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#infoSetorModal">
@@ -23,62 +23,31 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3 px-1">
     <h6 class="fw-bold mb-0 text-sm text-uppercase text-muted tracking-wide">Riwayat Transaksi</h6>
-    <div class="dropdown">
-        <button class="btn btn-sm bg-white text-muted border border-secondary border-opacity-25 rounded-1 px-2 py-1 shadow-none d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.75rem;">
-            <i class="bi bi-calendar3 me-1"></i> Juli 2026 <i class="bi bi-chevron-down ms-1" style="font-size: 0.6rem;"></i>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-1" style="border-radius: 8px; overflow: hidden; padding: 0; min-width: 130px; font-size: 0.85rem;">
-            <li><a class="dropdown-item py-2 px-3 bg-light text-success fw-bold border-bottom" href="#">Juli 2026 <i class="bi bi-check-circle-fill ms-1 float-end"></i></a></li>
-            <li><a class="dropdown-item py-2 px-3 border-bottom" href="#">Juni 2026</a></li>
-            <li><a class="dropdown-item py-2 px-3" href="#">Mei 2026</a></li>
-        </ul>
-    </div>
+    <span class="badge bg-white text-muted border border-secondary border-opacity-25 rounded-1 px-2 py-1" style="font-size: 0.75rem;">
+        <i class="bi bi-calendar3 me-1"></i> {{ $bulanIni->translatedFormat('F Y') }}
+    </span>
 </div>
 
 <div class="surface-card p-3">
-    <div class="history-item setor-tunai">
+    @forelse ($riwayatTabungan as $riwayat)
+    <div class="history-item {{ $riwayat->jenis === 'setor' ? 'setor-tunai' : 'tarik-tunai' }}">
         <div class="overflow-hidden flex-grow-1 pe-2">
-            <h6 class="mb-1 text-sm fw-bold text-truncate">Setor Tunai (Admin: Siti)</h6>
-            <div class="text-muted text-xs text-truncate">Setor rutin mingguan</div>
+            <h6 class="mb-1 text-sm fw-bold text-truncate">
+                {{ $riwayat->jenis === 'setor' ? 'Setor Tunai' : 'Tarik Tunai' }}{{ $riwayat->admin ? ' (Admin: ' . $riwayat->admin->name . ')' : '' }}
+            </h6>
+            <div class="text-muted text-xs text-truncate">{{ $riwayat->keterangan ?: '-' }}</div>
         </div>
         <div class="text-end flex-shrink-0">
-            <h6 class="amount mb-1 text-sm fw-bold">+ Rp 50.000</h6>
-            <div class="text-muted text-xs">Hari ini, 10:00</div>
+            <h6 class="amount mb-1 text-sm fw-bold">{{ $riwayat->jenis === 'setor' ? '+' : '-' }} Rp {{ number_format($riwayat->nominal, 0, ',', '.') }}</h6>
+            <div class="text-muted text-xs">{{ $riwayat->created_at->translatedFormat('d M Y, H:i') }}</div>
         </div>
     </div>
-    
-    <div class="history-item setor-tunai">
-        <div class="overflow-hidden flex-grow-1 pe-2">
-            <h6 class="mb-1 text-sm fw-bold text-truncate">Setor Tunai (Admin: Budi)</h6>
-            <div class="text-muted text-xs text-truncate">Setor sisa belanja</div>
-        </div>
-        <div class="text-end flex-shrink-0">
-            <h6 class="amount mb-1 text-sm fw-bold">+ Rp 25.000</h6>
-            <div class="text-muted text-xs">15 Jul 2026, 14:30</div>
-        </div>
+    @empty
+    <div class="text-center py-4">
+        <i class="bi bi-inbox text-muted" style="font-size: 2rem;"></i>
+        <p class="text-muted text-sm mt-2 mb-0">Belum ada riwayat tabungan bulan ini</p>
     </div>
-
-    <div class="history-item tarik-tunai">
-        <div class="overflow-hidden flex-grow-1 pe-2">
-            <h6 class="mb-1 text-sm fw-bold text-truncate">Tarik Tunai (Admin: Siti)</h6>
-            <div class="text-muted text-xs text-truncate">Kebutuhan mendadak</div>
-        </div>
-        <div class="text-end flex-shrink-0">
-            <h6 class="amount mb-1 text-sm fw-bold">- Rp 100.000</h6>
-            <div class="text-muted text-xs">10 Jul 2026, 09:15</div>
-        </div>
-    </div>
-
-    <div class="history-item setor-tunai">
-        <div class="overflow-hidden flex-grow-1 pe-2">
-            <h6 class="mb-1 text-sm fw-bold text-truncate">Setor Tunai (Admin: Ahmad)</h6>
-            <div class="text-muted text-xs text-truncate">Setor bulanan</div>
-        </div>
-        <div class="text-end flex-shrink-0">
-            <h6 class="amount mb-1 text-sm fw-bold">+ Rp 200.000</h6>
-            <div class="text-muted text-xs">1 Jul 2026, 08:00</div>
-        </div>
-    </div>
+    @endforelse
 </div>
 
 <!-- Info Setor Modal -->
