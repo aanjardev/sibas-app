@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Notifications\WelcomeNotification;
 
 class AuthController extends Controller
 {
@@ -35,6 +36,11 @@ class AuthController extends Controller
                 return redirect()->route('admin.dashboard');
             }
 
+            $user = Auth::user();
+            if ($user->notifications()->count() === 0) {
+                $user->notify(new WelcomeNotification());
+            }
+
             return redirect()->intended(route('dashboard'));
         }
 
@@ -50,19 +56,46 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
+    public function validateStep1(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name'     => ['required', 'string', 'max:50'],
+            'email'    => ['required', 'email', 'max:100', 'unique:users,email'],
+            'no_hp'    => ['required', 'string', 'max:15'],
+            'alamat'   => ['required', 'string', 'max:100'],
+        ], [
+            'name.required'   => 'Nama lengkap wajib diisi.',
+            'name.max'        => 'Nama lengkap maksimal 50 karakter.',
+            'email.required'  => 'Email wajib diisi.',
+            'email.email'     => 'Format email tidak valid.',
+            'email.unique'    => 'Email sudah terdaftar. Silakan <a href="' . route('login') . '">login</a> jika sudah memiliki akun, atau gunakan email lain.',
+            'email.max'       => 'Email maksimal 100 karakter.',
+            'no_hp.required'  => 'Nomor HP wajib diisi.',
+            'no_hp.max'       => 'Nomor HP maksimal 15 karakter.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'alamat.max'      => 'Alamat maksimal 100 karakter.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
-            'no_hp'    => ['required', 'string', 'max:20'],
-            'alamat'   => ['required', 'string', 'max:500'],
-            'password' => ['required', 'min:8', 'confirmed'],
+            'name'     => ['required', 'string', 'max:50'],
+            'email'    => ['required', 'email', 'max:100', 'unique:users,email'],
+            'no_hp'    => ['required', 'string', 'max:15'],
+            'alamat'   => ['required', 'string', 'max:100'],
+            'password' => ['required', 'string', 'min:8', 'max:50', 'confirmed'],
         ], [
             'name.required'      => 'Nama lengkap wajib diisi.',
             'email.required'     => 'Email wajib diisi.',
             'email.email'        => 'Format email tidak valid.',
-            'email.unique'       => 'Email sudah terdaftar, silakan gunakan email lain.',
+            'email.unique'       => 'Email sudah terdaftar. Silakan <a href="' . route('login') . '">login</a> jika sudah memiliki akun, atau gunakan email lain.',
             'no_hp.required'     => 'Nomor HP wajib diisi.',
             'alamat.required'    => 'Alamat wajib diisi.',
             'password.required'  => 'Password wajib diisi.',
@@ -99,6 +132,8 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+
+        $user->notify(new WelcomeNotification());
 
         return redirect()->route('dashboard');
     }

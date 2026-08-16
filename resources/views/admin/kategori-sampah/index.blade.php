@@ -18,7 +18,7 @@
             <div class="input-group">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                 <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari nama jenis sampah...">
-                <button type="submit" class="d-none"></button>
+                <button class="btn btn-primary" type="submit">Cari</button>
             </div>
         </form>
     </div>

@@ -108,10 +108,10 @@
             position: relative;
             overflow: hidden;
         }
-        .product-card:hover { border-color: var(--primary); box-shadow: 0 4px 16px rgba(8,70,39,0.12); transform: translateY(-2px); }
+        .product-card:hover { border-color: var(--primary); }
         .product-card.in-cart { border-color: var(--primary); background: #f0f7f3; }
         .product-card.out-of-stock { opacity: 0.55; cursor: not-allowed; }
-        .product-card.out-of-stock:hover { transform: none; box-shadow: none; border-color: #e4ece6; }
+        .product-card.out-of-stock:hover { outline: none; border-color: #e4ece6; }
 
         /* Product image — full width, fixed height */
         .product-img-wrap {
@@ -132,7 +132,6 @@
             display: block;
             transition: transform 0.3s ease;
         }
-        .product-card:hover .product-img-wrap img { transform: scale(1.06); }
         .product-img-placeholder {
             display: flex;
             flex-direction: column;
@@ -241,6 +240,50 @@
         }
         .qty-display::-webkit-inner-spin-button,
         .qty-display::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+        /* Modern Payment Method Selector */
+        .payment-method-card {
+            border: 1.5px solid #e4ece6;
+            border-radius: 10px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+        }
+        .payment-method-card:hover {
+            border-color: var(--primary);
+            background: #f0f7f3;
+        }
+        .payment-method-input:checked + .payment-method-card {
+            border-color: var(--primary);
+            background: #f0f7f3;
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+        .payment-method-input:disabled + .payment-method-card {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f8f9fa;
+        }
+        .payment-method-input:disabled + .payment-method-card:hover {
+            border-color: #e4ece6;
+            background: #f8f9fa;
+        }
+        .payment-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        .icon-saldo { background: #e0f2e9; color: var(--primary); }
+        .icon-tunai { background: #fff3e0; color: #f57c00; }
+        .icon-campuran { background: #e3f2fd; color: #1976d2; }
 
         /* Cart Footer */
         .cart-footer {
@@ -664,7 +707,7 @@
 
 <!-- Modal Checkout -->
 <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="margin: 1rem auto; width: calc(100% - 2rem); max-width: 500px;">
+    <div class="modal-dialog modal-dialog-centered modal-lg" style="margin: 1rem auto; width: calc(100% - 2rem);">
         <div class="modal-content shadow border-0" style="border-radius: 16px;">
             <div class="modal-header border-bottom px-4 pt-4 pb-2">
                 <h5 class="fw-bold mb-0 text-dark fs-5"><i class="bi bi-bag-check-fill text-success me-1"></i> Proses Checkout</h5>
@@ -675,64 +718,161 @@
                     @csrf
                     <div id="hiddenCartInputs"></div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold text-sm">Pencarian Anggota <span class="text-danger">*</span></label>
-                        <div class="input-group position-relative">
-                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                            <input type="text" class="form-control bg-white border-start-0 text-sm" id="searchAnggota" placeholder="Ketik nama / ID anggota..." autocomplete="off">
-                            <div id="search-results" class="list-group position-absolute w-100 shadow d-none" style="top: 100%; left: 0; max-height: 200px; overflow-y: auto; z-index: 1050;"></div>
-                        </div>
-                        <input type="hidden" name="user_id" id="user_id" required>
-
-                        <!-- Selected Member Card Display -->
-                        <div class="mt-2 p-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3 d-flex justify-content-between align-items-center d-none" id="selected-member-card">
-                            <div class="d-flex align-items-center">
-                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 36px; height: 36px;">
-                                    <span class="fw-bold" id="selected-member-initial"></span>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0 fw-bold text-success text-sm" id="selected-member-name"></h6>
-                                    <span class="text-muted text-xs">Saldo: <b class="text-dark" id="saldo_awal_text">Rp 0</b></span>
+                    <div class="row g-4">
+                        <!-- Kolom Kiri: Detail Utama -->
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-sm d-block mb-2">Tipe Pelanggan</label>
+                                <div class="btn-group w-100" role="group" aria-label="Tipe Pelanggan">
+                                    <input type="radio" class="btn-check" name="tipe_pelanggan" id="tipe_anggota" value="anggota" autocomplete="off" checked onchange="toggleTipePelanggan()">
+                                    <label class="btn btn-outline-success" for="tipe_anggota">Anggota Koperasi</label>
+                                  
+                                    <input type="radio" class="btn-check" name="tipe_pelanggan" id="tipe_umum" value="umum" autocomplete="off" onchange="toggleTipePelanggan()">
+                                    <label class="btn btn-outline-success" for="tipe_umum">Pelanggan Umum</label>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-sm btn-light text-danger border" onclick="clearMemberSelection()">
-                                <i class="bi bi-x"></i>
-                            </button>
-                        </div>
-                    </div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold text-sm">Metode Pembayaran <span class="text-danger">*</span></label>
-                        <select name="metode_bayar" id="metode_bayar" class="form-select text-sm" required onchange="toggleBayarTunai()">
-                            <option value="" disabled selected>Pilih Metode...</option>
-                            <option value="saldo">Potong Saldo Penuh</option>
-                            <option value="tunai">Tunai Penuh</option>
-                            <option value="campuran">Campuran (Saldo + Tunai)</option>
-                        </select>
-                    </div>
+                            <div class="mb-4" id="member_search_container">
+                                <label class="form-label fw-semibold text-sm">Pencarian Anggota <span class="text-danger">*</span></label>
+                                <div class="input-group position-relative">
+                                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control bg-white border-start-0 text-sm" id="searchAnggota" placeholder="Ketik nama / ID anggota..." autocomplete="off">
+                                    <div id="search-results" class="list-group position-absolute w-100 shadow d-none" style="top: 100%; left: 0; max-height: 200px; overflow-y: auto; z-index: 1050;"></div>
+                                </div>
+                                <input type="hidden" name="user_id" id="user_id">
 
-                    <div class="mb-4 d-none" id="bayar_tunai_container">
-                        <label class="form-label fw-semibold text-sm">Nominal Bayar Tunai (Rp) <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light text-muted text-sm">Rp</span>
-                            <input type="number" step="100" min="0" class="form-control text-sm fw-bold text-success" name="bayar_tunai" id="bayar_tunai" placeholder="0">
-                        </div>
-                        <small class="text-muted text-xs">Sisanya akan dipotong dari saldo otomatis.</small>
-                    </div>
+                                <!-- Selected Member Card Display -->
+                                <div class="mt-2 p-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3 d-flex justify-content-between align-items-center d-none" id="selected-member-card">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 36px; height: 36px;">
+                                            <span class="fw-bold" id="selected-member-initial"></span>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold text-success text-sm" id="selected-member-name"></h6>
+                                            <span class="text-muted text-xs">Saldo: <b class="text-dark" id="saldo_awal_text">Rp 0</b></span>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-light text-danger border" onclick="clearMemberSelection()">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-                    <div class="p-3 bg-light rounded-3 mb-4 border">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-muted text-sm">Total Belanja</span>
-                            <span class="fw-bold text-dark text-base" id="checkout_total">Rp 0</span>
-                        </div>
-                    </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-sm mb-3">Metode Pembayaran <span class="text-danger">*</span></label>
+                                <div class="d-flex flex-column gap-2">
+                                    <label class="position-relative m-0">
+                                        <input type="radio" name="metode_bayar" value="saldo" class="payment-method-input position-absolute opacity-0" onchange="toggleBayarTunai()" required>
+                                        <div class="payment-method-card">
+                                            <div class="payment-icon icon-saldo">
+                                                <i class="bi bi-wallet2"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="fw-bold text-dark text-sm mb-1" style="line-height: 1.2;">Potong Saldo Penuh</div>
+                                                <div class="text-muted text-xs" id="saldo-text-info" style="line-height: 1.2;">Bayar menggunakan saldo tabungan</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="position-relative m-0">
+                                        <input type="radio" name="metode_bayar" value="tunai" class="payment-method-input position-absolute opacity-0" onchange="toggleBayarTunai()">
+                                        <div class="payment-method-card">
+                                            <div class="payment-icon icon-tunai">
+                                                <i class="bi bi-cash-stack"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="fw-bold text-dark text-sm mb-1" style="line-height: 1.2;">Tunai Penuh</div>
+                                                <div class="text-muted text-xs" style="line-height: 1.2;">Bayar secara tunai (cash)</div>
+                                            </div>
+                                        </div>
+                                    </label>
 
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <button type="button" class="btn btn-light w-100 fw-bold py-2 text-muted border text-sm" data-bs-dismiss="modal" style="border-radius: 8px;">Batal</button>
+                                    <label class="position-relative m-0">
+                                        <input type="radio" name="metode_bayar" value="campuran" class="payment-method-input position-absolute opacity-0" onchange="toggleBayarTunai()">
+                                        <div class="payment-method-card">
+                                            <div class="payment-icon icon-campuran">
+                                                <i class="bi bi-pie-chart"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="fw-bold text-dark text-sm mb-1" style="line-height: 1.2;">Campuran (Saldo + Tunai)</div>
+                                                <div class="text-muted text-xs" style="line-height: 1.2;">Sebagian saldo, sebagian tunai</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4 d-none" id="bayar_tunai_container">
+                                <label class="form-label fw-semibold text-sm">Nominal Bayar Tunai (Campuran) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted text-sm">Rp</span>
+                                    <input type="number" step="100" min="0" class="form-control text-sm fw-bold text-primary" name="bayar_tunai" id="bayar_tunai" placeholder="0">
+                                </div>
+                                <small class="text-muted text-xs">Sisanya akan otomatis dipotong dari saldo tabungan.</small>
+                            </div>
+
+                            <div class="mb-0 d-none" id="uang_diterima_container">
+                                <label class="form-label fw-semibold text-sm">Uang Tunai Diterima (Rp) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted text-sm">Rp</span>
+                                    <input type="number" step="100" min="0" class="form-control text-sm fw-bold text-success" name="uang_diterima" id="uang_diterima" placeholder="0">
+                                    <button type="button" class="btn btn-outline-success fw-bold text-sm" onclick="setUangPas()"><i class="bi bi-cash me-1"></i>Uang Pas</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <button type="submit" class="btn btn-primary w-100 fw-bold py-2 text-sm text-white shadow-sm" style="border-radius: 8px;" id="submitCheckoutBtn" disabled>Proses Pembayaran</button>
+
+                        <!-- Kolom Kanan: Summary & Opsional -->
+                        <div class="col-md-6 d-flex flex-column">
+                            <div class="p-3 bg-light rounded-3 mb-4 border flex-grow-0">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-muted text-sm">Subtotal</span>
+                                    <span class="fw-semibold text-dark text-sm" id="checkout_subtotal">Rp 0</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted text-sm">Diskon</span>
+                                    <span class="fw-semibold text-danger text-sm" id="checkout_diskon_display">- Rp 0</span>
+                                </div>
+                                <hr class="my-2 border-secondary opacity-25">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-bold text-dark text-base">Grand Total</span>
+                                    <span class="fw-bold text-primary text-base" id="checkout_total">Rp 0</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2 d-none" id="checkout_kembalian_container">
+                                    <span class="fw-bold text-dark text-base">Kembalian</span>
+                                    <span class="fw-bold text-success text-base" id="checkout_kembalian">Rp 0</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <button type="button" class="btn btn-sm btn-outline-secondary w-100 border-dashed" onclick="toggleOpsional(this)" id="btnToggleOpsional">
+                                    <i class="bi bi-plus-circle me-1"></i> Tambah Diskon / Catatan
+                                </button>
+                                
+                                <div id="opsional_container" class="d-none mt-3 p-3 border rounded-3 bg-white">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-sm">Diskon (Opsional)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light text-muted text-sm">Rp</span>
+                                            <input type="number" step="100" min="0" class="form-control text-sm text-dark" name="diskon" id="diskon" placeholder="0">
+                                        </div>
+                                    </div>
+                                    <div class="mb-0">
+                                        <label class="form-label fw-semibold text-sm">Catatan (Opsional)</label>
+                                        <textarea class="form-control text-sm" name="keterangan_checkout" id="keterangan_checkout" rows="2" placeholder="Catatan transaksi..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto">
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <button type="button" class="btn btn-light w-100 fw-bold py-2 text-muted border text-sm" data-bs-dismiss="modal" style="border-radius: 8px;">Batal</button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2 text-sm text-white shadow-sm" style="border-radius: 8px;" id="submitCheckoutBtn" disabled>Proses Pembayaran</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -767,6 +907,18 @@ const categoryIcon = {
 let cart = {}; // { productId: { product, qty } }
 let currentCat = '';
 let memberSaldo = 0;
+
+// Checkout Elements
+function formatRupiah(number) {
+    if (isNaN(number)) return 'Rp 0';
+    return 'Rp ' + Math.floor(number).toLocaleString('id-ID');
+}
+
+const searchInput = document.getElementById('searchAnggota');
+const searchResults = document.getElementById('search-results');
+const userIdInput = document.getElementById('user_id');
+const submitBtn = document.getElementById('submitCheckoutBtn');
+let debounceTimer;
 
 function productImageHTML(p) {
     if (p.image) {
@@ -1012,11 +1164,6 @@ document.addEventListener('keydown', (e) => {
 })();
 
 // Checkout Logic
-const searchInput = document.getElementById('searchAnggota');
-const searchResults = document.getElementById('search-results');
-const userIdInput = document.getElementById('user_id');
-const submitBtn = document.getElementById('submitCheckoutBtn');
-let debounceTimer;
 
 searchInput.addEventListener('input', function() {
     clearTimeout(debounceTimer);
@@ -1028,7 +1175,7 @@ searchInput.addEventListener('input', function() {
     }
 
     debounceTimer = setTimeout(() => {
-        fetch(`/admin/api/search-anggota?q=${encodeURIComponent(query)}`)
+        fetch(`{{ route('admin.api.search-anggota') }}?q=${encodeURIComponent(query)}`)
             .then(response => response.json())
             .then(data => {
                 searchResults.innerHTML = '';
@@ -1082,9 +1229,12 @@ function clearMemberSelection() {
 }
 
 function toggleBayarTunai() {
-    const metode = document.getElementById('metode_bayar').value;
+    const metodeEl = document.querySelector('input[name="metode_bayar"]:checked');
+    const metode = metodeEl ? metodeEl.value : '';
     const container = document.getElementById('bayar_tunai_container');
+    const uangContainer = document.getElementById('uang_diterima_container');
     const bayarTunaiInput = document.getElementById('bayar_tunai');
+    const uangDiterimaInput = document.getElementById('uang_diterima');
 
     if (metode === 'campuran') {
         container.classList.remove('d-none');
@@ -1094,33 +1244,180 @@ function toggleBayarTunai() {
         bayarTunaiInput.required = false;
         bayarTunaiInput.value = '';
     }
+
+    if (metode === 'tunai' || metode === 'campuran') {
+        uangContainer.classList.remove('d-none');
+        uangDiterimaInput.required = true;
+    } else {
+        uangContainer.classList.add('d-none');
+        uangDiterimaInput.required = false;
+        uangDiterimaInput.value = '';
+    }
+
+    checkCheckoutValidity();
+}
+
+function toggleTipePelanggan() {
+    const tipe = document.querySelector('input[name="tipe_pelanggan"]:checked').value;
+    const memberContainer = document.getElementById('member_search_container');
+    const tunaiInput = document.querySelector('input[value="tunai"]');
+    
+    if (tipe === 'umum') {
+        memberContainer.classList.add('d-none');
+        userIdInput.value = '';
+        memberSaldo = 0;
+        
+        // Force tunai payment
+        if (tunaiInput) {
+            tunaiInput.checked = true;
+        }
+        toggleBayarTunai();
+    } else {
+        memberContainer.classList.remove('d-none');
+        // Clear selection to force them to select a member
+        clearMemberSelection();
+    }
     checkCheckoutValidity();
 }
 
 function checkCheckoutValidity() {
-    const hasUser = userIdInput.value !== '';
-    const metode = document.getElementById('metode_bayar').value;
-    const hasItems = Object.keys(cart).length > 0;
-    const entries = Object.values(cart);
-    const subtotal = entries.reduce((s, e) => s + e.product.price * e.qty, 0);
+    try {
+        const tipe = document.querySelector('input[name="tipe_pelanggan"]:checked').value;
+        const hasUser = userIdInput.value !== '';
+        const metodeEl = document.querySelector('input[name="metode_bayar"]:checked');
+        const metode = metodeEl ? metodeEl.value : '';
+        const hasItems = Object.keys(cart).length > 0;
+        const entries = Object.values(cart);
+        
+        // Calculations
+        const subtotal = entries.reduce((s, e) => s + e.product.price * e.qty, 0);
+        const diskon = parseFloat(document.getElementById('diskon').value) || 0;
+        const grandTotal = Math.max(0, subtotal - diskon);
 
-    let isValid = hasUser && hasItems && metode;
+        document.getElementById('checkout_subtotal').innerText = formatRupiah(subtotal);
+        document.getElementById('checkout_diskon_display').innerText = '- ' + formatRupiah(diskon);
+        document.getElementById('checkout_total').innerText = formatRupiah(grandTotal);
 
-    if (isValid && metode === 'saldo' && subtotal > memberSaldo) {
-        isValid = false; // Saldo tidak cukup
-    }
-    
-    if (isValid && metode === 'campuran') {
-        const tunai = parseFloat(document.getElementById('bayar_tunai').value) || 0;
-        if (tunai <= 0 || (subtotal - tunai) > memberSaldo) {
-            isValid = false;
+        const saldoInput = document.querySelector('input[value="saldo"]');
+        const campuranInput = document.querySelector('input[value="campuran"]');
+        
+        if (saldoInput) {
+            if (tipe === 'umum' || grandTotal > memberSaldo || memberSaldo <= 0) {
+                saldoInput.disabled = true;
+                if (saldoInput.checked) {
+                    saldoInput.checked = false;
+                    toggleBayarTunai();
+                }
+                if (tipe === 'umum') {
+                    document.getElementById('saldo-text-info').innerHTML = '<span class="text-danger"><i class="bi bi-x-circle me-1"></i>Tidak berlaku untuk Umum</span>';
+                } else {
+                    document.getElementById('saldo-text-info').innerHTML = '<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i>Saldo tidak cukup</span>';
+                }
+            } else {
+                saldoInput.disabled = false;
+                document.getElementById('saldo-text-info').innerText = 'Bayar menggunakan saldo tabungan';
+            }
         }
-    }
 
-    submitBtn.disabled = !isValid;
+        if (campuranInput) {
+            if (tipe === 'umum' || memberSaldo <= 0) {
+                campuranInput.disabled = true;
+                if (campuranInput.checked) {
+                    campuranInput.checked = false;
+                    toggleBayarTunai();
+                }
+            } else {
+                campuranInput.disabled = false;
+            }
+        }
+
+        let isValid = false;
+        if (tipe === 'anggota') {
+            isValid = hasUser && hasItems && metode;
+        } else {
+            isValid = hasItems && metode === 'tunai';
+        }
+
+        if (isValid && metode === 'saldo' && grandTotal > memberSaldo) {
+            isValid = false; // Saldo tidak cukup
+        }
+        
+        let requiredTunai = 0;
+        if (metode === 'tunai') {
+            requiredTunai = grandTotal;
+        } else if (metode === 'campuran') {
+            requiredTunai = parseFloat(document.getElementById('bayar_tunai').value) || 0;
+            if (requiredTunai <= 0 || (grandTotal - requiredTunai) > memberSaldo) {
+                isValid = false;
+            }
+        }
+
+        // Kembalian Logic
+        const uangDiterima = parseFloat(document.getElementById('uang_diterima').value) || 0;
+        const kembalianContainer = document.getElementById('checkout_kembalian_container');
+        const kembalianDisplay = document.getElementById('checkout_kembalian');
+
+        if (metode === 'tunai' || metode === 'campuran') {
+            kembalianContainer.classList.remove('d-none');
+            const kembalian = uangDiterima - requiredTunai;
+            
+            if (kembalian < 0) {
+                kembalianDisplay.innerText = '- ' + formatRupiah(Math.abs(kembalian));
+                kembalianDisplay.classList.replace('text-success', 'text-danger');
+                isValid = false; // Uang diterima kurang
+            } else {
+                kembalianDisplay.innerText = formatRupiah(kembalian);
+                kembalianDisplay.classList.replace('text-danger', 'text-success');
+            }
+        } else {
+            kembalianContainer.classList.add('d-none');
+        }
+
+        submitBtn.disabled = !isValid;
+    } catch (e) {
+        console.error("checkCheckoutValidity error:", e);
+    }
+}
+
+function toggleOpsional(btn) {
+    const container = document.getElementById('opsional_container');
+    if (container.classList.contains('d-none')) {
+        container.classList.remove('d-none');
+        btn.innerHTML = '<i class="bi bi-dash-circle me-1"></i> Sembunyikan Diskon / Catatan';
+    } else {
+        container.classList.add('d-none');
+        btn.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Tambah Diskon / Catatan';
+        // reset values if hidden
+        document.getElementById('diskon').value = '';
+        document.getElementById('keterangan_checkout').value = '';
+        checkCheckoutValidity(); // recalculate total
+    }
 }
 
 document.getElementById('bayar_tunai').addEventListener('input', checkCheckoutValidity);
+document.getElementById('uang_diterima').addEventListener('input', checkCheckoutValidity);
+document.getElementById('diskon').addEventListener('input', checkCheckoutValidity);
+
+function setUangPas() {
+    const metodeEl = document.querySelector('input[name="metode_bayar"]:checked');
+    const metode = metodeEl ? metodeEl.value : '';
+    const entries = Object.values(cart);
+    
+    // Calculate total required
+    const subtotal = entries.reduce((s, e) => s + e.product.price * e.qty, 0);
+    const diskon = parseFloat(document.getElementById('diskon').value) || 0;
+    const grandTotal = Math.max(0, subtotal - diskon);
+    
+    let requiredTunai = 0;
+    if (metode === 'tunai') {
+        requiredTunai = grandTotal;
+    } else if (metode === 'campuran') {
+        requiredTunai = parseFloat(document.getElementById('bayar_tunai').value) || 0;
+    }
+    
+    document.getElementById('uang_diterima').value = requiredTunai;
+    checkCheckoutValidity();
+}
 </script>
 </body>
 </html>

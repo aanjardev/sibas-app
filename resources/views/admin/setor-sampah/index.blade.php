@@ -19,14 +19,14 @@
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari TRX, nama anggota...">
+                    <button class="btn btn-primary" type="submit">Cari</button>
                 </div>
                 <select name="kategori_id" class="form-select bg-white text-sm" style="max-width: 150px;" onchange="this.form.submit()">
                     <option value="">Semua Kategori</option>
-                    @foreach($kategoriList as $kat)
+                    @foreach($kategoriOptions as $kat)
                         <option value="{{ $kat->id }}" {{ request('kategori_id') == $kat->id ? 'selected' : '' }}>{{ $kat->nama }}</option>
                     @endforeach
                 </select>
-                <button type="submit" class="d-none"></button>
             </div>
         </form>
     </div>
@@ -58,7 +58,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($setorList as $setor)
+                            @forelse($transaksiList as $setor)
                             <tr>
                                 <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-S{{ str_pad($setor->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 <td class="py-3 text-muted text-sm">{{ $setor->created_at->format('d M Y, H:i') }}</td>
@@ -95,7 +95,7 @@
 
                 <!-- Mobile Card List View (< 768px) -->
                 <div class="d-block d-md-none p-3">
-                    @forelse($setorList as $setor)
+                    @forelse($transaksiList as $setor)
                     <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
                         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
                             <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>{{ $setor->created_at->format('d M Y, H:i') }}</span>
@@ -136,7 +136,7 @@
             
             <!-- Footer Pagination -->
             <div class="admin-card-footer p-3 p-md-4 border-top">
-                {{ $setorList->links('pagination::bootstrap-5') }}
+                {{ $transaksiList->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>

@@ -152,7 +152,7 @@
         }
 
         debounceTimer = setTimeout(() => {
-            fetch(`/admin/setor-sampah/search-anggota?q=${encodeURIComponent(query)}`)
+            fetch(`{{ route('admin.api.search-anggota') }}?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(data => {
                     searchResults.innerHTML = '';

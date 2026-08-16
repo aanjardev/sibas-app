@@ -74,7 +74,7 @@ class AdminAnggotaController extends Controller
             $nextNumber = (int)$matches[1] + 1;
         }
 
-        User::create([
+        $user = User::create([
             'name'          => $validated['name'],
             'email'         => $validated['email'],
             'no_hp'         => $validated['no_hp'],
@@ -86,6 +86,8 @@ class AdminAnggotaController extends Controller
             'saldo_tabungan'=> 0,
             'is_active'     => true,
         ]);
+
+        $user->notify(new \App\Notifications\WelcomeNotification());
 
         return redirect()->route('admin.anggota.index')->with('success', 'Anggota baru berhasil ditambahkan!');
     }

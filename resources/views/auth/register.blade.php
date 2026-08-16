@@ -412,7 +412,8 @@
                 @csrf
 
                 {{-- Data Pribadi --}}
-                <div class="form-section">Data Pribadi</div>
+                <div id="step-1">
+                    <div class="form-section">Data Pribadi</div>
 
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama Lengkap <span style="color:#ef4444">*</span></label>
@@ -425,6 +426,7 @@
                         placeholder="Masukkan nama lengkap"
                         autocomplete="name"
                         required
+                        maxlength="50"
                     >
                     @error('name')
                         <div class="invalid-feedback"><i class="bi bi-exclamation-circle"></i> {{ $message }}</div>
@@ -442,6 +444,7 @@
                         placeholder="contoh@email.com"
                         autocomplete="email"
                         required
+                        maxlength="100"
                     >
                     @error('email')
                         <div class="invalid-feedback"><i class="bi bi-exclamation-circle"></i> {{ $message }}</div>
@@ -459,6 +462,7 @@
                         placeholder="08xxxxxxxxxx"
                         autocomplete="tel"
                         required
+                        maxlength="15"
                     >
                     @error('no_hp')
                         <div class="invalid-feedback"><i class="bi bi-exclamation-circle"></i> {{ $message }}</div>
@@ -474,13 +478,20 @@
                         placeholder="Masukkan alamat lengkap"
                         rows="3"
                         required
+                        maxlength="100"
                     >{{ old('alamat') }}</textarea>
                     @error('alamat')
                         <div class="invalid-feedback"><i class="bi bi-exclamation-circle"></i> {{ $message }}</div>
                     @enderror
                 </div>
 
-                {{-- Keamanan --}}
+                <button type="button" class="btn-auth" id="btn-next" onclick="nextStep()">
+                    Lanjut <i class="bi bi-arrow-right ms-1"></i>
+                </button>
+            </div>
+
+            {{-- Keamanan --}}
+            <div id="step-2" style="display: none;">
                 <div class="form-section">Keamanan Akun</div>
 
                 <div class="mb-3">
@@ -510,6 +521,7 @@
                             placeholder="Minimal 8 karakter"
                             autocomplete="new-password"
                             required
+                            maxlength="50"
                             oninput="checkStrength(this.value)"
                         >
                         <button type="button" class="toggle-password" onclick="togglePassword('password', this)" aria-label="Tampilkan password">
@@ -541,6 +553,7 @@
                             placeholder="Ulangi password"
                             autocomplete="new-password"
                             required
+                            maxlength="50"
                         >
                         <button type="button" class="toggle-password" onclick="togglePassword('password_confirmation', this)" aria-label="Tampilkan konfirmasi password">
                             <i class="bi bi-eye"></i>
@@ -548,9 +561,15 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-auth" id="btn-register">
-                    Buat Akun
-                </button>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="button" class="btn-auth bg-secondary mt-0" id="btn-back" onclick="prevStep()" style="flex:1;">
+                        <i class="bi bi-arrow-left me-1"></i> Kembali
+                    </button>
+                    <button type="submit" class="btn-auth mt-0" id="btn-register" style="flex:2;">
+                        Buat Akun
+                    </button>
+                </div>
+            </div>
             </form>
 
             <div class="auth-divider">
@@ -677,6 +696,72 @@
         if (pwdField && pwdField.value) {
             checkStrength(pwdField.value);
         }
+
+        function nextStep() {
+            const form = document.getElementById('register-form');
+            const formData = new FormData(form);
+            
+            // clear previous step-1 errors
+            document.querySelectorAll('#step-1 .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('#step-1 .invalid-feedback').forEach(el => el.remove());
+
+            const btnNext = document.getElementById('btn-next');
+            const originalText = btnNext.innerHTML;
+            btnNext.innerHTML = 'Memeriksa...';
+            btnNext.disabled = true;
+
+            fetch('{{ route('register.validate_step1') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok && response.status !== 422) {
+                    throw new Error('Terjadi kesalahan jaringan.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                btnNext.innerHTML = originalText;
+                btnNext.disabled = false;
+
+                if (data.errors) {
+                    for (const field in data.errors) {
+                        const input = document.getElementById(field);
+                        if (input) {
+                            input.classList.add('is-invalid');
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'invalid-feedback';
+                            errorDiv.innerHTML = '<i class="bi bi-exclamation-circle"></i> ' + data.errors[field][0];
+                            input.parentNode.appendChild(errorDiv);
+                        }
+                    }
+                } else if (data.success) {
+                    document.getElementById('step-1').style.display = 'none';
+                    document.getElementById('step-2').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                btnNext.innerHTML = originalText;
+                btnNext.disabled = false;
+                alert(error.message);
+            });
+        }
+
+        function prevStep() {
+            document.getElementById('step-2').style.display = 'none';
+            document.getElementById('step-1').style.display = 'block';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            @if($errors->has('password') || $errors->has('password_confirmation'))
+                document.getElementById('step-1').style.display = 'none';
+                document.getElementById('step-2').style.display = 'block';
+            @endif
+        });
     </script>
 </body>
 </html>

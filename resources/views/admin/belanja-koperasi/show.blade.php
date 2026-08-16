@@ -173,9 +173,19 @@
                         </tbody>
                         <tfoot class="border-top">
                             <tr style="background: #f0f7f3;">
-                                <td colspan="3" class="ps-4 py-3 text-end fw-bold">TOTAL BAYAR</td>
-                                <td class="pe-4 py-3 text-end fw-bold fs-5" style="color: var(--primary);">Rp {{ number_format($transaksi->total_belanja, 0, ',', '.') }}</td>
+                                <td colspan="3" class="ps-4 py-3 text-end fw-bold">SUBTOTAL</td>
+                                <td class="pe-4 py-3 text-end fw-bold fs-5">Rp {{ number_format($transaksi->total_belanja, 0, ',', '.') }}</td>
                             </tr>
+                            @if($transaksi->diskon > 0)
+                            <tr>
+                                <td colspan="3" class="ps-4 py-2 text-end text-sm text-muted fw-semibold">Diskon</td>
+                                <td class="pe-4 py-2 text-end text-sm fw-bold text-danger">- Rp {{ number_format($transaksi->diskon, 0, ',', '.') }}</td>
+                            </tr>
+                            <tr style="background: #e8f5e9;">
+                                <td colspan="3" class="ps-4 py-3 text-end fw-bold">GRAND TOTAL</td>
+                                <td class="pe-4 py-3 text-end fw-bold fs-5" style="color: var(--primary);">Rp {{ number_format($transaksi->total_belanja - $transaksi->diskon, 0, ',', '.') }}</td>
+                            </tr>
+                            @endif
                             @if($transaksi->bayar_saldo > 0)
                             <tr>
                                 <td colspan="3" class="ps-4 py-2 text-end text-sm text-muted fw-semibold">Bayar Saldo</td>
@@ -186,6 +196,14 @@
                             <tr>
                                 <td colspan="3" class="ps-4 py-2 text-end text-sm text-muted fw-semibold">Bayar Tunai</td>
                                 <td class="pe-4 py-2 text-end text-sm fw-bold">Rp {{ number_format($transaksi->bayar_tunai, 0, ',', '.') }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="ps-4 py-2 text-end text-sm text-muted fw-semibold">Uang Diterima</td>
+                                <td class="pe-4 py-2 text-end text-sm fw-bold text-success">Rp {{ number_format($transaksi->uang_diterima, 0, ',', '.') }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="ps-4 py-2 text-end text-sm text-muted fw-semibold">Kembalian</td>
+                                <td class="pe-4 py-2 text-end text-sm fw-bold">Rp {{ number_format($transaksi->kembalian, 0, ',', '.') }}</td>
                             </tr>
                             @endif
                         </tfoot>
@@ -217,7 +235,17 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <span class="text-muted text-xs">Total Belanja</span>
-                    <span class="fw-bold text-sm" style="color:var(--primary);">Rp {{ number_format($transaksi->total_belanja, 0, ',', '.') }}</span>
+                    <span class="fw-bold text-sm">Rp {{ number_format($transaksi->total_belanja, 0, ',', '.') }}</span>
+                </div>
+                @if($transaksi->diskon > 0)
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <span class="text-muted text-xs">Diskon</span>
+                    <span class="fw-bold text-sm text-danger">- Rp {{ number_format($transaksi->diskon, 0, ',', '.') }}</span>
+                </div>
+                @endif
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <span class="text-muted text-xs">Grand Total</span>
+                    <span class="fw-bold text-sm" style="color:var(--primary);">Rp {{ number_format($transaksi->total_belanja - $transaksi->diskon, 0, ',', '.') }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <span class="text-muted text-xs">Metode</span>

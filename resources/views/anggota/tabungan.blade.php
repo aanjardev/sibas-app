@@ -21,11 +21,19 @@
     </div>
 </div>
 
-<div class="d-flex justify-content-between align-items-center mb-3 px-1">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 px-1">
     <h6 class="fw-bold mb-0 text-sm text-uppercase text-muted tracking-wide">Riwayat Transaksi</h6>
-    <span class="badge bg-white text-muted border border-secondary border-opacity-25 rounded-1 px-2 py-1" style="font-size: 0.75rem;">
-        <i class="bi bi-calendar3 me-1"></i> {{ $bulanIni->translatedFormat('F Y') }}
-    </span>
+    <div class="d-flex align-items-center gap-2">
+        <a href="{{ request()->fullUrlWithQuery(['month' => $bulanIni->copy()->subMonth()->month, 'year' => $bulanIni->copy()->subMonth()->year]) }}" class="text-muted"><i class="bi bi-chevron-left"></i></a>
+        <span class="badge bg-white text-muted border border-secondary border-opacity-25 rounded-1 px-2 py-1" style="font-size: 0.75rem;">
+            <i class="bi bi-calendar3 me-1"></i> {{ $bulanIni->translatedFormat('F Y') }}
+        </span>
+        @if ($bulanIni->format('Y-m') < \Carbon\Carbon::now()->format('Y-m'))
+            <a href="{{ request()->fullUrlWithQuery(['month' => $bulanIni->copy()->addMonth()->month, 'year' => $bulanIni->copy()->addMonth()->year]) }}" class="text-muted"><i class="bi bi-chevron-right"></i></a>
+        @else
+            <span class="text-muted opacity-25"><i class="bi bi-chevron-right"></i></span>
+        @endif
+    </div>
 </div>
 
 <div class="surface-card p-3">

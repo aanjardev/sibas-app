@@ -32,6 +32,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/login',    [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login',   [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register/validate-step1', [AuthController::class, 'validateStep1'])->name('register.validate_step1');
     Route::post('/register',[AuthController::class, 'register']);
 });
 
@@ -67,6 +68,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Admin Protected routes (harus login & role admin)
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profil', [AdminDashboardController::class, 'profil'])->name('profil');
+        Route::post('/profil/update', [AdminDashboardController::class, 'updateProfil'])->name('profil.update');
 
         Route::get('/api/search-anggota', [AdminSetorSampahController::class, 'searchAnggota'])->name('api.search-anggota');
 

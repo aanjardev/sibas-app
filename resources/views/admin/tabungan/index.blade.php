@@ -19,13 +19,13 @@
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari No TRX, nama anggota...">
+                    <button class="btn btn-primary" type="submit">Cari</button>
                 </div>
                 <select name="jenis" class="form-select bg-white text-sm" style="max-width: 140px;" onchange="this.form.submit()">
                     <option value="">Semua Transaksi</option>
                     <option value="setor" {{ request('jenis') == 'setor' ? 'selected' : '' }}>Setor Tunai</option>
                     <option value="tarik" {{ request('jenis') == 'tarik' ? 'selected' : '' }}>Tarik Tunai</option>
                 </select>
-                <button type="submit" class="d-none"></button>
             </div>
         </form>
     </div>
@@ -79,7 +79,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($tabunganList as $tabungan)
+                            @forelse($transaksiList as $tabungan)
                             <tr>
                                 <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-T{{ str_pad($tabungan->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 <td class="py-3 text-muted text-sm">{{ $tabungan->created_at->format('d M Y, H:i') }}</td>
@@ -121,7 +121,7 @@
 
                 <!-- Mobile Card List View (< 768px) -->
                 <div class="d-block d-md-none p-3">
-                    @forelse($tabunganList as $tabungan)
+                    @forelse($transaksiList as $tabungan)
                     <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
                         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
                             <span class="text-muted text-xs"><i class="bi bi-clock me-1"></i>{{ $tabungan->created_at->format('d M Y, H:i') }}</span>
@@ -163,7 +163,7 @@
 
             <!-- Footer Pagination -->
             <div class="admin-card-footer p-3 p-md-4 border-top">
-                {{ $tabunganList->links('pagination::bootstrap-5') }}
+                {{ $transaksiList->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>

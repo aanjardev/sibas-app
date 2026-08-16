@@ -5,7 +5,7 @@
 
 @section('content')
 <!-- Profile Hero Card -->
-<div class="mb-4 mt-3">
+<div class="mb-4">
     <div class="primary-card p-4 text-center position-relative">
         <!-- Background Icon
         <i class="bi bi-person-badge position-absolute" style="font-size: 8rem; right: -20px; top: -10px; opacity: 0.1;"></i> -->

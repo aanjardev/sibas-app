@@ -20,6 +20,7 @@
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari No TRX, nama pembeli...">
+                    <button class="btn btn-primary" type="submit">Cari</button>
                 </div>
                 <select name="status" class="form-select bg-white text-sm" style="max-width: 145px;" onchange="this.form.submit()">
                     <option value="">Semua Status</option>
@@ -27,7 +28,6 @@
                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                     <option value="batal" {{ request('status') == 'batal' ? 'selected' : '' }}>Dibatalkan</option>
                 </select>
-                <button type="submit" class="d-none"></button>
             </div>
         </form>
     </div>
@@ -143,7 +143,7 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="py-3 text-end fw-bold text-dark text-sm">Rp {{ number_format($trx->total_belanja, 0, ',', '.') }}</td>
+                                <td class="py-3 text-end fw-bold text-dark text-sm">Rp {{ number_format($trx->total_belanja - $trx->diskon, 0, ',', '.') }}</td>
                                 <td class="py-3 text-center">
                                     @if($trx->status == 'selesai')
                                         <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fw-medium">Selesai</span>
@@ -162,7 +162,7 @@
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus"
-                                            onclick="confirmDelete({{ $trx->id }}, 'TRX-B{{ str_pad($trx->id, 4, '0', STR_PAD_LEFT) }}', '{{ addslashes($trx->user->name ?? 'Pelanggan Umum') }}', 'Rp {{ number_format($trx->total_belanja, 0, ',', '.') }}')">
+                                            onclick="confirmDelete({{ $trx->id }}, 'TRX-B{{ str_pad($trx->id, 4, '0', STR_PAD_LEFT) }}', '{{ addslashes($trx->user->name ?? 'Pelanggan Umum') }}', 'Rp {{ number_format($trx->total_belanja - $trx->diskon, 0, ',', '.') }}')">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -218,12 +218,12 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top mb-3">
                             <span class="text-muted text-xs">Total Belanja</span>
-                            <span class="fw-bold text-dark text-base">Rp {{ number_format($trx->total_belanja, 0, ',', '.') }}</span>
+                            <span class="text-dark fw-bold text-base">Rp {{ number_format($trx->total_belanja - $trx->diskon, 0, ',', '.') }}</span>
                         </div>
                         <div class="d-flex gap-2">
                             <a href="{{ route('admin.belanja-koperasi.show', $trx->id) }}" class="btn btn-sm btn-outline-secondary flex-fill text-xs py-1"><i class="bi bi-eye me-1"></i>Detail</a>
                             <a href="{{ route('admin.belanja-koperasi.edit', $trx->id) }}" class="btn btn-sm btn-outline-primary text-xs py-1 px-2"><i class="bi bi-pencil"></i></a>
-                            <button type="button" class="btn btn-sm btn-outline-danger text-xs py-1 px-2" onclick="confirmDelete({{ $trx->id }}, 'TRX-B{{ str_pad($trx->id, 4, '0', STR_PAD_LEFT) }}', '{{ addslashes($trx->user->name ?? 'Pelanggan Umum') }}', 'Rp {{ number_format($trx->total_belanja, 0, ',', '.') }}')"><i class="bi bi-trash"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-danger text-xs py-1 px-2" onclick="confirmDelete({{ $trx->id }}, 'TRX-B{{ str_pad($trx->id, 4, '0', STR_PAD_LEFT) }}', '{{ addslashes($trx->user->name ?? 'Pelanggan Umum') }}', 'Rp {{ number_format($trx->total_belanja - $trx->diskon, 0, ',', '.') }}')"><i class="bi bi-trash"></i></button>
                         </div>
                     </div>
                     @empty

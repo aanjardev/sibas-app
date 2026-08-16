@@ -18,14 +18,14 @@
             <div class="input-group">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                 <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari nama, ID, no hp...">
+                <button class="btn btn-primary" type="submit">Cari</button>
             </div>
             <select name="status" class="form-select bg-white text-sm" style="max-width: 130px;" onchange="this.form.submit()">
                 <option value="">Semua Status</option>
                 <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
                 <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
             </select>
-            <!-- Hide submit button, trigger by enter or select change -->
-            <button type="submit" class="d-none"></button>
+            </select>
         </form>
     </div>
 </div>

@@ -56,9 +56,9 @@
             <a href="#" class="sidebar-link">
                 <i class="bi bi-file-earmark-bar-graph"></i> Laporan
             </a>
-            <a href="#" class="sidebar-link text-danger mt-3" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
+            <!-- <a href="#" class="sidebar-link text-danger mt-3" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
                 <i class="bi bi-box-arrow-right text-danger"></i> Keluar
-            </a>
+            </a> -->
         </div>
     </div>
 
@@ -74,14 +74,14 @@
         <div class="d-flex align-items-center">
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://ui-avatars.com/api/?name=Admin+Bank&background=084627&color=fff" alt="Admin" width="36" height="36" class="rounded-circle me-2">
-                    <div class="d-none d-md-block text-start">
-                        <div class="fw-bold" style="font-size: 0.85rem; line-height: 1;">Admin Utama</div>
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=084627&color=fff&bold=true" alt="Admin" width="36" height="36" class="rounded-circle me-2">
+                    <div class="d-none d-md-block text-start me-2">
+                        <div class="fw-bold" style="font-size: 0.85rem; line-height: 1;">{{ auth()->user()->name }}</div>
                         <small class="text-muted" style="font-size: 0.75rem;">Administrator</small>
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                    <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2"></i>Profil</a></li>
+                    <li><a class="dropdown-item py-2" href="{{ route('admin.profil') }}"><i class="bi bi-person me-2"></i>Profil</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item py-2 text-danger" href="#" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                 </ul>

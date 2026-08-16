@@ -5,16 +5,24 @@
 
 @section('content')
 <!-- Summary Card (Hero Style) -->
-<div class="mb-4 mt-3">
+<div class="mb-4">
     <div class="primary-card p-4">
         
         <!-- Top Row: Label and Period -->
-        <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
             <p class="mb-0 opacity-100 fw-medium" style="font-size: 0.95rem; color: rgba(255,255,255,0.9);">Total Belanja</p>
             
-            <span class="badge text-white fw-medium d-flex align-items-center shadow-none" style="background-color: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 5px 12px; font-size: 0.85rem;">
-                {{ $bulanIni->translatedFormat('F Y') }}
-            </span>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ request()->fullUrlWithQuery(['month' => $bulanIni->copy()->subMonth()->month, 'year' => $bulanIni->copy()->subMonth()->year]) }}" class="text-white opacity-75"><i class="bi bi-chevron-left"></i></a>
+                <span class="badge text-white fw-medium d-flex align-items-center shadow-none" style="background-color: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 5px 12px; font-size: 0.85rem;">
+                    {{ $bulanIni->translatedFormat('F Y') }}
+                </span>
+                @if ($bulanIni->format('Y-m') < \Carbon\Carbon::now()->format('Y-m'))
+                    <a href="{{ request()->fullUrlWithQuery(['month' => $bulanIni->copy()->addMonth()->month, 'year' => $bulanIni->copy()->addMonth()->year]) }}" class="text-white opacity-75"><i class="bi bi-chevron-right"></i></a>
+                @else
+                    <span class="text-white opacity-25"><i class="bi bi-chevron-right"></i></span>
+                @endif
+            </div>
         </div>
 
         <!-- Nominal (Rata Kiri) -->

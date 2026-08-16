@@ -31,8 +31,9 @@ class AnggotaController extends Controller
             ->whereYear('created_at', $bulanIni->year)
             ->count();
 
-        // ── Aktivitas terakhir (gabungan riwayat_saldo + riwayat_tabungan) ──
+        // ── Aktivitas terakhir (gabungan riwayat_saldo + riwayat_tabungan + transaksi_belanja) ──
         $riwayatSaldo = $user->riwayatSaldo()
+            ->where('jenis', '!=', 'belanja')
             ->latest()
             ->limit(5)
             ->get()
@@ -78,7 +79,23 @@ class AnggotaController extends Controller
                 ];
             });
 
-        $aktivitasTerakhir = $riwayatSaldo->merge($riwayatTabungan)
+        $transaksiBelanja = $user->transaksiBelanja()
+            ->latest()
+            ->limit(5)
+            ->get()
+            ->map(function ($item) {
+                return (object) [
+                    'type'       => 'belanja',
+                    'label'      => 'Belanja Koperasi',
+                    'css_class'  => 'belanja',
+                    'keterangan' => 'Pembelanjaan di Koperasi',
+                    'nominal'    => $item->total_belanja,
+                    'is_income'  => false,
+                    'created_at' => $item->created_at,
+                ];
+            });
+
+        $aktivitasTerakhir = $riwayatSaldo->concat($riwayatTabungan)->concat($transaksiBelanja)
             ->sortByDesc('created_at')
             ->take(5)
             ->values();
@@ -99,7 +116,9 @@ class AnggotaController extends Controller
     public function riwayatSampah(Request $request)
     {
         $user = Auth::user();
-        $bulanIni = Carbon::now();
+        $month = $request->input('month', Carbon::now()->month);
+        $year = $request->input('year', Carbon::now()->year);
+        $bulanIni = Carbon::createFromDate($year, $month, 1);
 
         $transaksiSampah = $user->transaksiSampah()
             ->with('kategoriSampah')
@@ -126,7 +145,9 @@ class AnggotaController extends Controller
     public function riwayatBelanja(Request $request)
     {
         $user = Auth::user();
-        $bulanIni = Carbon::now();
+        $month = $request->input('month', Carbon::now()->month);
+        $year = $request->input('year', Carbon::now()->year);
+        $bulanIni = Carbon::createFromDate($year, $month, 1);
 
         $transaksiBelanja = $user->transaksiBelanja()
             ->with('details.kategoriProduk')
@@ -151,10 +172,12 @@ class AnggotaController extends Controller
     /**
      * Tabungan — saldo tabungan & riwayat setor/tarik.
      */
-    public function tabungan()
+    public function tabungan(Request $request)
     {
         $user = Auth::user();
-        $bulanIni = Carbon::now();
+        $month = $request->input('month', Carbon::now()->month);
+        $year = $request->input('year', Carbon::now()->year);
+        $bulanIni = Carbon::createFromDate($year, $month, 1);
 
         $riwayatTabungan = $user->riwayatTabungan()
             ->with('admin')
@@ -188,11 +211,33 @@ class AnggotaController extends Controller
         $user = Auth::user();
         $now  = Carbon::now();
 
+        // Tandai semua notifikasi telah dibaca
+        $user->update(['last_notif_read_at' => $now]);
+        $user->unreadNotifications->markAsRead();
+
         // Ambil semua riwayat saldo 30 hari terakhir
-        $allNotifikasi = $user->riwayatSaldo()
+        $riwayatSaldo = $user->riwayatSaldo()
             ->where('created_at', '>=', $now->copy()->subDays(30))
             ->latest()
             ->get();
+
+        // Ambil notifikasi dari tabel notifications
+        $dbNotif = $user->notifications()
+            ->where('created_at', '>=', $now->copy()->subDays(30))
+            ->get()
+            ->map(function ($notif) {
+                return (object) [
+                    'jenis'      => $notif->data['jenis'] ?? 'info',
+                    'nominal'    => 0,
+                    'keterangan' => $notif->data['message'] ?? '',
+                    'title'      => $notif->data['title'] ?? 'Notifikasi',
+                    'created_at' => $notif->created_at,
+                    'is_db_notif'=> true,
+                ];
+            });
+
+        // Merge dan urutkan
+        $allNotifikasi = $riwayatSaldo->concat($dbNotif)->sortByDesc('created_at')->values();
 
         // Group by waktu
         $hariIni   = $allNotifikasi->filter(fn ($item) => $item->created_at->isToday());

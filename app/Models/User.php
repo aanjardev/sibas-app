@@ -23,6 +23,7 @@ class User extends Authenticatable
         'saldo',
         'saldo_tabungan',
         'is_active',
+        'last_notif_read_at',
     ];
 
     protected $hidden = [
@@ -33,11 +34,12 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'saldo'             => 'decimal:2',
-            'saldo_tabungan'    => 'decimal:2',
-            'is_active'         => 'boolean',
+            'email_verified_at'  => 'datetime',
+            'password'           => 'hashed',
+            'saldo'              => 'decimal:2',
+            'saldo_tabungan'     => 'decimal:2',
+            'is_active'          => 'boolean',
+            'last_notif_read_at' => 'datetime',
         ];
     }
 

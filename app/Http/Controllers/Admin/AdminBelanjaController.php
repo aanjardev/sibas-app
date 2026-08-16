@@ -52,16 +52,22 @@ class AdminBelanjaController extends Controller
     public function checkout(Request $request)
     {
         $validated = $request->validate([
-            'user_id'           => 'required|exists:users,id',
+            'user_id'           => 'nullable|exists:users,id',
             'metode_bayar'      => 'required|in:saldo,tunai,campuran',
             'bayar_tunai'       => 'nullable|numeric|min:0',
             'items'             => 'required|array|min:1',
             'items.*.produk_id' => 'required|exists:kategori_produk,id',
             'items.*.jumlah'    => 'required|integer|min:1',
+            'diskon'            => 'nullable|numeric|min:0',
+            'uang_diterima'     => 'nullable|numeric|min:0',
+            'keterangan_checkout'=> 'nullable|string|max:255',
         ]);
 
-        DB::transaction(function () use ($validated) {
-            $user = User::findOrFail($validated['user_id']);
+        $transaksi = DB::transaction(function () use ($validated) {
+            $user = null;
+            if (!empty($validated['user_id'])) {
+                $user = User::findOrFail($validated['user_id']);
+            }
             $totalBelanja = 0;
             $detailItems = [];
 
@@ -81,33 +87,59 @@ class AdminBelanjaController extends Controller
                 ];
             }
 
+            // Calculate Diskon & Grand Total
+            $diskon = $validated['diskon'] ?? 0;
+            $grandTotal = max(0, $totalBelanja - $diskon);
+
             // Payment logic
             $bayarSaldo = 0;
             $bayarTunai = 0;
+            $uangDiterima = $validated['uang_diterima'] ?? 0;
 
-            if ($validated['metode_bayar'] === 'saldo') {
-                if ($user->saldo < $totalBelanja) {
-                    throw new \Exception('Saldo anggota tidak mencukupi.');
-                }
-                $bayarSaldo = $totalBelanja;
-            } elseif ($validated['metode_bayar'] === 'tunai') {
-                $bayarTunai = $totalBelanja;
-            } else { // campuran
-                $bayarTunai = $validated['bayar_tunai'] ?? 0;
-                $bayarSaldo = $totalBelanja - $bayarTunai;
-                if ($user->saldo < $bayarSaldo) {
-                    throw new \Exception('Saldo anggota tidak mencukupi untuk pembayaran campuran.');
+            if (!$user) {
+                // If Umum, force tunai
+                $bayarTunai = $grandTotal;
+                $bayarSaldo = 0;
+            } else {
+                if ($validated['metode_bayar'] === 'saldo') {
+                    if ($user->saldo < $grandTotal) {
+                        throw new \Exception('Saldo anggota tidak mencukupi.');
+                    }
+                    $bayarSaldo = $grandTotal;
+                    $uangDiterima = 0; // Reset uang diterima if paying with saldo
+                } elseif ($validated['metode_bayar'] === 'tunai') {
+                    $bayarTunai = $grandTotal;
+                } else { // campuran
+                    $bayarTunai = $validated['bayar_tunai'] ?? 0;
+                    $bayarSaldo = max(0, $grandTotal - $bayarTunai);
+                    if ($user->saldo < $bayarSaldo) {
+                        throw new \Exception('Saldo anggota tidak mencukupi untuk pembayaran campuran.');
+                    }
                 }
             }
 
+            // Kembalian Logic
+            $kembalian = 0;
+            if ($bayarTunai > 0) {
+                if ($uangDiterima < $bayarTunai) {
+                    throw new \Exception('Uang diterima kurang dari nominal bayar tunai.');
+                }
+                $kembalian = $uangDiterima - $bayarTunai;
+            }
+
+            $keterangan = $validated['keterangan_checkout'] ?? 'Pembelian koperasi (' . count($detailItems) . ' item)';
+
             // Create transaction
             $transaksi = TransaksiBelanja::create([
-                'user_id'       => $user->id,
+                'user_id'       => $user ? $user->id : null,
                 'total_belanja' => $totalBelanja,
+                'diskon'        => $diskon,
                 'bayar_saldo'   => $bayarSaldo,
                 'bayar_tunai'   => $bayarTunai,
+                'uang_diterima' => $uangDiterima,
+                'kembalian'     => $kembalian,
                 'status'        => 'selesai',
-                'keterangan'    => 'Pembelian koperasi (' . count($detailItems) . ' item)',
+                'keterangan'    => $keterangan,
             ]);
 
             // Create details & reduce stock
@@ -124,8 +156,8 @@ class AdminBelanjaController extends Controller
                 $detail['produk']->decrement('stok', $detail['jumlah']);
             }
 
-            // Deduct saldo if paying with saldo
-            if ($bayarSaldo > 0) {
+            // Deduct saldo if paying with saldo and user exists
+            if ($user && $bayarSaldo > 0) {
                 $saldoSebelum = $user->saldo;
                 $user->decrement('saldo', $bayarSaldo);
 
@@ -139,9 +171,11 @@ class AdminBelanjaController extends Controller
                     'keterangan'    => 'Pembelian koperasi',
                 ]);
             }
+
+            return $transaksi;
         });
 
-        return redirect()->route('admin.belanja-koperasi.index')->with('success', 'Transaksi belanja berhasil disimpan!');
+        return redirect()->route('admin.belanja-koperasi.show', $transaksi->id)->with('success', 'Transaksi belanja berhasil disimpan!');
     }
 
     public function show($id)
@@ -168,11 +202,13 @@ class AdminBelanjaController extends Controller
         // If cancelling, rollback saldo & stok
         if ($validated['status'] === 'batal' && $transaksi->status !== 'batal') {
             DB::transaction(function () use ($transaksi) {
-                $user = User::findOrFail($transaksi->user_id);
+                if ($transaksi->user_id) {
+                    $user = User::findOrFail($transaksi->user_id);
 
-                // Restore saldo
-                if ($transaksi->bayar_saldo > 0) {
-                    $user->increment('saldo', $transaksi->bayar_saldo);
+                    // Restore saldo
+                    if ($transaksi->bayar_saldo > 0) {
+                        $user->increment('saldo', $transaksi->bayar_saldo);
+                    }
                 }
 
                 // Restore stok

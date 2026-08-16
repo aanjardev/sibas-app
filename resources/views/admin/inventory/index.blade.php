@@ -19,6 +19,7 @@
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                     <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari nama produk, SKU...">
+                    <button class="btn btn-primary" type="submit">Cari</button>
                 </div>
                 <select name="stok" class="form-select bg-white text-sm" style="max-width: 140px;" onchange="this.form.submit()">
                     <option value="">Semua Stok</option>
@@ -26,7 +27,6 @@
                     <option value="menipis" {{ request('stok') == 'menipis' ? 'selected' : '' }}>Stok Menipis</option>
                     <option value="habis" {{ request('stok') == 'habis' ? 'selected' : '' }}>Habis</option>
                 </select>
-                <button type="submit" class="d-none"></button>
             </div>
         </form>
     </div>
@@ -80,7 +80,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($inventoryList as $produk)
+                            @forelse($produkList as $produk)
                             <tr>
                                 <td class="ps-4 py-3">
                                     <div class="d-flex align-items-center">
@@ -136,7 +136,7 @@
 
                 <!-- Mobile Card List View (< 768px) -->
                 <div class="d-block d-md-none p-3">
-                    @forelse($inventoryList as $produk)
+                    @forelse($produkList as $produk)
                     <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
                         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
                             <span class="badge bg-light text-dark border">{{ $produk->sku }}</span>
@@ -185,7 +185,7 @@
 
             <!-- Footer Pagination -->
             <div class="admin-card-footer p-3 p-md-4 border-top">
-                {{ $inventoryList->links('pagination::bootstrap-5') }}
+                {{ $produkList->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>
