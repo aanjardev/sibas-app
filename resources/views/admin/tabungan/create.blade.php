@@ -30,23 +30,23 @@
     @endif
 
     <div class="row g-3">
-        <div class="col-12 col-lg-8 mx-auto">
+        <div class="col-12 col-lg-6">
             <!-- Step 1: Pilih Jenis Transaksi & Anggota -->
-            <div class="admin-card border-0 shadow-sm mb-3">
+            <div class="admin-card border-0 shadow-sm mb-3 h-100" style="overflow: visible !important;">
                 <div class="admin-card-header bg-transparent border-bottom p-3 p-md-4">
                     <h5 class="admin-card-title mb-0 fw-bold fs-5">1. Jenis Transaksi & Anggota</h5>
                 </div>
-                <div class="admin-card-body p-3 p-md-4">
+                <div class="admin-card-body p-3 p-md-4" style="overflow: visible !important;">
                     <!-- Radio Choice: Setor vs Tarik -->
                     <div class="mb-4">
                         <label class="form-label fw-semibold text-sm mb-2">Pilih Jenis Transaksi <span class="text-danger">*</span></label>
                         <div class="btn-group w-100 p-1 bg-light rounded-3 border" role="group">
-                            <input type="radio" class="btn-check" name="jenis" id="jenis_setor" value="setor" checked onchange="calculateEstimasi()">
+                            <input type="radio" class="btn-check" name="jenis_transaksi" id="jenis_setor" value="setor" checked onchange="calculateEstimasi()">
                             <label class="btn btn-sm rounded-2 fw-bold border-0 py-2.5 shadow-sm bg-success text-white" for="jenis_setor" id="label_setor">
                                 <i class="bi bi-arrow-down-left me-1"></i> Setor Tunai (Nabung)
                             </label>
 
-                            <input type="radio" class="btn-check" name="jenis" id="jenis_tarik" value="tarik" onchange="calculateEstimasi()">
+                            <input type="radio" class="btn-check" name="jenis_transaksi" id="jenis_tarik" value="tarik" onchange="calculateEstimasi()">
                             <label class="btn btn-sm rounded-2 fw-bold border-0 py-2.5 text-secondary opacity-75" for="jenis_tarik" id="label_tarik">
                                 <i class="bi bi-arrow-up-right me-1"></i> Tarik Tunai (Penarikan)
                             </label>
@@ -82,33 +82,41 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <div class="col-12 col-lg-6">
             <!-- Step 2: Detail Transaksi -->
-            <div class="admin-card border-0 shadow-sm mb-3">
+            <div class="admin-card border-0 shadow-sm mb-3 h-100 d-flex flex-column">
                 <div class="admin-card-header bg-transparent border-bottom p-3 p-md-4">
                     <h5 class="admin-card-title mb-0 fw-bold fs-5">2. Rincian Nominal Transaksi</h5>
                 </div>
-                <div class="admin-card-body p-3 p-md-4">
+                <div class="admin-card-body p-3 p-md-4 d-flex flex-column flex-grow-1">
                     <div class="mb-3">
                         <label for="tanggal" class="form-label fw-semibold text-sm">Tanggal Transaksi <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control text-sm" id="tanggal" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" style="max-width: 250px;" required>
+                        @php
+                            $today = date('Y-m-d');
+                            $sevenDaysAgo = date('Y-m-d', strtotime('-7 days'));
+                        @endphp
+                        <input type="date" class="form-control text-sm" id="tanggal" name="tanggal" value="{{ old('tanggal', $today) }}" min="{{ $sevenDaysAgo }}" max="{{ $today }}" style="max-width: 250px;" required>
+                        <small class="text-muted text-xs mt-1 d-block">Maksimal 7 hari ke belakang.</small>
                     </div>
 
                     <div class="mb-3">
-                        <label for="nominal" class="form-label fw-semibold text-sm">Nominal Transaksi (Rp) <span class="text-danger">*</span></label>
+                        <label for="nominal_display" class="form-label fw-semibold text-sm">Nominal Transaksi (Rp) <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-light text-muted text-sm">Rp</span>
-                            <input type="number" step="1000" min="1000" class="form-control text-sm fw-bold text-dark fs-5" id="nominal" name="nominal" value="{{ old('nominal') }}" placeholder="0" required oninput="calculateEstimasi()">
+                            <input type="text" class="form-control text-sm fw-bold text-dark fs-5" id="nominal_display" placeholder="0" required oninput="formatRupiah(this)">
+                            <input type="hidden" id="nominal" name="nominal" value="{{ old('nominal') }}">
                         </div>
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-4 flex-grow-1">
                         <label for="keterangan" class="form-label fw-semibold text-sm">Catatan / Keterangan (Opsional)</label>
                         <textarea class="form-control text-sm" id="keterangan" name="keterangan" rows="2" placeholder="Contoh: Setor tunai mandiri / Penarikan tunai keperluan mendesak">{{ old('keterangan') }}</textarea>
                     </div>
 
                     <!-- Projection Summary Card -->
-                    <div class="p-3 p-md-4 rounded-3 border bg-light" id="projection-card">
+                    <div class="p-3 p-md-4 rounded-3 border bg-light mt-auto" id="projection-card">
                         <div class="row align-items-center g-3">
                             <div class="col-12 col-sm-6 border-end-sm">
                                 <span class="text-muted text-xs text-uppercase tracking-wider fw-semibold d-block">Saldo Awal Nasabah</span>
@@ -129,6 +137,27 @@
 @section('scripts')
 <script>
     let saldoAwal = 0;
+
+    // Load old nominal if exists
+    document.addEventListener('DOMContentLoaded', function() {
+        const nominalValue = document.getElementById('nominal').value;
+        if (nominalValue) {
+            document.getElementById('nominal_display').value = new Intl.NumberFormat('id-ID').format(nominalValue);
+        }
+    });
+
+    function formatRupiah(element) {
+        let value = element.value.replace(/[^0-9]/g, '');
+        document.getElementById('nominal').value = value;
+        
+        if (value) {
+            element.value = new Intl.NumberFormat('id-ID').format(value);
+        } else {
+            element.value = '';
+        }
+        
+        calculateEstimasi();
+    }
 
     const searchInput = document.getElementById('search-anggota');
     const searchResults = document.getElementById('search-results');

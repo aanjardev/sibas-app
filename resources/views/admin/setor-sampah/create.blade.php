@@ -77,7 +77,7 @@
                 <div class="admin-card-body p-3 p-md-4">
                     <div class="mb-3">
                         <label for="tanggal" class="form-label fw-semibold text-sm">Tanggal Setor <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control text-sm" id="tanggal" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" style="max-width: 250px;" required>
+                        <input type="date" class="form-control text-sm" id="tanggal" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" min="{{ date('Y-m-d', strtotime('-7 days')) }}" max="{{ date('Y-m-d') }}" style="max-width: 250px;" required>
                     </div>
 
                     <!-- Single Item Form (Backend currently only handles 1 item) -->
@@ -86,7 +86,7 @@
                         <div class="row g-2 align-items-center">
                             <div class="col-12 col-md-6">
                                 <label class="form-label text-xs fw-semibold text-muted mb-1">Kategori Sampah</label>
-                                <select class="form-select text-sm kategori-select" name="kategori_sampah_id" required onchange="calculateGrandTotal()">
+                                <select class="form-select text-sm kategori-select" name="items[0][kategori_id]" required onchange="calculateGrandTotal()">
                                     <option value="" selected disabled>Pilih Kategori...</option>
                                     @foreach($kategoriList as $kat)
                                         <option value="{{ $kat->id }}" data-harga="{{ $kat->harga_beli }}" {{ old('kategori_sampah_id') == $kat->id ? 'selected' : '' }}>
@@ -98,7 +98,7 @@
                             <div class="col-12 col-md-3">
                                 <label class="form-label text-xs fw-semibold text-muted mb-1">Berat (kg)</label>
                                 <div class="input-group">
-                                    <input type="number" step="0.1" min="0.1" class="form-control text-sm berat-input" name="berat" value="{{ old('berat') }}" placeholder="0.0" required oninput="calculateGrandTotal()">
+                                    <input type="number" step="0.1" min="0.1" class="form-control text-sm berat-input" name="items[0][berat]" value="{{ old('items.0.berat') }}" placeholder="0.0" required oninput="calculateGrandTotal()">
                                     <span class="input-group-text bg-white text-muted text-xs">kg</span>
                                 </div>
                             </div>

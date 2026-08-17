@@ -175,6 +175,22 @@ class AdminBelanjaController extends Controller
             return $transaksi;
         });
 
+        if ($transaksi->user_id) {
+            $user = User::find($transaksi->user_id);
+            if ($user) {
+                $judul = 'Pembelian Koperasi Berhasil';
+                $pesan = 'Anda telah melakukan pembelian senilai Rp ' . number_format($transaksi->total_belanja - $transaksi->diskon, 0, ',', '.');
+                
+                if ($transaksi->bayar_saldo > 0) {
+                    $pesan .= ' (dipotong dari saldo utama sebesar Rp ' . number_format($transaksi->bayar_saldo, 0, ',', '.') . ').';
+                } else {
+                    $pesan .= ' secara tunai.';
+                }
+                
+                $user->notify(new \App\Notifications\TransaksiBaruNotification($judul, $pesan, 'belanja_koperasi'));
+            }
+        }
+
         return redirect()->route('admin.belanja-koperasi.show', $transaksi->id)->with('success', 'Transaksi belanja berhasil disimpan!');
     }
 

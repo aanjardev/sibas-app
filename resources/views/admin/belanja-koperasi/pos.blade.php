@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kasir POS — SIBAS Admin</title>
@@ -769,7 +770,7 @@
                                             </div>
                                             <div class="flex-grow-1">
                                                 <div class="fw-bold text-dark text-sm mb-1" style="line-height: 1.2;">Potong Saldo Penuh</div>
-                                                <div class="text-muted text-xs" id="saldo-text-info" style="line-height: 1.2;">Bayar menggunakan saldo tabungan</div>
+                                                <div class="text-muted text-xs" id="saldo-text-info" style="line-height: 1.2;">Bayar menggunakan saldo utama</div>
                                             </div>
                                         </div>
                                     </label>
@@ -1184,7 +1185,7 @@ searchInput.addEventListener('input', function() {
                         const btn = document.createElement('button');
                         btn.type = 'button';
                         btn.className = 'list-group-item list-group-item-action py-2 text-sm';
-                        btn.innerHTML = `<div class="fw-bold">${user.name}</div><div class="text-muted text-xs">ID: ${user.nomor_anggota} | Saldo: Rp ${new Intl.NumberFormat('id-ID').format(user.saldo_tabungan)}</div>`;
+                        btn.innerHTML = `<div class="fw-bold">${user.name}</div><div class="text-muted text-xs">ID: ${user.nomor_anggota} | Saldo: Rp ${new Intl.NumberFormat('id-ID').format(user.saldo)}</div>`;
                         btn.onclick = () => selectMember(user);
                         searchResults.appendChild(btn);
                     });
@@ -1205,7 +1206,7 @@ document.addEventListener('click', function(e) {
 
 function selectMember(user) {
     userIdInput.value = user.id;
-    memberSaldo = parseFloat(user.saldo_tabungan) || 0;
+    memberSaldo = parseFloat(user.saldo) || 0;
 
     document.getElementById('selected-member-initial').innerText = user.name.charAt(0).toUpperCase();
     document.getElementById('selected-member-name').innerText = user.name;
@@ -1315,7 +1316,7 @@ function checkCheckoutValidity() {
                 }
             } else {
                 saldoInput.disabled = false;
-                document.getElementById('saldo-text-info').innerText = 'Bayar menggunakan saldo tabungan';
+                document.getElementById('saldo-text-info').innerText = 'Bayar menggunakan saldo utama';
             }
         }
 

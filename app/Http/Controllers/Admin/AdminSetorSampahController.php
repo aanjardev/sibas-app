@@ -7,6 +7,7 @@ use App\Models\KategoriSampah;
 use App\Models\RiwayatSaldo;
 use App\Models\TransaksiSampah;
 use App\Models\User;
+use App\Notifications\TransaksiBaruNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -49,9 +50,10 @@ class AdminSetorSampahController extends Controller
             'items.*.berat'        => 'required|numeric|min:0.1',
         ]);
 
-        DB::transaction(function () use ($validated) {
+        $totalNilai = 0;
+
+        DB::transaction(function () use ($validated, &$totalNilai) {
             $user = User::findOrFail($validated['user_id']);
-            $totalNilai = 0;
 
             foreach ($validated['items'] as $item) {
                 $kategori = KategoriSampah::findOrFail($item['kategori_id']);
@@ -86,6 +88,13 @@ class AdminSetorSampahController extends Controller
                 'updated_at'    => $validated['tanggal'],
             ]);
         });
+
+        $user = User::find($validated['user_id']);
+        if ($user && $totalNilai > 0) {
+            $judul = 'Setoran Sampah Berhasil';
+            $pesan = 'Setoran sampah Anda sebanyak ' . count($validated['items']) . ' item senilai Rp ' . number_format($totalNilai, 0, ',', '.') . ' telah ditambahkan ke saldo utama.';
+            $user->notify(new TransaksiBaruNotification($judul, $pesan, 'setor_sampah'));
+        }
 
         return redirect()->route('admin.setor-sampah.index')->with('success', 'Transaksi setor sampah berhasil disimpan!');
     }

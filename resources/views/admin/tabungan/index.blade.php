@@ -84,8 +84,8 @@
                                 <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-T{{ str_pad($tabungan->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 <td class="py-3 text-muted text-sm">{{ $tabungan->created_at->format('d M Y, H:i') }}</td>
                                 <td class="py-3">
-                                    <div class="fw-bold text-dark text-sm">{{ $tabungan->anggota->name ?? '-' }}</div>
-                                    <div class="text-xs text-muted">ID: {{ $tabungan->anggota->nomor_anggota ?? '-' }}</div>
+                                    <div class="fw-bold text-dark text-sm">{{ $tabungan->user->name ?? '-' }}</div>
+                                    <div class="text-xs text-muted">ID: {{ $tabungan->user->nomor_anggota ?? '-' }}</div>
                                 </td>
                                 <td class="py-3">
                                     @if($tabungan->jenis == 'setor')
@@ -129,7 +129,7 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <span class="text-muted text-xs">Anggota</span>
-                            <span class="fw-bold text-sm text-dark">{{ $tabungan->anggota->name ?? '-' }} <small class="text-muted fw-normal">({{ $tabungan->anggota->nomor_anggota ?? '-' }})</small></span>
+                            <span class="fw-bold text-sm text-dark">{{ $tabungan->user->name ?? '-' }} <small class="text-muted fw-normal">({{ $tabungan->user->nomor_anggota ?? '-' }})</small></span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-muted text-xs">Jenis Transaksi</span>
@@ -215,7 +215,7 @@
 <script>
     function confirmDelete(id) {
         var form = document.getElementById('deleteForm');
-        form.action = '/admin/tabungan/' + id;
+        form.action = '{{ url("admin/tabungan") }}/' + id;
         var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
         modal.show();
     }

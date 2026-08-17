@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\RiwayatTabungan;
 use App\Models\User;
+use App\Notifications\TransaksiBaruNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -81,6 +82,13 @@ class AdminTabunganController extends Controller
             ]);
         });
 
+        $user = User::find($validated['user_id']);
+        if ($user) {
+            $judul = $validated['jenis_transaksi'] === 'setor' ? 'Setoran Tabungan' : 'Penarikan Tabungan';
+            $pesan = ($validated['jenis_transaksi'] === 'setor' ? 'Setoran' : 'Penarikan') . ' tabungan Anda sebesar Rp ' . number_format($validated['nominal'], 0, ',', '.') . ' berhasil diproses.';
+            $user->notify(new TransaksiBaruNotification($judul, $pesan, 'tabungan'));
+        }
+
         return redirect()->route('admin.tabungan.index')->with('success', 'Transaksi tabungan berhasil disimpan!');
     }
 
@@ -132,16 +140,22 @@ class AdminTabunganController extends Controller
 
     public function destroy($id)
     {
-        $transaksi = RiwayatTabungan::findOrFail($id);
+        $transaksi = RiwayatTabungan::find($id);
+
+        if (!$transaksi) {
+            return redirect()->route('admin.tabungan.index')->with('error', 'Data tabungan tidak ditemukan atau sudah dihapus.');
+        }
 
         DB::transaction(function () use ($transaksi) {
-            $user = User::findOrFail($transaksi->user_id);
+            $user = User::find($transaksi->user_id);
 
-            // Rollback saldo
-            if ($transaksi->jenis === 'setor') {
-                $user->decrement('saldo_tabungan', $transaksi->nominal);
-            } else {
-                $user->increment('saldo_tabungan', $transaksi->nominal);
+            if ($user) {
+                // Rollback saldo
+                if ($transaksi->jenis === 'setor') {
+                    $user->decrement('saldo_tabungan', $transaksi->nominal);
+                } else {
+                    $user->increment('saldo_tabungan', $transaksi->nominal);
+                }
             }
 
             $transaksi->delete();

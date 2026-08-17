@@ -44,11 +44,11 @@
                 <div class="admin-card-body p-3 p-md-4">
                     <div class="d-flex align-items-center">
                         <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 48px; height: 48px;">
-                            <span class="fw-bold fs-5">{{ substr($setorSampah->anggota->name, 0, 1) }}</span>
+                            <span class="fw-bold fs-5">{{ substr($setorSampah->user->name, 0, 1) }}</span>
                         </div>
                         <div>
-                            <h6 class="mb-0 fw-bold text-dark text-base">{{ $setorSampah->anggota->name }}</h6>
-                            <span class="text-muted text-xs">ID: {{ $setorSampah->anggota->nomor_anggota }} | No. HP: {{ $setorSampah->anggota->no_hp }}</span>
+                            <h6 class="mb-0 fw-bold text-dark text-base">{{ $setorSampah->user->name }}</h6>
+                            <span class="text-muted text-xs">ID: {{ $setorSampah->user->nomor_anggota }} | No. HP: {{ $setorSampah->user->no_hp }}</span>
                         </div>
                     </div>
                 </div>
@@ -71,10 +71,10 @@
                         <div class="row g-2 align-items-center">
                             <div class="col-12 col-md-6">
                                 <label class="form-label text-xs fw-semibold text-muted mb-1">Kategori Sampah</label>
-                                <select class="form-select text-sm kategori-select" name="kategori_sampah_id" required onchange="calculateGrandTotal()">
+                                <select class="form-select text-sm kategori-select" name="items[0][kategori_id]" required onchange="calculateGrandTotal()">
                                     <option value="" selected disabled>Pilih Kategori...</option>
                                     @foreach($kategoriList as $kat)
-                                        <option value="{{ $kat->id }}" data-harga="{{ $kat->harga_beli }}" {{ old('kategori_sampah_id', $setorSampah->kategori_sampah_id) == $kat->id ? 'selected' : '' }}>
+                                        <option value="{{ $kat->id }}" data-harga="{{ $kat->harga_beli }}" {{ old('items.0.kategori_id', $setorSampah->kategori_sampah_id) == $kat->id ? 'selected' : '' }}>
                                             {{ $kat->nama }} (Rp {{ number_format($kat->harga_beli, 0, ',', '.') }} / kg)
                                         </option>
                                     @endforeach
@@ -83,7 +83,7 @@
                             <div class="col-12 col-md-3">
                                 <label class="form-label text-xs fw-semibold text-muted mb-1">Berat (kg)</label>
                                 <div class="input-group">
-                                    <input type="number" step="0.1" min="0.1" class="form-control text-sm berat-input" name="berat" value="{{ old('berat', $setorSampah->berat) }}" required oninput="calculateGrandTotal()">
+                                    <input type="number" step="0.1" min="0.1" class="form-control text-sm berat-input" name="items[0][berat]" value="{{ old('items.0.berat', $setorSampah->berat) }}" required oninput="calculateGrandTotal()">
                                     <span class="input-group-text bg-white text-muted text-xs">kg</span>
                                 </div>
                             </div>
@@ -99,7 +99,7 @@
                         <div class="row align-items-center g-3">
                             <div class="col-12 col-sm-6 border-end-sm">
                                 <span class="text-muted text-xs text-uppercase tracking-wider fw-semibold d-block">Total Berat Keseluruhan</span>
-                                <span class="fs-4 fw-bold text-dark" id="total_berat_display">{{ old('berat', $setorSampah->berat) }} kg</span>
+                                <span class="fs-4 fw-bold text-dark" id="total_berat_display">{{ old('items.0.berat', $setorSampah->berat) }} kg</span>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <span class="text-muted text-xs text-uppercase tracking-wider fw-semibold d-block">Grand Total Pendapatan</span>

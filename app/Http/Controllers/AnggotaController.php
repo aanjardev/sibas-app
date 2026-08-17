@@ -227,10 +227,10 @@ class AnggotaController extends Controller
             ->get()
             ->map(function ($notif) {
                 return (object) [
-                    'jenis'      => $notif->data['jenis'] ?? 'info',
+                    'jenis'      => $notif->data['tipe_transaksi'] ?? $notif->data['jenis'] ?? 'info',
                     'nominal'    => 0,
-                    'keterangan' => $notif->data['message'] ?? '',
-                    'title'      => $notif->data['title'] ?? 'Notifikasi',
+                    'keterangan' => $notif->data['pesan'] ?? $notif->data['message'] ?? '',
+                    'title'      => $notif->data['judul'] ?? $notif->data['title'] ?? 'Notifikasi',
                     'created_at' => $notif->created_at,
                     'is_db_notif'=> true,
                 ];

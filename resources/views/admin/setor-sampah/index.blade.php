@@ -63,8 +63,8 @@
                                 <td class="ps-4 py-3"><span class="badge bg-light text-dark border fw-medium">TRX-S{{ str_pad($setor->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 <td class="py-3 text-muted text-sm">{{ $setor->created_at->format('d M Y, H:i') }}</td>
                                 <td class="py-3">
-                                    <div class="fw-bold text-dark text-sm">{{ $setor->anggota->name ?? '-' }}</div>
-                                    <div class="text-xs text-muted">ID: {{ $setor->anggota->nomor_anggota ?? '-' }}</div>
+                                    <div class="fw-bold text-dark text-sm">{{ $setor->user->name ?? '-' }}</div>
+                                    <div class="text-xs text-muted">ID: {{ $setor->user->nomor_anggota ?? '-' }}</div>
                                 </td>
                                 <td class="py-3">
                                     <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">
@@ -103,7 +103,7 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-muted text-xs">Anggota</span>
-                            <span class="fw-bold text-sm text-dark">{{ $setor->anggota->name ?? '-' }} <small class="text-muted fw-normal">({{ $setor->anggota->nomor_anggota ?? '-' }})</small></span>
+                            <span class="fw-bold text-sm text-dark">{{ $setor->user->name ?? '-' }} <small class="text-muted fw-normal">({{ $setor->user->nomor_anggota ?? '-' }})</small></span>
                         </div>
                         <div class="mb-2">
                             <span class="text-muted text-xs d-block mb-1">Rincian Item Setor</span>
