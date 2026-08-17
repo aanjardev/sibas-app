@@ -23,7 +23,7 @@ class AnggotaDemoSeeder extends Seeder
             'email'          => 'demo@sibas.com',
             'password'       => 'password',
             'role'           => 'anggota',
-            'nomor_anggota'  => 'AGT-DEMO1',
+            'nomor_anggota'  => 'AGT-DEMO2',
             'no_hp'          => '081234567890',
             'alamat'         => 'Jl. Melati No. 45, Sukamaju',
             'saldo'          => 1250000,

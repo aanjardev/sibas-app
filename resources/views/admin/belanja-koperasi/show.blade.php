@@ -6,7 +6,7 @@
 @section('content')
 
 {{-- Back & Action Bar --}}
-<div class="row g-3 mb-3 mb-md-4">
+<div class="row g-3 mb-3 mb-md-4 d-print-none">
     <div class="col-12 d-flex align-items-center justify-content-between gap-2 flex-wrap">
         <a href="{{ route('admin.belanja-koperasi.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
             <i class="bi bi-arrow-left me-1"></i> Riwayat Transaksi
@@ -26,14 +26,14 @@
 </div>
 
 @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+    <div class="alert alert-success alert-dismissible fade show mb-3 d-print-none" role="alert">
         {{ session('success') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 
 {{-- Status Banner --}}
-<div class="row g-3 mb-3">
+<div class="row g-3 mb-3 d-print-none">
     <div class="col-12">
         @if($transaksi->status == 'selesai')
         <div class="d-flex align-items-center gap-3 p-3 rounded-3 border" style="background: #f0f7f3; border-color: #c3dece !important;">
@@ -81,7 +81,7 @@
     </div>
 </div>
 
-<div class="row g-3" id="printArea">
+<div class="row g-3 d-print-none" id="printArea">
     {{-- ── Left: Nota Detail ── --}}
     <div class="col-12 col-lg-8">
 
@@ -317,17 +317,116 @@
     </div>
 </div>
 
+{{-- Struk Print Supermarket Style --}}
+<div class="d-none d-print-block print-receipt">
+    <div class="receipt-header text-center">
+        <h3>KOPERASI SIBAS</h3>
+        <p>Sistem Bank Sampah Terpadu</p>
+    </div>
+    <div class="receipt-divider"></div>
+    <div class="receipt-info">
+        <table>
+            <tr>
+                <td style="width: 70px;">No. TRX</td>
+                <td>: TRX-B{{ str_pad($transaksi->id, 4, '0', STR_PAD_LEFT) }}</td>
+            </tr>
+            <tr>
+                <td>Tanggal</td>
+                <td>: {{ $transaksi->created_at->format('d/m/Y H:i') }}</td>
+            </tr>
+            <tr>
+                <td>Kasir</td>
+                <td>: Sistem</td>
+            </tr>
+            <tr>
+                <td>Anggota</td>
+                <td>: {{ $transaksi->user->name ?? 'Pelanggan Umum' }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="receipt-divider"></div>
+    <div class="receipt-items">
+        <table>
+            @foreach($transaksi->details as $detail)
+            <tr>
+                <td colspan="3">{{ $detail->kategoriProduk->nama ?? 'Produk' }}</td>
+            </tr>
+            <tr>
+                <td style="width: 45%;">{{ $detail->jumlah }} x {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
+                <td></td>
+                <td class="text-end">{{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+            </tr>
+            @endforeach
+        </table>
+    </div>
+    <div class="receipt-divider"></div>
+    <div class="receipt-totals">
+        <table>
+            <tr>
+                <td>Subtotal</td>
+                <td class="text-end">{{ number_format($transaksi->total_belanja, 0, ',', '.') }}</td>
+            </tr>
+            @if($transaksi->diskon > 0)
+            <tr>
+                <td>Diskon</td>
+                <td class="text-end">-{{ number_format($transaksi->diskon, 0, ',', '.') }}</td>
+            </tr>
+            @endif
+            <tr>
+                <td class="fw-bold">Total</td>
+                <td class="fw-bold text-end">{{ number_format($transaksi->total_belanja - $transaksi->diskon, 0, ',', '.') }}</td>
+            </tr>
+            @if($transaksi->bayar_saldo > 0)
+            <tr>
+                <td>Bayar Saldo</td>
+                <td class="text-end">{{ number_format($transaksi->bayar_saldo, 0, ',', '.') }}</td>
+            </tr>
+            @endif
+            @if($transaksi->bayar_tunai > 0)
+            <tr>
+                <td>Bayar Tunai</td>
+                <td class="text-end">{{ number_format($transaksi->bayar_tunai, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td>Kembali</td>
+                <td class="text-end">{{ number_format($transaksi->kembalian, 0, ',', '.') }}</td>
+            </tr>
+            @endif
+        </table>
+    </div>
+    <div class="receipt-divider"></div>
+    <div class="receipt-footer text-center">
+        <p>Terima Kasih</p>
+        <p>Barang yang sudah dibeli<br>tidak dapat ditukar/dikembalikan.</p>
+    </div>
+</div>
+
 <style>
 @media print {
+    @page { margin: 0; }
     /* Hide non-printable elements */
     .admin-header, .admin-sidebar, .no-print,
     .btn, nav, .modal { display: none !important; }
+    
     /* Reset layout for print */
-    .admin-main { margin: 0 !important; padding: 0 !important; }
-    .col-lg-8 { width: 100% !important; }
-    .admin-card { border: 1px solid #ddd !important; box-shadow: none !important; page-break-inside: avoid; }
-    body { background: white !important; font-size: 11pt; }
-    .print-kop { border-bottom: 2px dashed #333 !important; }
+    .admin-main { margin: 0 !important; padding: 0 !important; display: block !important; }
+    
+    body { background: white !important; font-family: 'Courier New', Courier, monospace; font-size: 12px; color: black; margin: 0; padding: 0; }
+    
+    .print-receipt { 
+        display: block !important; 
+        width: 80mm; 
+        margin: 0 auto;
+        padding: 5mm;
+    }
+    .print-receipt h3 { font-size: 18px; font-weight: bold; margin-bottom: 2px; }
+    .print-receipt p { margin: 0; font-size: 12px; line-height: 1.2; }
+    .receipt-divider { border-bottom: 1px dashed black; margin: 8px 0; }
+    .print-receipt table { width: 100%; font-size: 12px; border-collapse: collapse; }
+    .print-receipt td { padding: 2px 0; vertical-align: top; }
+    .text-end { text-align: right; }
+    .text-center { text-align: center; }
+    .fw-bold { font-weight: bold; }
 }
 </style>
 @endsection
