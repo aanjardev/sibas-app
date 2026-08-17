@@ -23,6 +23,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 COPY . .
 
+RUN composer config -g cache-dir /tmp/composer-cache
+
 RUN composer install \
     --no-dev \
     --no-interaction \
