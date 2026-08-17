@@ -28,7 +28,7 @@ RUN composer config -g cache-dir /tmp/composer-cache
 RUN composer install \
     --no-dev \
     --no-interaction \
-    --prefer-dist \
+    --prefer-source \
     --optimize-autoloader
 
 RUN php artisan config:clear
