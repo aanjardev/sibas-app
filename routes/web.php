@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\AdminSetorSampahController;
 use App\Http\Controllers\Admin\AdminTabunganController;
 use App\Http\Controllers\Admin\AdminInventoryController;
 use App\Http\Controllers\Admin\AdminBelanjaController;
+use App\Http\Controllers\Admin\AdminLaporanController;
+use App\Http\Controllers\Admin\AdminUserController;
 
 // ─── Root redirect ────────────────────────────────────────────────────────────
 Route::get('/', function () {
@@ -87,5 +89,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/belanja-koperasi/pos', [AdminBelanjaController::class, 'pos'])->name('belanja-koperasi.pos');
         Route::post('/belanja-koperasi/checkout', [AdminBelanjaController::class, 'checkout'])->name('belanja-koperasi.checkout');
         Route::resource('belanja-koperasi', AdminBelanjaController::class)->except(['create', 'store']);
+
+        Route::get('/laporan', [AdminLaporanController::class, 'index'])->name('laporan');
+
+        Route::post('kelola-admin/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->name('kelola-admin.reset-password');
+        Route::resource('kelola-admin', AdminUserController::class)->only(['index', 'create', 'store', 'destroy']);
     });
 });

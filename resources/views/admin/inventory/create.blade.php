@@ -69,17 +69,15 @@
 
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-md-6">
-                            <label for="kategori_produk_id" class="form-label fw-semibold text-sm">Kategori Produk <span class="text-danger">*</span></label>
-                            <select class="form-select text-sm @error('kategori_produk_id') is-invalid @enderror" id="kategori_produk_id" name="kategori_produk_id" required>
-                                <option value="" selected disabled>Pilih Kategori...</option>
-                                @foreach($kategoriList as $kat)
-                                    <option value="{{ $kat->id }}" {{ old('kategori_produk_id') == $kat->id ? 'selected' : '' }}>{{ $kat->nama }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-12 col-md-6">
                             <label for="satuan" class="form-label fw-semibold text-sm">Satuan <span class="text-danger">*</span></label>
                             <input type="text" class="form-control text-sm @error('satuan') is-invalid @enderror" id="satuan" name="satuan" value="{{ old('satuan', 'pcs') }}" placeholder="Contoh: pcs, kg, pouch, dus" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="is_active" class="form-label fw-semibold text-sm">Status Aktif <span class="text-danger">*</span></label>
+                            <select class="form-select text-sm @error('is_active') is-invalid @enderror" id="is_active" name="is_active" required>
+                                <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Aktif</option>
+                                <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Tidak Aktif</option>
+                            </select>
                         </div>
                     </div>
 
@@ -87,35 +85,16 @@
 
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-md-6">
-                            <label for="harga_beli" class="form-label fw-semibold text-sm">Harga Beli Modal (Rp) <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light text-muted text-sm">Rp</span>
-                                <input type="number" step="1" min="0" class="form-control text-sm @error('harga_beli') is-invalid @enderror" id="harga_beli" name="harga_beli" value="{{ old('harga_beli') }}" placeholder="0" required>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
                             <label for="harga_jual" class="form-label fw-semibold text-sm">Harga Jual Anggota (Rp) <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted text-sm">Rp</span>
                                 <input type="number" step="1" min="0" class="form-control text-sm fw-bold text-success @error('harga_jual') is-invalid @enderror" id="harga_jual" name="harga_jual" value="{{ old('harga_jual') }}" placeholder="0" required>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row g-3 mb-3">
                         <div class="col-12 col-md-6">
                             <label for="stok" class="form-label fw-semibold text-sm">Stok Awal <span class="text-danger">*</span></label>
                             <input type="number" min="0" class="form-control text-sm @error('stok') is-invalid @enderror" id="stok" name="stok" value="{{ old('stok', 0) }}" placeholder="0" required>
                         </div>
-                        <div class="col-12 col-md-6">
-                            <label for="min_stok" class="form-label fw-semibold text-sm">Batas Peringatan Stok Menipis</label>
-                            <input type="number" min="1" class="form-control text-sm @error('min_stok') is-invalid @enderror" id="min_stok" name="min_stok" value="{{ old('min_stok', 5) }}">
-                        </div>
-                    </div>
-
-                    <div class="mb-0">
-                        <label for="deskripsi" class="form-label fw-semibold text-sm">Deskripsi / Spesifikasi Produk</label>
-                        <textarea class="form-control text-sm @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi" rows="3" placeholder="Informasi kemasan, keunggulan, atau catatan produk...">{{ old('deskripsi') }}</textarea>
                     </div>
                 </div>
             </div>

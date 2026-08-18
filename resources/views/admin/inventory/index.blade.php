@@ -6,14 +6,14 @@
 @section('content')
 <!-- Header Bar & Action Button -->
 <div class="row g-3 mb-3 mb-md-4 align-items-center">
-    <div class="col-12 col-md-6 d-flex align-items-center justify-content-between justify-content-md-start">
-        <a href="{{ route('admin.inventory.create') }}" class="btn btn-primary text-white shadow-sm w-100 w-md-auto d-flex align-items-center justify-content-center py-2 px-3">
-            <i class="bi bi-plus-circle me-2 fs-6"></i> Tambah Produk Baru
+    <div class="col-12 col-md-auto">
+        <a href="{{ route('admin.inventory.create') }}" class="btn btn-primary btn-sm text-white shadow-sm d-flex align-items-center justify-content-center py-2 px-3" style="min-width: 180px;">
+            <i class="bi bi-plus-circle me-2"></i> Tambah Produk
         </a>
     </div>
     
     <!-- Search & Filter Bar -->
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md">
         <form action="{{ route('admin.inventory.index') }}" method="GET">
             <div class="d-flex gap-2">
                 <div class="input-group">
@@ -21,7 +21,7 @@
                     <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari nama produk, SKU...">
                     <button class="btn btn-primary" type="submit">Cari</button>
                 </div>
-                <select name="stok" class="form-select bg-white text-sm" style="max-width: 140px;" onchange="this.form.submit()">
+                <select name="stok" class="form-select bg-white text-sm" style="min-width: 160px; max-width: 200px;" onchange="this.form.submit()">
                     <option value="">Semua Stok</option>
                     <option value="aman" {{ request('stok') == 'aman' ? 'selected' : '' }}>Stok Aman</option>
                     <option value="menipis" {{ request('stok') == 'menipis' ? 'selected' : '' }}>Stok Menipis</option>
@@ -72,8 +72,6 @@
                             <tr>
                                 <th class="ps-4 py-3 text-xs text-uppercase text-muted">Produk</th>
                                 <th class="py-3 text-xs text-uppercase text-muted">SKU / Kode</th>
-                                <th class="py-3 text-xs text-uppercase text-muted">Kategori</th>
-                                <th class="py-3 text-end text-xs text-uppercase text-muted">Harga Beli</th>
                                 <th class="py-3 text-end text-xs text-uppercase text-muted">Harga Jual</th>
                                 <th class="py-3 text-center text-xs text-uppercase text-muted">Sisa Stok</th>
                                 <th class="pe-4 py-3 text-end text-xs text-uppercase text-muted">Aksi</th>
@@ -93,19 +91,17 @@
                                         </div>
                                         <div>
                                             <h6 class="mb-0 fw-bold text-dark text-sm">{{ $produk->nama }}</h6>
-                                            <span class="text-xs text-muted">{{ $produk->deskripsi ?? 'Tanpa deskripsi' }}</span>
+                                            <span class="text-xs text-muted">Satuan: {{ $produk->satuan }}</span>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="py-3"><span class="badge bg-light text-dark border fw-medium">{{ $produk->sku }}</span></td>
-                                <td class="py-3"><span class="badge bg-light text-secondary border">{{ $produk->kategoriProduk->nama ?? 'Umum' }}</span></td>
-                                <td class="py-3 text-end text-muted text-sm">Rp {{ number_format($produk->harga_beli, 0, ',', '.') }}</td>
+                                <td class="py-3"><span class="badge bg-light text-dark border fw-medium">PRD-{{ str_pad($produk->id, 4, '0', STR_PAD_LEFT) }}</span></td>
                                 <td class="py-3 text-end fw-bold text-success text-sm">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</td>
                                 <td class="py-3 text-center">
-                                    <span class="fw-bold {{ $produk->stok <= 0 ? 'text-danger' : ($produk->stok <= $produk->min_stok ? 'text-warning' : 'text-dark') }} text-sm d-block">{{ $produk->stok }} {{ $produk->satuan }}</span>
+                                    <span class="fw-bold {{ $produk->stok <= 0 ? 'text-danger' : ($produk->stok <= 5 ? 'text-warning' : 'text-dark') }} text-sm d-block">{{ floatval($produk->stok) }} {{ $produk->satuan }}</span>
                                     @if($produk->stok <= 0)
                                         <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-0.5 text-xs">Habis</span>
-                                    @elseif($produk->stok <= $produk->min_stok)
+                                    @elseif($produk->stok <= 5)
                                         <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 py-0.5 text-xs">Menipis</span>
                                     @else
                                         <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-0.5 text-xs">Stok Aman</span>
@@ -113,7 +109,7 @@
                                 </td>
                                 <td class="pe-4 py-3 text-end">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-success" title="Restock / Tambah Stok" onclick="setRestockData({{ $produk->id }}, '{{ $produk->sku }}', '{{ addslashes($produk->nama) }}', {{ $produk->stok }}, '{{ $produk->satuan }}')">
+                                        <button type="button" class="btn btn-sm btn-outline-success" title="Restock / Tambah Stok" onclick="setRestockData({{ $produk->id }}, 'PRD-{{ str_pad($produk->id, 4, '0', STR_PAD_LEFT) }}', '{{ addslashes($produk->nama) }}', {{ floatval($produk->stok) }}, '{{ $produk->satuan }}')">
                                             <i class="bi bi-plus-lg me-1"></i> Restock
                                         </button>
                                         <a href="{{ route('admin.inventory.edit', $produk->id) }}" class="btn btn-sm btn-outline-primary" title="Edit Produk">
@@ -127,7 +123,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">Belum ada data produk inventaris.</td>
+                                <td colspan="5" class="text-center py-4 text-muted">Belum ada data produk inventaris.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -139,13 +135,13 @@
                     @forelse($produkList as $produk)
                     <div class="p-3 mb-2 rounded-3 border bg-white shadow-xs">
                         <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                            <span class="badge bg-light text-dark border">{{ $produk->sku }}</span>
+                            <span class="badge bg-light text-dark border">PRD-{{ str_pad($produk->id, 4, '0', STR_PAD_LEFT) }}</span>
                             @if($produk->stok <= 0)
-                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 text-xs">Habis: {{ $produk->stok }} {{ $produk->satuan }}</span>
-                            @elseif($produk->stok <= $produk->min_stok)
-                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 py-1 text-xs">Menipis: {{ $produk->stok }} {{ $produk->satuan }}</span>
+                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 text-xs">Habis: {{ floatval($produk->stok) }} {{ $produk->satuan }}</span>
+                            @elseif($produk->stok <= 5)
+                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2 py-1 text-xs">Menipis: {{ floatval($produk->stok) }} {{ $produk->satuan }}</span>
                             @else
-                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Stok: {{ $produk->stok }} {{ $produk->satuan }}</span>
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 text-xs">Stok: {{ floatval($produk->stok) }} {{ $produk->satuan }}</span>
                             @endif
                         </div>
                         <div class="d-flex align-items-center mb-2">
@@ -158,13 +154,17 @@
                             </div>
                             <div>
                                 <h6 class="mb-0 fw-bold text-dark text-sm">{{ $produk->nama }}</h6>
-                                <span class="text-xs text-muted">{{ $produk->kategoriProduk->nama ?? 'Umum' }}</span>
+                                <span class="text-xs text-muted">Satuan: {{ $produk->satuan }}</span>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top mb-3">
-                            <div>
-                                <span class="text-muted text-xs d-block">Harga Beli</span>
-                                <span class="text-dark text-xs">Rp {{ number_format($produk->harga_beli, 0, ',', '.') }}</span>
+                            <div class="text-start">
+                                <span class="text-muted text-xs d-block">Status Aktif</span>
+                                @if($produk->is_active)
+                                    <span class="fw-bold text-success text-xs">Aktif</span>
+                                @else
+                                    <span class="fw-bold text-danger text-xs">Nonaktif</span>
+                                @endif
                             </div>
                             <div class="text-end">
                                 <span class="text-muted text-xs d-block">Harga Jual</span>
@@ -172,7 +172,7 @@
                             </div>
                         </div>
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-sm btn-success flex-fill text-xs py-1.5 text-white shadow-xs" onclick="setRestockData({{ $produk->id }}, '{{ $produk->sku }}', '{{ addslashes($produk->nama) }}', {{ $produk->stok }}, '{{ $produk->satuan }}')"><i class="bi bi-plus-lg me-1"></i> Restock</button>
+                            <button type="button" class="btn btn-sm btn-success flex-fill text-xs py-1.5 text-white shadow-xs" onclick="setRestockData({{ $produk->id }}, 'PRD-{{ str_pad($produk->id, 4, '0', STR_PAD_LEFT) }}', '{{ addslashes($produk->nama) }}', {{ floatval($produk->stok) }}, '{{ $produk->satuan }}')"><i class="bi bi-plus-lg me-1"></i> Restock</button>
                             <a href="{{ route('admin.inventory.edit', $produk->id) }}" class="btn btn-sm btn-outline-primary flex-fill text-xs py-1.5"><i class="bi bi-pencil me-1"></i> Edit</a>
                             <button type="button" class="btn btn-sm btn-outline-danger text-xs py-1.5 px-3" onclick="confirmDelete({{ $produk->id }})"><i class="bi bi-trash"></i></button>
                         </div>

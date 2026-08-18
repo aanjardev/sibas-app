@@ -4,7 +4,7 @@
 @section('header_title', 'Edit Produk Inventory')
 
 @section('content')
-<form action="{{ route('admin.inventory.update', $inventory->id) }}" method="POST" enctype="multipart/form-data" id="edit-inventory-form">
+<form action="{{ route('admin.inventory.update', $produk->id) }}" method="POST" enctype="multipart/form-data" id="edit-inventory-form">
     @csrf
     @method('PUT')
     <!-- Top Header Bar with Back & Save Buttons on a single row -->
@@ -45,8 +45,8 @@
                         <label class="form-label fw-semibold text-sm">Foto Produk <span class="text-muted font-normal text-xs">(1 Foto Utama)</span></label>
                         <div class="d-flex flex-column flex-sm-row align-items-center gap-3">
                             <div class="rounded-3 border bg-light d-flex align-items-center justify-content-center flex-shrink-0 overflow-hidden" id="photo-preview-box" style="width: 110px; height: 110px;">
-                                @if($inventory->foto)
-                                    <img src="{{ asset('storage/' . $inventory->foto) }}" alt="Preview" class="w-100 h-100" id="preview-img" style="object-fit: cover;">
+                                @if(isset($produk->foto))
+                                    <img src="{{ asset('storage/' . $produk->foto) }}" alt="Preview" class="w-100 h-100" id="preview-img" style="object-fit: cover;">
                                     <i class="bi bi-box-seam fs-1 text-secondary d-none" id="placeholder-icon"></i>
                                 @else
                                     <img src="#" alt="Preview" class="w-100 h-100 d-none" id="preview-img" style="object-fit: cover;">
@@ -72,23 +72,21 @@
                         </div>
                         <div class="col-12 col-md-8">
                             <label for="nama" class="form-label fw-semibold text-sm">Nama Produk <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control text-sm @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama', $inventory->nama) }}" required>
+                            <input type="text" class="form-control text-sm @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama', $produk->nama) }}" required>
                         </div>
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-md-6">
-                            <label for="kategori_produk_id" class="form-label fw-semibold text-sm">Kategori Produk <span class="text-danger">*</span></label>
-                            <select class="form-select text-sm @error('kategori_produk_id') is-invalid @enderror" id="kategori_produk_id" name="kategori_produk_id" required>
-                                <option value="" disabled>Pilih Kategori...</option>
-                                @foreach($kategoriList as $kat)
-                                    <option value="{{ $kat->id }}" {{ old('kategori_produk_id', $inventory->kategori_produk_id) == $kat->id ? 'selected' : '' }}>{{ $kat->nama }}</option>
-                                @endforeach
-                            </select>
+                            <label for="satuan" class="form-label fw-semibold text-sm">Satuan <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control text-sm @error('satuan') is-invalid @enderror" id="satuan" name="satuan" value="{{ old('satuan', $produk->satuan) }}" required>
                         </div>
                         <div class="col-12 col-md-6">
-                            <label for="satuan" class="form-label fw-semibold text-sm">Satuan <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control text-sm @error('satuan') is-invalid @enderror" id="satuan" name="satuan" value="{{ old('satuan', $inventory->satuan) }}" required>
+                            <label for="is_active" class="form-label fw-semibold text-sm">Status Aktif <span class="text-danger">*</span></label>
+                            <select class="form-select text-sm @error('is_active') is-invalid @enderror" id="is_active" name="is_active" required>
+                                <option value="1" {{ old('is_active', $produk->is_active) == '1' ? 'selected' : '' }}>Aktif</option>
+                                <option value="0" {{ old('is_active', $produk->is_active) == '0' ? 'selected' : '' }}>Tidak Aktif</option>
+                            </select>
                         </div>
                     </div>
 
@@ -96,35 +94,16 @@
 
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-md-6">
-                            <label for="harga_beli" class="form-label fw-semibold text-sm">Harga Beli Modal (Rp) <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light text-muted text-sm">Rp</span>
-                                <input type="number" step="1" min="0" class="form-control text-sm @error('harga_beli') is-invalid @enderror" id="harga_beli" name="harga_beli" value="{{ old('harga_beli', $inventory->harga_beli) }}" required>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
                             <label for="harga_jual" class="form-label fw-semibold text-sm">Harga Jual Anggota (Rp) <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted text-sm">Rp</span>
-                                <input type="number" step="1" min="0" class="form-control text-sm fw-bold text-success @error('harga_jual') is-invalid @enderror" id="harga_jual" name="harga_jual" value="{{ old('harga_jual', $inventory->harga_jual) }}" required>
+                                <input type="number" step="1" min="0" class="form-control text-sm fw-bold text-success @error('harga_jual') is-invalid @enderror" id="harga_jual" name="harga_jual" value="{{ old('harga_jual', $produk->harga_jual) }}" required>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row g-3 mb-3">
                         <div class="col-12 col-md-6">
                             <label for="stok" class="form-label fw-semibold text-sm">Jumlah Sisa Stok <span class="text-danger">*</span></label>
-                            <input type="number" min="0" class="form-control text-sm @error('stok') is-invalid @enderror" id="stok" name="stok" value="{{ old('stok', $inventory->stok) }}" required>
+                            <input type="number" min="0" class="form-control text-sm @error('stok') is-invalid @enderror" id="stok" name="stok" value="{{ old('stok', $produk->stok) }}" required>
                         </div>
-                        <div class="col-12 col-md-6">
-                            <label for="min_stok" class="form-label fw-semibold text-sm">Batas Peringatan Stok Menipis</label>
-                            <input type="number" min="1" class="form-control text-sm @error('min_stok') is-invalid @enderror" id="min_stok" name="min_stok" value="{{ old('min_stok', $inventory->min_stok) }}">
-                        </div>
-                    </div>
-
-                    <div class="mb-0">
-                        <label for="deskripsi" class="form-label fw-semibold text-sm">Deskripsi / Spesifikasi Produk</label>
-                        <textarea class="form-control text-sm @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi" rows="3">{{ old('deskripsi', $inventory->deskripsi) }}</textarea>
                     </div>
                 </div>
             </div>

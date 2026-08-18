@@ -7,14 +7,14 @@
 
 {{-- Action Bar --}}
 <div class="row g-3 mb-3 mb-md-4 align-items-center">
-    <div class="col-12 col-md-6 d-flex align-items-center justify-content-between justify-content-md-start gap-2">
-        <a href="{{ route('admin.belanja-koperasi.pos') }}" class="btn btn-primary text-white shadow-sm d-flex align-items-center justify-content-center py-2 px-4 fw-semibold" style="border-radius: 10px;">
-            <i class="bi bi-cart-plus me-2 fs-6"></i> Buka Kasir
+    <div class="col-12 col-md-auto">
+        <a href="{{ route('admin.belanja-koperasi.pos') }}" class="btn btn-primary btn-sm text-white shadow-sm d-flex align-items-center justify-content-center py-2 px-3 fw-semibold" style="min-width: 180px;">
+            <i class="bi bi-cart-plus me-2"></i> Buka Kasir
         </a>
     </div>
 
     {{-- Search & Filter --}}
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md">
         <form action="{{ route('admin.belanja-koperasi.index') }}" method="GET">
             <div class="d-flex gap-2">
                 <div class="input-group">
@@ -22,7 +22,7 @@
                     <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari No TRX, nama pembeli...">
                     <button class="btn btn-primary" type="submit">Cari</button>
                 </div>
-                <select name="status" class="form-select bg-white text-sm" style="max-width: 145px;" onchange="this.form.submit()">
+                <select name="status" class="form-select bg-white text-sm" style="min-width: 160px; max-width: 200px;" onchange="this.form.submit()">
                     <option value="">Semua Status</option>
                     <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>

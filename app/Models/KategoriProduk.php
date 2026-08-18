@@ -15,6 +15,7 @@ class KategoriProduk extends Model
         'harga_jual',
         'stok',
         'is_active',
+        'foto',
     ];
 
     protected $casts = [

@@ -6,21 +6,21 @@
 @section('content')
 <!-- Header Bar & Actions -->
 <div class="row g-3 mb-3 mb-md-4 align-items-center">
-    <div class="col-12 col-md-6 d-flex align-items-center justify-content-between justify-content-md-start">
-        <a href="{{ route('admin.anggota.create') }}" class="btn btn-primary text-white shadow-sm w-100 w-md-auto d-flex align-items-center justify-content-center py-2 px-3">
-            <i class="bi bi-person-plus me-2 fs-6"></i> Tambah Anggota Baru
+    <div class="col-12 col-md-auto">
+        <a href="{{ route('admin.anggota.create') }}" class="btn btn-primary btn-sm text-white shadow-sm d-flex align-items-center justify-content-center py-2 px-3" style="min-width: 180px;">
+            <i class="bi bi-person-plus me-2"></i> Tambah Anggota
         </a>
     </div>
     
     <!-- Search & Filter Bar -->
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md">
         <form action="{{ route('admin.anggota.index') }}" method="GET" class="d-flex gap-2">
             <div class="input-group">
                 <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
                 <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari nama, ID, no hp...">
                 <button class="btn btn-primary" type="submit">Cari</button>
             </div>
-            <select name="status" class="form-select bg-white text-sm" style="max-width: 130px;" onchange="this.form.submit()">
+            <select name="status" class="form-select bg-white text-sm" style="min-width: 160px; max-width: 200px;" onchange="this.form.submit()">
                 <option value="">Semua Status</option>
                 <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
                 <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>

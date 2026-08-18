@@ -58,12 +58,18 @@ class AdminInventoryController extends Controller
             'foto'       => 'nullable|image|max:2048',
         ]);
 
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('produk_foto', 'public');
+        }
+
         KategoriProduk::create([
             'nama'       => $validated['nama'],
             'satuan'     => $validated['satuan'],
             'harga_jual' => $validated['harga_jual'],
             'stok'       => $validated['stok'],
             'is_active'  => $validated['is_active'],
+            'foto'       => $fotoPath,
         ]);
 
         return redirect()->route('admin.inventory.index')->with('success', 'Produk baru berhasil ditambahkan!');
@@ -90,12 +96,22 @@ class AdminInventoryController extends Controller
             'foto'       => 'nullable|image|max:2048',
         ]);
 
+        if ($request->hasFile('foto')) {
+            if ($produk->foto) {
+                Storage::disk('public')->delete($produk->foto);
+            }
+            $validated['foto'] = $request->file('foto')->store('produk_foto', 'public');
+        } else {
+            $validated['foto'] = $produk->foto;
+        }
+
         $produk->update([
             'nama'       => $validated['nama'],
             'satuan'     => $validated['satuan'],
             'harga_jual' => $validated['harga_jual'],
             'stok'       => $validated['stok'],
             'is_active'  => $validated['is_active'],
+            'foto'       => $validated['foto'],
         ]);
 
         return redirect()->route('admin.inventory.index')->with('success', 'Produk berhasil diperbarui!');
@@ -108,6 +124,10 @@ class AdminInventoryController extends Controller
         if ($produk->detailTransaksiBelanja()->exists()) {
             return redirect()->route('admin.inventory.index')
                 ->with('error', 'Tidak bisa menghapus produk yang sudah memiliki riwayat transaksi belanja.');
+        }
+
+        if ($produk->foto) {
+            Storage::disk('public')->delete($produk->foto);
         }
 
         $produk->delete();

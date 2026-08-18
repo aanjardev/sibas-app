@@ -6,14 +6,14 @@
 @section('content')
 <!-- Header Bar & Actions -->
 <div class="row g-3 mb-3 mb-md-4 align-items-center">
-    <div class="col-12 col-md-6 d-flex align-items-center justify-content-between justify-content-md-start">
-        <a href="{{ route('admin.setor-sampah.create') }}" class="btn btn-primary text-white shadow-sm w-100 w-md-auto d-flex align-items-center justify-content-center py-2 px-3">
-            <i class="bi bi-plus-circle me-2 fs-6"></i> Input Setor Sampah Baru
+    <div class="col-12 col-md-auto">
+        <a href="{{ route('admin.setor-sampah.create') }}" class="btn btn-primary btn-sm text-white shadow-sm d-flex align-items-center justify-content-center py-2 px-3" style="min-width: 180px;">
+            <i class="bi bi-plus-circle me-2"></i> Input Setor Sampah
         </a>
     </div>
     
     <!-- Search & Filter Bar -->
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md">
         <form action="{{ route('admin.setor-sampah.index') }}" method="GET">
             <div class="d-flex gap-2">
                 <div class="input-group">
@@ -21,7 +21,7 @@
                     <input type="text" name="search" value="{{ request('search') }}" class="form-control bg-white border-start-0 text-sm" placeholder="Cari TRX, nama anggota...">
                     <button class="btn btn-primary" type="submit">Cari</button>
                 </div>
-                <select name="kategori_id" class="form-select bg-white text-sm" style="max-width: 150px;" onchange="this.form.submit()">
+                <select name="kategori_id" class="form-select bg-white text-sm" style="min-width: 160px; max-width: 200px;" onchange="this.form.submit()">
                     <option value="">Semua Kategori</option>
                     @foreach($kategoriOptions as $kat)
                         <option value="{{ $kat->id }}" {{ request('kategori_id') == $kat->id ? 'selected' : '' }}>{{ $kat->nama }}</option>

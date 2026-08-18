@@ -16,6 +16,12 @@ class AdminKategoriSampahController extends Controller
             $query->where('nama', 'like', "%{$search}%");
         }
 
+        if ($request->input('status') === 'aktif') {
+            $query->where('is_active', true);
+        } elseif ($request->input('status') === 'nonaktif') {
+            $query->where('is_active', false);
+        }
+
         $kategoriList = $query->latest()->paginate(15)->withQueryString();
 
         return view('admin.kategori-sampah.index', compact('kategoriList'));

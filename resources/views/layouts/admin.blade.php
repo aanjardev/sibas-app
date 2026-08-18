@@ -54,8 +54,11 @@
             </a>
             
             <div class="nav-category mt-4">Sistem</div>
-            <a href="#" class="sidebar-link">
+            <a href="{{ route('admin.laporan') }}" class="sidebar-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
                 <i class="bi bi-file-earmark-bar-graph"></i> Laporan
+            </a>
+            <a href="{{ route('admin.kelola-admin.index') }}" class="sidebar-link {{ request()->routeIs('admin.kelola-admin.*') ? 'active' : '' }}">
+                <i class="bi bi-people-fill"></i> Kelola Admin
             </a>
             <!-- <a href="#" class="sidebar-link text-danger mt-3" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
                 <i class="bi bi-box-arrow-right text-danger"></i> Keluar
