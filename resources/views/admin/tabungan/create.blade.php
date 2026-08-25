@@ -108,6 +108,7 @@
                             <input type="text" class="form-control text-sm fw-bold text-dark fs-5" id="nominal_display" placeholder="0" required oninput="formatRupiah(this)">
                             <input type="hidden" id="nominal" name="nominal" value="{{ old('nominal') }}">
                         </div>
+                        <div id="nominal_feedback" class="text-danger text-xs mt-1 d-none">Nominal tabungan tidak boleh 0.</div>
                     </div>
 
                     <div class="mb-4 flex-grow-1">
@@ -264,10 +265,19 @@
     function checkFormValidity(isSetor, nominal, saldoAkhir) {
         const hasUser = userIdInput.value !== '';
         const hasNominal = nominal > 0;
-        
-        if (!isSetor && saldoAkhir < 0) {
+        const feedback = document.getElementById('nominal_feedback');
+        const displayValue = document.getElementById('nominal_display').value;
+
+        if (displayValue !== '' && nominal <= 0) {
+            feedback.innerText = 'Mohon maaf, nominal tabungan tidak boleh 0.';
+            feedback.classList.remove('d-none');
+            submitBtn.disabled = true;
+        } else if (!isSetor && saldoAkhir < 0) {
+            feedback.innerText = 'Saldo tabungan nasabah tidak mencukupi untuk penarikan ini.';
+            feedback.classList.remove('d-none');
             submitBtn.disabled = true; // Cannot tarik more than balance
         } else {
+            feedback.classList.add('d-none');
             submitBtn.disabled = !(hasUser && hasNominal);
         }
     }

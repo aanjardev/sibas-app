@@ -47,8 +47,13 @@ class AdminTabunganController extends Controller
         $validated = $request->validate([
             'user_id'          => 'required|exists:users,id',
             'jenis_transaksi'  => 'required|in:setor,tarik',
-            'nominal'          => 'required|numeric|min:1000',
+            'nominal'          => 'required|numeric|min:1',
             'keterangan'       => 'nullable|string|max:255',
+        ], [
+            'user_id.required' => 'Silakan pilih anggota nasabah terlebih dahulu.',
+            'nominal.required' => 'Nominal transaksi wajib diisi.',
+            'nominal.numeric'  => 'Nominal transaksi harus berupa angka.',
+            'nominal.min'      => 'Mohon maaf, nominal tabungan tidak boleh 0 atau bernilai minus.',
         ]);
 
         DB::transaction(function () use ($validated) {
@@ -103,8 +108,12 @@ class AdminTabunganController extends Controller
         $transaksi = RiwayatTabungan::findOrFail($id);
 
         $validated = $request->validate([
-            'nominal'    => 'required|numeric|min:1000',
+            'nominal'    => 'required|numeric|min:1',
             'keterangan' => 'nullable|string|max:255',
+        ], [
+            'nominal.required' => 'Nominal transaksi wajib diisi.',
+            'nominal.numeric'  => 'Nominal transaksi harus berupa angka.',
+            'nominal.min'      => 'Mohon maaf, nominal tabungan tidak boleh 0 atau bernilai minus.',
         ]);
 
         DB::transaction(function () use ($transaksi, $validated) {

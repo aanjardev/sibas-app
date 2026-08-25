@@ -36,6 +36,55 @@
             max-width: 420px;
         }
 
+        /* Institutional Logos Banner */
+        .institutional-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .institutional-banner img {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .institutional-banner .ib-divider {
+            width: 1px;
+            height: 32px;
+            background: #cbd5e1;
+            flex-shrink: 0;
+        }
+
+        .institutional-banner .ib-text {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            line-height: 1.45;
+            text-align: left;
+            max-width: 160px;
+        }
+
+        @media (max-width: 400px) {
+            .institutional-banner {
+                gap: 10px;
+            }
+            .institutional-banner img {
+                height: 32px;
+            }
+            .institutional-banner .ib-text {
+                font-size: 0.6rem;
+                max-width: 120px;
+            }
+            .institutional-banner .ib-divider {
+                height: 26px;
+            }
+        }
+
         .auth-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -96,6 +145,15 @@
 </head>
 <body>
     <div class="auth-wrapper">
+        <!-- Institutional Logos Banner -->
+        <div class="institutional-banner">
+            <img src="{{ asset('images/kemendiksaintek.png') }}" alt="Kemdiktisaintek">
+            <img src="{{ asset('images/unmer_malang.png') }}" alt="Universitas Merdeka Malang">
+            <img src="{{ asset('images/um.png') }}" alt="Universitas Negeri Malang">
+            <div class="ib-divider"></div>
+            <div class="ib-text">Program Hibah Pengabdian kepada Masyarakat DPPM 2026</div>
+        </div>
+
         <div class="text-center mb-4">
             <!-- <div class="brand-badge">
                 <i class="bi bi-shield-lock-fill"></i> Panel Administrator

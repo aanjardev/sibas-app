@@ -49,6 +49,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/tabungan',       [AnggotaController::class, 'tabungan'])->name('tabungan');
     Route::get('/profil',         [AnggotaController::class, 'profil'])->name('profil');
     Route::get('/notifikasi',     [AnggotaController::class, 'notifikasi'])->name('notifikasi');
+    Route::get('/laporan',        [AnggotaController::class, 'laporan'])->name('laporan');
+    Route::get('/laporan/export-pdf', [AnggotaController::class, 'exportPdf'])->name('laporan.export_pdf');
 });
 
 // ─── Admin Auth Guest routes ──────────────────────────────────────────────────

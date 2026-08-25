@@ -39,6 +39,55 @@
             max-width: 420px;
         }
 
+        /* Institutional Logos Banner */
+        .institutional-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .institutional-banner img {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .institutional-banner .ib-divider {
+            width: 1px;
+            height: 32px;
+            background: #cbd5e1;
+            flex-shrink: 0;
+        }
+
+        .institutional-banner .ib-text {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            line-height: 1.45;
+            text-align: left;
+            max-width: 160px;
+        }
+
+        @media (max-width: 400px) {
+            .institutional-banner {
+                gap: 10px;
+            }
+            .institutional-banner img {
+                height: 32px;
+            }
+            .institutional-banner .ib-text {
+                font-size: 0.6rem;
+                max-width: 120px;
+            }
+            .institutional-banner .ib-divider {
+                height: 26px;
+            }
+        }
+
         /* Logo Area */
         .auth-logo {
             display: flex;
@@ -273,6 +322,15 @@
 </head>
 <body>
     <div class="auth-wrapper">
+        <!-- Institutional Logos Banner -->
+        <div class="institutional-banner">
+            <img src="{{ asset('images/kemendiksaintek.png') }}" alt="Kemdiktisaintek">
+            <img src="{{ asset('images/unmer_malang.png') }}" alt="Universitas Merdeka Malang">
+            <img src="{{ asset('images/um.png') }}" alt="Universitas Negeri Malang">
+            <div class="ib-divider"></div>
+            <div class="ib-text">Program Hibah Pengabdian kepada Masyarakat DPPM 2026</div>
+        </div>
+
         <!-- Logo -->
         <div class="auth-logo">
             <div class="logo-icon">
@@ -287,12 +345,7 @@
         <!-- Card -->
         <div class="auth-card">
             <h2>Masuk ke Akun</h2>
-            <p class="subtitle">Selamat datang kembali! Masukkan data kamu.</p>
-
-            {{-- Global error --}}
-            @if ($errors->has('email') && !$errors->has('email'))
-                {{-- handled inline --}}
-            @endif
+            <p class="subtitle">Selamat datang kembali! Silakan masukkan email atau nomor HP kamu.</p>
 
             @if (session('error'))
                 <div class="auth-alert">
@@ -304,24 +357,31 @@
             <form action="{{ route('login') }}" method="POST" id="login-form">
                 @csrf
 
-                {{-- Email --}}
+                {{-- Email / Nomor HP --}}
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
+                    <label for="login" class="form-label">Email atau Nomor HP</label>
                     <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        class="form-control @error('email') is-invalid @enderror"
-                        value="{{ old('email') }}"
-                        placeholder="contoh@email.com"
-                        autocomplete="email"
+                        type="text"
+                        id="login"
+                        name="login"
+                        class="form-control @if($errors->has('login') || $errors->has('email')) is-invalid @endif"
+                        value="{{ old('login', old('email')) }}"
+                        placeholder="contoh@email.com atau 08123456789"
+                        autocomplete="username"
                         autofocus
                     >
-                    @error('email')
+                    @error('login')
                         <div class="invalid-feedback">
                             <i class="bi bi-exclamation-circle"></i> {{ $message }}
                         </div>
                     @enderror
+                    @if (!$errors->has('login'))
+                        @error('email')
+                            <div class="invalid-feedback">
+                                <i class="bi bi-exclamation-circle"></i> {{ $message }}
+                            </div>
+                        @enderror
+                    @endif
                 </div>
 
                 {{-- Password --}}

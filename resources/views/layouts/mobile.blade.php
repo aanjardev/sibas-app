@@ -51,6 +51,18 @@
         @yield('content')
     </main>
 
+    <!-- Institutional Watermark Footer -->
+    <div style="text-align:center; padding: 16px 20px 90px; opacity: 0.6;">
+        <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:8px;">
+            <img src="{{ asset('images/kemendiksaintek.png') }}" alt="Kemdiktisaintek" style="height:28px; width:auto; object-fit:contain;">
+            <img src="{{ asset('images/unmer_malang.png') }}" alt="Unmer Malang" style="height:28px; width:auto; object-fit:contain;">
+            <img src="{{ asset('images/um.png') }}" alt="UM" style="height:28px; width:auto; object-fit:contain;">
+        </div>
+        <div style="font-size:0.6rem; font-weight:600; color:#64748b; letter-spacing:0.2px; line-height:1.4;">
+            Program Hibah Pengabdian kepada Masyarakat DPPM 2026
+        </div>
+    </div>
+
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
         <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">

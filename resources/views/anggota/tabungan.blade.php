@@ -10,13 +10,16 @@
         <p class="mb-1 text-sm text-white opacity-75 position-relative z-index-1">Saldo Tabungan Anda</p>
         <h2 class="fw-bold mb-3 text-white position-relative z-index-1" style="font-size: 2.2rem; letter-spacing: -1px;">Rp {{ number_format($user->saldo_tabungan, 0, ',', '.') }}</h2>
         
-        <div class="d-flex justify-content-center gap-2 position-relative z-index-1">
+        <div class="d-flex justify-content-center gap-2 position-relative z-index-1 flex-wrap">
             <button class="btn btn-light btn-sm px-3 rounded-pill fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#infoSetorModal">
                 <i class="bi bi-arrow-down-circle me-1 text-success"></i> Setor
             </button>
             <button class="btn btn-light btn-sm px-3 rounded-pill fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#infoTarikModal">
                 <i class="bi bi-arrow-up-circle me-1 text-danger"></i> Tarik
             </button>
+            <a href="{{ route('laporan', ['tab' => 'tabungan']) }}" class="btn btn-light btn-sm px-3 rounded-pill fw-semibold shadow-sm text-dark">
+                <i class="bi bi-file-earmark-pdf-fill me-1 text-danger"></i> Rekap PDF
+            </a>
         </div>
     </div>
 </div>

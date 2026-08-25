@@ -64,6 +64,18 @@
                 <i class="bi bi-box-arrow-right text-danger"></i> Keluar
             </a> -->
         </div>
+
+        <!-- Institutional Watermark -->
+        <div class="sidebar-footer-wm">
+            <div class="sidebar-wm-logos">
+                <img src="{{ asset('images/kemendiksaintek.png') }}" alt="Kemdiktisaintek">
+                <img src="{{ asset('images/unmer_malang.png') }}" alt="Unmer Malang">
+                <img src="{{ asset('images/um.png') }}" alt="UM">
+            </div>
+            <div class="sidebar-wm-text">
+                Program Hibah Pengabdian<br>kepada Masyarakat DPPM 2026
+            </div>
+        </div>
     </div>
 
     <!-- Header Navbar -->

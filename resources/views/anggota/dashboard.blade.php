@@ -61,6 +61,21 @@
     </div>
 </div>
 
+<div class="mb-3">
+    <a href="{{ route('laporan') }}" class="surface-card p-3 d-flex align-items-center justify-content-between text-decoration-none shadow-sm" style="border: 1px solid var(--border-color); border-radius: 12px;">
+        <div class="d-flex align-items-center">
+            <div class="bg-danger bg-opacity-10 text-danger rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                <i class="bi bi-file-earmark-pdf-fill fs-5"></i>
+            </div>
+            <div>
+                <h6 class="fw-bold mb-0 text-main" style="font-size: 0.9rem;">Laporan & Rekap Transaksi</h6>
+                <small class="text-muted text-xs">Lihat ringkasan aktivitas & unduh PDF</small>
+            </div>
+        </div>
+        <i class="bi bi-chevron-right text-muted"></i>
+    </a>
+</div>
+
 <h6 class="fw-bold mb-2 text-sm text-uppercase text-muted tracking-wide px-1">Aktivitas Terakhir</h6>
 
 <div class="surface-card p-3">

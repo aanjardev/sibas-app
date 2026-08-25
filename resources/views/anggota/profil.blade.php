@@ -56,6 +56,22 @@
     </div>
 </div>
 
+<h6 class="fw-bold mb-2 text-sm text-uppercase text-muted tracking-wide px-1">Laporan & Rekapitulasi</h6>
+<div class="surface-card mb-4 p-0">
+    <a href="{{ route('laporan') }}" class="d-flex align-items-center justify-content-between p-3 text-decoration-none text-dark">
+        <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 42px; height: 42px;">
+                <i class="bi bi-file-earmark-pdf-fill fs-5"></i>
+            </div>
+            <div>
+                <h6 class="fw-bold mb-0 text-main" style="font-size: 0.95rem;">Laporan & Export PDF</h6>
+                <p class="mb-0 opacity-75 text-muted" style="font-size: 0.75rem;">Unduh rekap transaksi & mutasi tabungan</p>
+            </div>
+        </div>
+        <i class="bi bi-chevron-right text-muted"></i>
+    </a>
+</div>
+
 <button type="button" class="btn bg-white w-100 py-3 text-danger fw-bold shadow-sm d-flex justify-content-center align-items-center" style="border: 1px solid var(--border-color); border-radius: 8px;" data-bs-toggle="modal" data-bs-target="#logoutModal">
     <i class="bi bi-box-arrow-right me-2 fs-5"></i> Keluar
 </button>

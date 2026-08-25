@@ -58,7 +58,7 @@ class AdminAnggotaController extends Controller
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'nullable|email|unique:users,email',
-            'no_hp'    => 'required|string|max:20',
+            'no_hp'    => 'required|string|max:20|unique:users,no_hp',
             'alamat'   => 'required|string',
             'password' => 'required|string|min:8|confirmed',
         ]);
@@ -130,7 +130,7 @@ class AdminAnggotaController extends Controller
         $validated = $request->validate([
             'name'      => 'required|string|max:255',
             'email'     => 'nullable|email|unique:users,email,' . $id,
-            'no_hp'     => 'required|string|max:20',
+            'no_hp'     => 'required|string|max:20|unique:users,no_hp,' . $id,
             'alamat'    => 'required|string',
             'is_active' => 'required|boolean',
         ]);

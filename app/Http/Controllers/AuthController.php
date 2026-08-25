@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Notifications\WelcomeNotification;
 
@@ -19,34 +20,55 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+        $loginInput = trim($request->input('login', $request->input('email', '')));
+        $request->merge(['login' => $loginInput]);
+
+        $request->validate([
+            'login'    => ['required', 'string'],
             'password' => ['required'],
         ], [
-            'email.required'    => 'Email wajib diisi.',
-            'email.email'       => 'Format email tidak valid.',
+            'login.required'    => 'Email atau Nomor HP wajib diisi.',
             'password.required' => 'Password wajib diisi.',
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
+        $password = $request->input('password');
+        $remember = $request->boolean('remember');
 
-            // Redirect based on role
-            if (Auth::user()->role === 'admin') {
-                return redirect()->route('admin.dashboard');
+        // Extract variations for phone number or search string
+        $cleanNoHp = preg_replace('/[^0-9]/', '', $loginInput);
+
+        // Find candidate users by email, no_hp (raw or cleaned), or nomor_anggota
+        $candidatesQuery = User::where('email', $loginInput)
+            ->orWhere('no_hp', $loginInput)
+            ->orWhere('nomor_anggota', $loginInput);
+
+        if (!empty($cleanNoHp)) {
+            $candidatesQuery->orWhere('no_hp', $cleanNoHp);
+        }
+
+        $users = $candidatesQuery->get();
+
+        foreach ($users as $user) {
+            if ($user->password && Hash::check($password, $user->password)) {
+                Auth::login($user, $remember);
+                $request->session()->regenerate();
+
+                // Redirect based on role
+                if ($user->role === 'admin') {
+                    return redirect()->route('admin.dashboard');
+                }
+
+                if ($user->notifications()->count() === 0) {
+                    $user->notify(new WelcomeNotification());
+                }
+
+                return redirect()->intended(route('dashboard'));
             }
-
-            $user = Auth::user();
-            if ($user->notifications()->count() === 0) {
-                $user->notify(new WelcomeNotification());
-            }
-
-            return redirect()->intended(route('dashboard'));
         }
 
         return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+            'login' => 'Email/Nomor HP atau password yang Anda masukkan salah.',
+        ])->withInput($request->only('login'));
     }
 
     // ─── Register ────────────────────────────────────────
