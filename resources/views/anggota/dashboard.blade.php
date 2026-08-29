@@ -9,11 +9,21 @@
         
         <!-- Balance Section (Top) -->
         <div class="text-center pb-3">
-            <p class="mb-1 text-sm opacity-75">Saldo Tabungan</p>
-            <h2 class="fw-bold mb-2" style="font-size: 2.4rem; letter-spacing: -1px;">Rp {{ number_format($user->saldo_tabungan, 0, ',', '.') }}</h2>
-            <div class="d-inline-flex align-items-center bg-white bg-opacity-25 px-3 py-1 rounded-pill">
-                <i class="bi bi-wallet2 me-2 text-white opacity-75" style="font-size: 0.8rem;"></i>
-                <span class="text-white text-xs">Cashback Sampah: <strong class="fw-bold">Rp {{ number_format($totalCashbackSampah, 0, ',', '.') }}</strong></span>
+            <p class="mb-1 text-sm opacity-75">Total Saldo</p>
+            <h2 class="fw-bold mb-3" style="font-size: 2.4rem; letter-spacing: -1px;">Rp {{ number_format($totalSaldo, 0, ',', '.') }}</h2>
+            <div class="row g-2 text-start">
+                <div class="col-6">
+                    <div class="bg-white bg-opacity-10 px-3 py-2 rounded-3 h-100">
+                        <span class="d-block text-white opacity-75 mb-1" style="font-size: 0.65rem;">Saldo Cashback</span>
+                        <strong class="d-block text-white text-sm">Rp {{ number_format($user->saldo, 0, ',', '.') }}</strong>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="bg-white bg-opacity-10 px-3 py-2 rounded-3 h-100">
+                        <span class="d-block text-white opacity-75 mb-1" style="font-size: 0.65rem;">Saldo Tabungan</span>
+                        <strong class="d-block text-white text-sm">Rp {{ number_format($user->saldo_tabungan, 0, ',', '.') }}</strong>
+                    </div>
+                </div>
             </div>
         </div>
 

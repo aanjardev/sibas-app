@@ -17,6 +17,7 @@ class AnggotaController extends Controller
     {
         $user = Auth::user();
         $bulanIni = Carbon::now();
+        $totalSaldo = (float) $user->saldo + (float) $user->saldo_tabungan;
 
         // ── Ringkasan bulan ini ──────────────────────────────────────
         $transaksiSampahBulanIni = $user->transaksiSampah()
@@ -25,8 +26,6 @@ class AnggotaController extends Controller
             ->get();
 
         $totalBeratSampah     = $transaksiSampahBulanIni->sum('berat');
-        $totalCashbackSampah  = $transaksiSampahBulanIni->sum('total');
-
         $totalBelanjaBulanIni = $user->transaksiBelanja()
             ->where('status', 'selesai')
             ->whereMonth('created_at', $bulanIni->month)
@@ -104,8 +103,8 @@ class AnggotaController extends Controller
 
         return view('anggota.dashboard', compact(
             'user',
+            'totalSaldo',
             'totalBeratSampah',
-            'totalCashbackSampah',
             'totalBelanjaBulanIni',
             'aktivitasTerakhir',
             'bulanIni',
