@@ -5,7 +5,7 @@
 
 @section('content')
 {{-- Unified Header & Filter Bar --}}
-<div class="admin-card border-0 shadow-sm mb-3 mb-md-4 d-print-none">
+<div class="admin-card laporan-toolbar-card border-0 shadow-sm mb-3 mb-md-4 d-print-none">
     <div class="admin-card-body p-3 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
         <div>
             <h5 class="fw-bold mb-1"><i class="bi bi-file-earmark-bar-graph me-2"></i>Laporan SIBAS</h5>
@@ -28,6 +28,39 @@
                 <button type="submit" class="btn btn-primary btn-sm text-white px-3">
                     <i class="bi bi-funnel me-1"></i> Terapkan
                 </button>
+                <div class="dropdown">
+                    <button class="btn btn-success btn-sm text-white px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li>
+                            <a class="dropdown-item text-sm py-2 fw-semibold" href="{{ route('admin.laporan.export_excel', array_merge(request()->query(), ['scope' => 'all'])) }}">
+                                <i class="bi bi-files me-2 text-success"></i>Semua Data
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-sm py-2" href="{{ route('admin.laporan.export_excel', array_merge(request()->query(), ['scope' => 'current', 'tab' => 'sampah'])) }}">
+                                <i class="bi bi-trash3 me-2 text-success"></i>Laporan Setor Sampah
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-sm py-2" href="{{ route('admin.laporan.export_excel', array_merge(request()->query(), ['scope' => 'current', 'tab' => 'belanja'])) }}">
+                                <i class="bi bi-cart3 me-2 text-success"></i>Laporan Belanja Koperasi
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-sm py-2" href="{{ route('admin.laporan.export_excel', array_merge(request()->query(), ['scope' => 'current', 'tab' => 'tabungan'])) }}">
+                                <i class="bi bi-wallet2 me-2 text-success"></i>Laporan Tabungan
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-sm py-2" href="{{ route('admin.laporan.export_excel', array_merge(request()->query(), ['scope' => 'current', 'tab' => 'inventory'])) }}">
+                                <i class="bi bi-box-seam me-2 text-success"></i>Laporan Inventory
+                            </a>
+                        </li>
+                    </ul>
+                </div>
                 <button type="button" class="btn btn-outline-dark btn-sm px-3" onclick="window.print()">
                     <i class="bi bi-printer me-1"></i> Cetak
                 </button>
@@ -516,6 +549,17 @@
 
 {{-- Print Styles --}}
 <style>
+    /* Toolbar memiliki dropdown yang perlu keluar dari batas card. */
+    .laporan-toolbar-card {
+        position: relative;
+        z-index: 20;
+        overflow: visible;
+    }
+
+    .laporan-toolbar-card .dropdown-menu {
+        z-index: 1080;
+    }
+
     @media print {
         @page {
             size: A4 portrait;

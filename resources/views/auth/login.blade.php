@@ -345,7 +345,7 @@
         <!-- Card -->
         <div class="auth-card">
             <h2>Masuk ke Akun</h2>
-            <p class="subtitle">Selamat datang kembali! Silakan masukkan email atau nomor HP kamu.</p>
+            <p class="subtitle">Silakan masukkan email atau nomor HP kamu.</p>
 
             @if (session('error'))
                 <div class="auth-alert">
